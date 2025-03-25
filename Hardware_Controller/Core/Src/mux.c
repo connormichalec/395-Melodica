@@ -2,10 +2,10 @@
 #include "midi.h"
 
 uint8_t ReadNote(uint8_t key) {
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, key & 0x01);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, (key & 0x02) >> 1);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, (key & 0x04) >> 2);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, (key & 0x08) >> 3);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, key & 0x01);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, (key & 0x02) >> 1);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, (key & 0x04) >> 2);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, (key & 0x08) >> 3);
 
     if (key & 0x10) return (uint8_t) HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
     return (uint8_t) HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11);
@@ -14,10 +14,10 @@ uint8_t ReadNote(uint8_t key) {
 
 
 void ReadKeyboard(uint8_t status[]) {
-	GPIO_PinState low = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4);
-	GPIO_PinState mid = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_5);
-	GPIO_PinState high = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6);
-	GPIO_PinState too_high = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_7);
+	GPIO_PinState low = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4);
+	GPIO_PinState mid = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
+	GPIO_PinState high = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6);
+	GPIO_PinState too_high = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7);
 
     uint8_t new_status;
 	for (uint8_t i = 0; i < 32; i++) {
