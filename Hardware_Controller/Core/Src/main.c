@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "midi.h"
 #include "string.h"
+#include "adc.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -72,6 +73,7 @@ static void MX_LPUART1_UART_Init(void);
 /* USER CODE BEGIN 0 */
 
 volatile uint16_t adc_reg;	// Register for holding adc value
+uint16_t adc_exp_reg = 0;		// Holds previous output of exponential filter
 uint8_t adc_conv_complete_flag = 0;
 
 /* USER CODE END 0 */
@@ -130,13 +132,17 @@ int main(void)
   {
 	  ReadKeyboard(notes);
 
-	  //if (adc_conv_complete_flag == 1) {
+
+
+	  if (adc_conv_complete_flag == 1) {
+		  uint16_t filtered_adc = exponential_filter(adc_reg, adc_exp_reg, 800);
+		  uint8_t pressure = remap(filtered_adc, 400, 1, 8);
+		  channel_pressure(0, pressure);
 		  //snprintf(adc_string, 50, "Value: %d\n", adc_reg);
 		  //HAL_UART_Transmit(&hlpuart1, (uint8_t *) adc_string, (uint16_t) strlen(adc_string), HAL_MAX_DELAY);
-		  //adc_conv_complete_flag = 0;
-	  //}
+		  adc_conv_complete_flag = 0;
+	  }
 
-	  //HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -341,7 +347,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 32000-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 100 - 1;
+  htim2.Init.Period = 10 - 1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -397,20 +403,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, S0_Pin|S1_Pin|S2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, S0_Pin|S1_Pin|S2_Pin|S3_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : S0_Pin S1_Pin S2_Pin */
-  GPIO_InitStruct.Pin = S0_Pin|S1_Pin|S2_Pin;
+  /*Configure GPIO pins : S0_Pin S1_Pin S2_Pin S3_Pin */
+  GPIO_InitStruct.Pin = S0_Pin|S1_Pin|S2_Pin|S3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : S3_Pin */
-  GPIO_InitStruct.Pin = S3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(S3_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Note_input_1_Pin Note_input_2_Pin */
   GPIO_InitStruct.Pin = Note_input_1_Pin|Note_input_2_Pin;
