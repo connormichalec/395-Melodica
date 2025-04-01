@@ -10,4 +10,4 @@
 #include "stm32l0xx_hal.h"
 
 void SetSelectBits(uint8_t key);
-void ReadKeyboard(uint8_t status[]);
+void ReadKeyboard(uint8_t status[], uint8_t pressure_on);

@@ -126,17 +126,16 @@ int main(void)
   MIDI_Init();
 
   uint8_t notes[32];
+  uint8_t pressure = 0;
 
   char adc_string[50];
   while (1)
   {
-	  ReadKeyboard(notes);
-
-
+	  ReadKeyboard(notes, pressure > 0);
 
 	  if (adc_conv_complete_flag == 1) {
 		  uint16_t filtered_adc = exponential_filter(adc_reg, adc_exp_reg, 800);
-		  uint8_t pressure = remap(filtered_adc, 400, 1, 8);
+		  pressure = remap(filtered_adc, 400, 1, 8);
 		  channel_pressure(0, pressure);
 		  //snprintf(adc_string, 50, "Value: %d\n", adc_reg);
 		  //HAL_UART_Transmit(&hlpuart1, (uint8_t *) adc_string, (uint16_t) strlen(adc_string), HAL_MAX_DELAY);
@@ -345,7 +344,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 32000-1;
+  htim2.Init.Prescaler = 3200-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 10 - 1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
