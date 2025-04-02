@@ -3,17 +3,23 @@
 extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart2;
 
+uint8_t note_counters[128];
 
 void note_on(uint8_t channel, uint8_t key, uint8_t velocity) {
-    MIDI_SendByte(NOTE_ON | (channel & 0b00001111));
+	note_counters[key]++;
+	MIDI_SendByte(NOTE_ON | (channel & 0b00001111));
     MIDI_SendByte((uint8_t) 0b01111111 & key);
     MIDI_SendByte((uint8_t) 0b01111111 & velocity);
 }
 
 void note_off(uint8_t channel, uint8_t key, uint8_t velocity) {
-    MIDI_SendByte(NOTE_OFF | (channel & 0b00001111));
-    MIDI_SendByte((uint8_t) 0b01111111 & key);
-    MIDI_SendByte((uint8_t) 0b01111111 & velocity);
+	if (note_counters[key] != 0) note_counters[key]--;
+
+	if (note_counters[key] == 0) {
+		MIDI_SendByte(NOTE_OFF | (channel & 0b00001111));
+		MIDI_SendByte((uint8_t) 0b01111111 & key);
+		MIDI_SendByte((uint8_t) 0b01111111 & velocity);
+	}
 }
 
 void channel_pressure(uint8_t channel, uint8_t pressure) {
@@ -62,9 +68,12 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 void MIDI_Init(void) {
     HAL_UART_Receive_IT(&huart2, &midi_buffer, 1); // Start receiving
+
+    for (int i = 0; i < 128; i++) note_counters[i] = 0;
 }
 
 MIDI_State midiState = MIDI_WAITING_FOR_STATUS;
+MIDI_Reg midi_reg;
 uint8_t midiStatus = 0;
 uint8_t midiData1 = 0;
 
@@ -100,22 +109,21 @@ void MIDI_ProcessByte(uint8_t byte) {
 				midiState = MIDI_WAITING_FOR_STATUS; // Reset on unexpected data
 				break;
 		}
-
 	}
 }
 
 void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2) {
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
-			HAL_UART_Transmit(&hlpuart1, "Note off\n", 9, HAL_MAX_DELAY);
+			midi_reg.notes[midiData1] = 0;
 			break;
 
 		case 0x90: // Note On
-			HAL_UART_Transmit(&hlpuart1, "Note on\n", 8, HAL_MAX_DELAY);
+			midi_reg.notes[midiData2] = midiData2;
 			break;
 
 		case 0xD0: // Channel Pressure
-
+			midi_reg.pressure = midiData1;
 			break;
 
 
