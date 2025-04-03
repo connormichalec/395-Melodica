@@ -13,7 +13,7 @@ uint8_t ReadNote(uint8_t key) {
 
 
 
-void ReadKeyboard(uint8_t status[]) {
+void ReadKeyboard(uint8_t status[], uint8_t pressure_on) {
 	GPIO_PinState low = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4);
 	GPIO_PinState mid = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
 	GPIO_PinState high = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6);
@@ -21,6 +21,7 @@ void ReadKeyboard(uint8_t status[]) {
 
     uint8_t new_status;
 	for (uint8_t i = 0; i < 32; i++) {
+        //new_status = ReadNote(i) && pressure_on;
         new_status = ReadNote(i);
         if (!status[i] && new_status) {
         	if (low) note_on(0, 29 + i, 60);

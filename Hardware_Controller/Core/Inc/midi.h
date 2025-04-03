@@ -11,6 +11,7 @@
 #define MIDI_CLK 4
 
 #include <stdint.h>
+#include <stdio.h>
 #include "stm32l0xx_hal.h"
 #include "stm32l0xx_hal_uart.h"
 
@@ -57,3 +58,28 @@ NoteListener new_note(uint8_t key, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin);
 
 // Listens for a specific note
 void listen(NoteListener * note);
+
+/////// MIDI RX STUFF
+
+typedef enum {
+    MIDI_WAITING_FOR_STATUS,
+    MIDI_WAITING_FOR_DATA1,
+    MIDI_WAITING_FOR_DATA2
+} MIDI_State;
+
+typedef struct {
+	uint8_t notes[128];
+	uint8_t pressure;
+} MIDI_Reg;
+
+// Callback function for UART interrupt, initiates reception of MIDI bytes
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+
+// Needs to be called in main function; Initializes UART setup so MIDI rx can work
+void MIDI_Init(void);
+
+// Performs appropriate logic when a MIDI byte is received
+void MIDI_ProcessByte(uint8_t byte);
+
+// Handles a MIDI message (pretty self-explanatory)
+void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2);
