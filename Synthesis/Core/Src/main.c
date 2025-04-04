@@ -100,7 +100,7 @@ int main(void)
   MX_TIM8_Init();
   /* USER CODE BEGIN 2 */
 
-  audio_signal_init((void*) &htim8, (void*) &hdac);
+  audio_signal_init(&htim8, &hdac);
   audio_signal_loop();
 
   /* USER CODE END 2 */
