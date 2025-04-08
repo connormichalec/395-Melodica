@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32l0xx_hal_tim.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -67,9 +67,11 @@ void Error_Handler(void);
 #define S2_GPIO_Port GPIOA
 #define S3_Pin GPIO_PIN_7
 #define S3_GPIO_Port GPIOA
-#define Note_input_1_Pin GPIO_PIN_11
+#define Note_input_0_Pin GPIO_PIN_11
+#define Note_input_0_GPIO_Port GPIOA
+#define Note_input_1_Pin GPIO_PIN_12
 #define Note_input_1_GPIO_Port GPIOA
-#define Note_input_2_Pin GPIO_PIN_12
+#define Note_input_2_Pin GPIO_PIN_15
 #define Note_input_2_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */

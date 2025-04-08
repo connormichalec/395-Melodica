@@ -24,6 +24,7 @@
 #include "midi.h"
 #include "string.h"
 #include "adc.h"
+#include "looper.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -52,6 +53,7 @@ UART_HandleTypeDef hlpuart1;
 UART_HandleTypeDef huart2;
 
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim21;
 
 /* USER CODE BEGIN PV */
 
@@ -65,6 +67,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_ADC_Init(void);
 static void MX_LPUART1_UART_Init(void);
+static void MX_TIM21_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -112,6 +115,7 @@ int main(void)
   MX_TIM2_Init();
   MX_ADC_Init();
   MX_LPUART1_UART_Init();
+  MX_TIM21_Init();
   /* USER CODE BEGIN 2 */
 
 
@@ -125,8 +129,13 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);
   MIDI_Init();
 
-  uint8_t notes[32];
+  uint8_t notes[48];
   uint8_t pressure = 0;
+
+  uint16_t breath_threshold;
+  uint8_t BREATH_THRESHOLD_SET = 0;
+
+  uint8_t flip = 0;
 
   char adc_string[50];
   while (1)
@@ -134,13 +143,16 @@ int main(void)
 	  ReadKeyboard(notes, pressure > 0);
 
 	  if (adc_conv_complete_flag == 1) {
+		  if (!BREATH_THRESHOLD_SET) {
+			  BREATH_THRESHOLD_SET = 1;
+			  breath_threshold = adc_reg + 10;
+		  }
 		  uint16_t filtered_adc = exponential_filter(adc_reg, adc_exp_reg, 800);
-		  pressure = remap(filtered_adc, 400, 1, 8);
+		  pressure = remap(filtered_adc, breath_threshold, 1, 8);
 		  channel_pressure(0, pressure);
-		  //snprintf(adc_string, 50, "Value: %d\n", adc_reg);
-		  //HAL_UART_Transmit(&hlpuart1, (uint8_t *) adc_string, (uint16_t) strlen(adc_string), HAL_MAX_DELAY);
 		  adc_conv_complete_flag = 0;
 	  }
+
 
     /* USER CODE END WHILE */
 
@@ -371,6 +383,51 @@ static void MX_TIM2_Init(void)
 }
 
 /**
+  * @brief TIM21 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM21_Init(void)
+{
+
+  /* USER CODE BEGIN TIM21_Init 0 */
+
+  /* USER CODE END TIM21_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM21_Init 1 */
+
+  /* USER CODE END TIM21_Init 1 */
+  htim21.Instance = TIM21;
+  htim21.Init.Prescaler = 0;
+  htim21.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim21.Init.Period = 65535;
+  htim21.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim21.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim21) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim21, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim21, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM21_Init 2 */
+
+  /* USER CODE END TIM21_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -411,11 +468,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Note_input_1_Pin Note_input_2_Pin */
-  GPIO_InitStruct.Pin = Note_input_1_Pin|Note_input_2_Pin;
+  /*Configure GPIO pins : Note_input_0_Pin Note_input_1_Pin */
+  GPIO_InitStruct.Pin = Note_input_0_Pin|Note_input_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Note_input_2_Pin */
+  GPIO_InitStruct.Pin = Note_input_2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(Note_input_2_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB4 PB5 PB6 PB7 */
   GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
