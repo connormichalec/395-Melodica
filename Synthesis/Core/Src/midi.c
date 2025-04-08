@@ -112,6 +112,10 @@ void MIDI_ProcessByte(uint8_t byte) {
 	}
 }
 
+float ToFrequency(uint8_t note) {
+	return 440 * pow(2.0f, (float) (note - 69) / 12);
+}
+
 void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2) {
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
@@ -126,9 +130,10 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 			midi_reg.pressure = midiData1;
 			break;
 
-
 		default:
 			// Ignore unsupported messages for now
 			break;
 	}
 }
+
+

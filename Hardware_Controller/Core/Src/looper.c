@@ -22,8 +22,8 @@ void LOOPER_INIT() {
 }
 
 void test() {
-	if (__HAL_TIM_GET_FLAG(&htim2, TIM_FLAG_UPDATE)) {
-		__HAL_TIM_CLEAR_FLAG(&htim2, TIM_FLAG_UPDATE);
+	if (__HAL_TIM_GET_FLAG(&htim21, TIM_FLAG_UPDATE)) {
+		__HAL_TIM_CLEAR_FLAG(&htim21, TIM_FLAG_UPDATE);
 		loop_tick++;
 	}
 

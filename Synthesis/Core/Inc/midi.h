@@ -81,5 +81,7 @@ void MIDI_Init(void);
 // Performs appropriate logic when a MIDI byte is received
 void MIDI_ProcessByte(uint8_t byte);
 
+void ToFrequency(uint8_t note);
+
 // Handles a MIDI message (pretty self-explanatory)
 void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2);
