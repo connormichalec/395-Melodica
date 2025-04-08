@@ -55,3 +55,9 @@ dkms.conf
 
 #settings:
 */.settings/
+
+#Kicad files:
+*.gbr
+*.drl
+*.gbrjob
+fp-info-cache
