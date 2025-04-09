@@ -37,7 +37,7 @@ void audio_signal_init(TIM_HandleTypeDef * _htim8, DAC_HandleTypeDef * _hdac) {
 
 	// some test oscillators (a 5th apart)
 	enable_oscillator(SIN, 200.0f);
-	enable_oscillator(SIN, 200.0f*((float)3/2));
+	enable_oscillator(SAW, 200.0f*((float)3/2));
 }
 
 void fill_buffer(uint16_t *buffer, long start, long end) {
