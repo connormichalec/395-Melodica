@@ -12,7 +12,6 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <math.h>
 #include "stm32l0xx_hal.h"
 #include "stm32l0xx_hal_uart.h"
 
@@ -82,7 +81,6 @@ void MIDI_Init(void);
 // Performs appropriate logic when a MIDI byte is received
 void MIDI_ProcessByte(uint8_t byte);
 
-// Converts a MIDI note to a frequency
 void ToFrequency(uint8_t note);
 
 // Handles a MIDI message (pretty self-explanatory)
