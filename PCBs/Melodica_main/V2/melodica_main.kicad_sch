@@ -8272,6 +8272,16 @@
 		)
 		(uuid "f66b37a0-33ac-4155-9248-a69d4ee5d070")
 	)
+	(text "<- NOTE: SWCLK and SWDIO pins are flipped accidentally here, leaving as is but in future pcb prints this should be fixed"
+		(exclude_from_sim no)
+		(at 295.91 108.712 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "2ebd3e52-f6c3-41b7-8105-0ff9e50313d2")
+	)
 	(text "(done like this for clarification)"
 		(exclude_from_sim no)
 		(at 177.546 191.77 0)
