@@ -10,18 +10,12 @@
 #ifndef SRC_SIGNAL_H_
 #define SRC_SIGNAL_H_
 
-
-typedef enum {
-	SIN,
-	SAW
-} oscillatorTypes;
-
+#include <stdint.h>
 
 void initialize_signal(int sample_rate_);
 
+void keyboard_update(uint8_t note, uint8_t state);
+
 float signal_next_sample();
-
-void enable_oscillator(oscillatorTypes oscillator, float frequency);
-
 
 #endif /* SRC_SIGNAL_H_ */

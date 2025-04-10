@@ -7,34 +7,39 @@
 
 #include "signal.h"
 #include "oscillator.h"
+#include "midi.h"
+#include "ADSR.h"
+
+#define MIDI_NUM_NOTES 128
 
 int sample_rate;				// Sample rate of DAC
 
-Oscillator oscillators[50];		// Oscillator array, oscillators currently active. Up to 50
-int num_oscillators;			// Number of oscillators currently enabled
+// This array keeps track of of what oscillator index a key is tacked to. When a keypress happens that key will be set to an osc idx.
+int key_oscillators[MIDI_NUM_NOTES];
 
 void initialize_signal(int sample_rate_) {
 	sample_rate = sample_rate_;
-	num_oscillators = 0;
-
+	init_oscillators();
+	init_adsrs();
+	for(int i = 0; i<MIDI_NUM_NOTES; i++) {
+		// -1 means no oscillator assigned
+		key_oscillators[i] = -1;
+	}
 }
 
-void enable_oscillator(oscillatorTypes oscillator, float frequency) {
-	float startPhase = 0.0f;
 
-	switch(oscillator) {
-	case SIN:
-		oscillators[num_oscillators].oscillatorFunction = &sin_oscillator;
-		break;
-	case SAW:
-		oscillators[num_oscillators].oscillatorFunction = &saw_oscillator;
-		break;
+void keyboard_update(uint8_t note, uint8_t state) {
+	// for now state is just turn on or off
+	if(state) {
+		// Key turned on, assign an oscillator to that key.
+		int idx = enable_oscillator(SAW, ToFrequency(note));
+		key_oscillators[note] = idx;
 	}
-
-	oscillators[num_oscillators].phase = startPhase;
-	oscillators[num_oscillators].frequency = frequency;									// Freq this oscillator should be initialized to.
-	num_oscillators++;
-	return;
+	else {
+		// Key turned off, disable oscillator assigned to that key. (TODO: Dont disable oscillator, just update adsr)
+		int idx = key_oscillators[note];
+		disable_oscillator(get_oscillator(idx));
+	}
 }
 
 float signal_next_sample() {
@@ -43,19 +48,22 @@ float signal_next_sample() {
 
 	float val = 0.0f;
 
-	for(int i = 0; i<num_oscillators; i++) {
-		Oscillator* o = &oscillators[i];									// Current oscillator we are dealing with
-		float phase_increment = (o->frequency/(float)sample_rate);			// How much to increment the phase each step.
+	for(int i = 0; i<get_num_oscillators(); i++) {
+		Oscillator* o = get_oscillator(i);									// Current oscillator we are dealing with
 
-		o->phase += phase_increment;
-		if(o->phase >= 1.0f)
-			o->phase = 0.0f;															// reset phase to 0 if phase gets to 1.
+		if(o->enabled) {
+			float phase_increment = (o->frequency/(float)sample_rate);			// How much to increment the phase each step.
 
-		val = val + o->oscillatorFunction(o->phase);									// Get sample value for that part of the phase
+			o->phase += phase_increment;
+			if(o->phase >= 1.0f)
+				o->phase = 0.0f;															// reset phase to 0 if phase gets to 1.
+
+			val = val + o->oscillatorFunction(o->phase);									// Get sample value for that part of the phase
+		}
 	}
 
 	// Normalize val based on num of oscillators active:
-	val = val / (float)num_oscillators;
+	val = val / (float)num_enabled_oscillators();
 
 	return val;
 }

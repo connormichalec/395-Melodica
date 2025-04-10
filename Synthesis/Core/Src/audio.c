@@ -11,6 +11,7 @@
 #include "signal.h"
 #include "oscillator.h"
 #include <math.h>
+#include "midi.h"
 
 #define SAMPLE_RATE 42000
 #define BUFFER_SIZE 2048
@@ -24,6 +25,10 @@ uint16_t buffer[BUFFER_SIZE];			// For ring buffer
 void * S_htim8;
 void * S_hdac;
 
+void note_callbk(uint8_t note, uint8_t event) {
+	keyboard_update(note,event);
+}
+
 void audio_signal_init(TIM_HandleTypeDef * _htim8, DAC_HandleTypeDef * _hdac) {
 	S_htim8 = _htim8;
 	S_hdac = _hdac;
@@ -35,9 +40,7 @@ void audio_signal_init(TIM_HandleTypeDef * _htim8, DAC_HandleTypeDef * _hdac) {
 
 	initialize_signal(SAMPLE_RATE);
 
-	// some test oscillators (a 5th apart)
-	enable_oscillator(SIN, 200.0f);
-	enable_oscillator(SAW, 200.0f*((float)3/2));
+	MIDI_Init(&note_callbk);
 }
 
 void fill_buffer(uint16_t *buffer, long start, long end) {
@@ -72,6 +75,5 @@ void audio_signal_loop() {
     HAL_DAC_Start_DMA(S_hdac, DAC_CHANNEL_1, (uint32_t*)buffer, BUFFER_SIZE, DAC_ALIGN_12B_R);
 
     while (1) {
-        // Nothing needed here—DMA & callbacks handle real-time updates
     }
 }

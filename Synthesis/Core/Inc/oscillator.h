@@ -8,14 +8,47 @@
 #ifndef SRC_OSCILLATOR_H_
 #define SRC_OSCILLATOR_H_
 
+typedef enum {
+	SIN,
+	SAW
+} oscillatorTypes;
+
 typedef struct {
 	float (*oscillatorFunction)(float phase);			// Function to get an oscillation based on phase
 	float phase;
 	float frequency;
+	int osc_idx;										// Oscillator index (for easy indexing of all oscillators)
+	int enabled;										// Is this oscillator enabled?
 } Oscillator;
 
-float sin_oscillator(float phase);
+/**
+ * Initialize oscillator system
+ */
+void init_oscillators();
 
-float saw_oscillator(float phase);
+/**
+ * Get Total number of oscillators
+ */
+int get_num_oscillators();
+
+/**
+ * Get number of oscillators currently enabled
+ */
+int num_enabled_oscillators();
+
+/**
+ * Get oscillator given its idx
+ */
+Oscillator * get_oscillator(int oscillator_idx);
+
+/**
+ * Enable an oscillator
+ */
+int enable_oscillator(oscillatorTypes oscillator, float frequency);
+
+/**
+ * Disable an oscillator
+ */
+void disable_oscillator(Oscillator * oscillator);
 
 #endif /* SRC_OSCILLATOR_H_ */

@@ -112,7 +112,7 @@ void MIDI_ProcessByte(uint8_t byte) {
 	}
 }
 
-float ToFrequency(uint8_t note) {
+void ToFrequency(uint8_t note) {
 	return 440 * pow(2.0f, (float) (note - 69) / 12);
 }
 
@@ -135,5 +135,3 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 			break;
 	}
 }
-
-
