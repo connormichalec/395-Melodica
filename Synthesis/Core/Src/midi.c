@@ -59,7 +59,7 @@ void listen(NoteListener * note) {
 uint8_t midi_buffer;	// Buffer for incoming midi data
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart->Instance == USART2) { // Ensure this is USART2's interrupt
+    if (huart->Instance == USART1) { // Ensure this is USART1's interrupt
         MIDI_ProcessByte(midi_buffer); // Your custom MIDI parsing logic
 
         // Restart UART reception to keep listening

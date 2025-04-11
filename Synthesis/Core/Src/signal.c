@@ -16,6 +16,8 @@ int sample_rate;				// Sample rate of DAC
 
 // This array keeps track of of what oscillator index a key is tacked to. When a keypress happens that key will be set to an osc idx.
 int key_oscillators[MIDI_NUM_NOTES];
+// This array keeps track of ADSRs currently assigned to each key oscillator.
+int key_adsr[MIDI_NUM_NOTES];
 
 void initialize_signal(int sample_rate_) {
 	sample_rate = sample_rate_;
@@ -27,12 +29,12 @@ void initialize_signal(int sample_rate_) {
 	}
 }
 
-
 void keyboard_update(uint8_t note, uint8_t state) {
 	// for now state is just turn on or off
+
 	if(state) {
 		// Key turned on, assign an oscillator to that key.
-		int idx = enable_oscillator(SAW, ToFrequency(note));
+		int idx = enable_oscillator(SIN, ToFrequency(note));
 		key_oscillators[note] = idx;
 	}
 	else {
@@ -44,9 +46,13 @@ void keyboard_update(uint8_t note, uint8_t state) {
 
 float signal_next_sample() {
 
-	// Go through oscillators and retrieve a sample, note I am using a phase accumulator to keep track of waveform.
-
 	float val = 0.0f;
+
+	// Go through oscillators and retrieve a sample, note I am using a phase accumulator to keep track of waveform.
+	if(num_enabled_oscillators()==0) {
+		return val;
+	}
+
 
 	for(int i = 0; i<get_num_oscillators(); i++) {
 		Oscillator* o = get_oscillator(i);									// Current oscillator we are dealing with
@@ -62,8 +68,9 @@ float signal_next_sample() {
 		}
 	}
 
-	// Normalize val based on num of oscillators active:
-	val = val / (float)num_enabled_oscillators();
+	//Clip val if it goes above 1:
+	if(val>1.0f)
+		val=1.0f;
 
 	return val;
 }

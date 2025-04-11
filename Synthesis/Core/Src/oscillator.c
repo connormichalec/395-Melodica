@@ -8,6 +8,7 @@
 #include <math.h>
 #include "oscillator.h"
 
+
 #define NUM_OSCILLATORS 10
 
 
@@ -57,7 +58,6 @@ int getFirstDisabledOscIdx() {
 
 int enable_oscillator(oscillatorTypes oscillator, float frequency) {
 	int idx = getFirstDisabledOscIdx();
-
 	// No oscillators avail
 	if(idx == -1) return -1;
 
@@ -87,6 +87,7 @@ void disable_oscillator(Oscillator * oscillator) {
 	oscillator->frequency = 0.0f;
 	oscillator->enabled = 0;
 	num_osc_enabled--;
+
 }
 
 Oscillator * get_oscillator(int oscillator_idx) {

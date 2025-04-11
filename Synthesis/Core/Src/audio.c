@@ -40,7 +40,6 @@ void audio_signal_init(TIM_HandleTypeDef * _htim8, DAC_HandleTypeDef * _hdac) {
 
 	initialize_signal(SAMPLE_RATE);
 
-	MIDI_Init(&note_callbk);
 }
 
 void fill_buffer(uint16_t *buffer, long start, long end) {
