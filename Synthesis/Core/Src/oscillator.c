@@ -82,6 +82,10 @@ int enable_oscillator(oscillatorTypes oscillator, float frequency) {
 }
 
 void disable_oscillator(Oscillator * oscillator) {
+	// Check if oscillator is actually enabmled:
+	if(!oscillator->enabled)
+		return;
+
 	oscillator->oscillatorFunction = NULL;
 	oscillator->phase = 0.0f;
 	oscillator->frequency = 0.0f;

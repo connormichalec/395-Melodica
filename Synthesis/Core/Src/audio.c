@@ -45,6 +45,8 @@ void audio_signal_init(TIM_HandleTypeDef * _htim8, DAC_HandleTypeDef * _hdac) {
 void fill_buffer(uint16_t *buffer, long start, long end) {
 	float val;
 
+
+
 	// Fill all samples in buf
     for (int i = start; i < end; i++) {
 
@@ -56,14 +58,22 @@ void fill_buffer(uint16_t *buffer, long start, long end) {
 
 }
 
+// 0 for first half, 1 for second half:
+volatile int fill_buffer_0 = 0;
+volatile int fill_buffer_1 = 0;
+
+// The reason we are using flags and not just filling buffers directly within the callback is because MIDI reception would be blocked if the interrupt is taking long to run.
+
 // Fill second half of buffer after first one starts playing
 void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac) {
-    fill_buffer(buffer, BUFFER_SIZE/2, BUFFER_SIZE);
+	// Set fill buffer second half flag:
+    fill_buffer_1 = 1;
 }
 
 // Fill first half of buffer after second half starts playing
 void HAL_DAC_ConvHalfCpltCallbackCh1(DAC_HandleTypeDef *hdac) {
-	fill_buffer(buffer, 0, BUFFER_SIZE/2);
+	// set fill buffer first half flag:
+	fill_buffer_0 = 1;
 }
 
 void audio_signal_loop() {
@@ -74,5 +84,13 @@ void audio_signal_loop() {
     HAL_DAC_Start_DMA(S_hdac, DAC_CHANNEL_1, (uint32_t*)buffer, BUFFER_SIZE, DAC_ALIGN_12B_R);
 
     while (1) {
+    	if(fill_buffer_1) {
+    		fill_buffer(buffer, BUFFER_SIZE/2, BUFFER_SIZE);
+    		fill_buffer_1 = 0;
+    	}
+    	else if(fill_buffer_0) {
+    		fill_buffer(buffer, 0, BUFFER_SIZE/2);
+    		fill_buffer_0 = 0;
+    	}
     }
 }

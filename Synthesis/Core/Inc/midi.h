@@ -60,7 +60,6 @@ NoteListener new_note(uint8_t key, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin);
 void listen(NoteListener * note);
 
 /////// MIDI RX STUFF
-
 typedef enum {
     MIDI_WAITING_FOR_STATUS,
     MIDI_WAITING_FOR_DATA1,
