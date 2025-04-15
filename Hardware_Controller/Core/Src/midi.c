@@ -2,6 +2,7 @@
 
 extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart2;
+extern Looper looper;
 
 uint8_t note_counters[128];
 
@@ -10,6 +11,8 @@ void note_on(uint8_t channel, uint8_t key, uint8_t velocity) {
 	MIDI_SendByte(NOTE_ON | (channel & 0b00001111));
     MIDI_SendByte((uint8_t) 0b01111111 & key);
     MIDI_SendByte((uint8_t) 0b01111111 & velocity);
+	looper.write_ons[looper.on_write_index] = timestamped_byte(key, looper.tick);
+	looper.on_write_index += 1;
 }
 
 void note_off(uint8_t channel, uint8_t key, uint8_t velocity) {
@@ -20,6 +23,8 @@ void note_off(uint8_t channel, uint8_t key, uint8_t velocity) {
 		MIDI_SendByte((uint8_t) 0b01111111 & key);
 		MIDI_SendByte((uint8_t) 0b01111111 & velocity);
 	}
+	looper.write_offs[looper.off_write_index] = timestamped_byte(key, looper.tick);
+	looper.off_write_index += 1;
 }
 
 void channel_pressure(uint8_t channel, uint8_t pressure) {
@@ -120,10 +125,18 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
 			midi_reg.notes[midiData1] = 0;
+
+			//looper.write_offs[looper.off_write_index] = timestamped_byte(midiData1, looper.tick);
+			//looper.off_write_index++;
+
 			break;
 
 		case 0x90: // Note On
-			midi_reg.notes[midiData2] = midiData2;
+			midi_reg.notes[midiData1] = midiData2;
+
+			//looper.write_ons[looper.on_write_index] = timestamped_byte(midiData1, looper.tick);
+			//looper.on_write_index++;
+
 			break;
 
 		case 0xD0: // Channel Pressure

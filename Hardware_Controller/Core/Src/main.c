@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "midi.h"
+#include "mux.h"
 #include "string.h"
 #include "adc.h"
 #include "looper.h"
@@ -127,7 +128,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   HAL_TIM_Base_Start(&htim2);
+  HAL_TIM_Base_Start(&htim21);
   MIDI_Init();
+  LOOPER_INIT();
 
   uint8_t notes[48];
   uint8_t pressure = 0;
@@ -135,9 +138,7 @@ int main(void)
   uint16_t breath_threshold;
   uint8_t BREATH_THRESHOLD_SET = 0;
 
-  uint8_t flip = 0;
-
-  char adc_string[50];
+  //char adc_string[50];
   while (1)
   {
 	  ReadKeyboard(notes, pressure > 0);
@@ -153,6 +154,7 @@ int main(void)
 		  adc_conv_complete_flag = 0;
 	  }
 
+	  looper_tick();
 
     /* USER CODE END WHILE */
 
@@ -401,9 +403,9 @@ static void MX_TIM21_Init(void)
 
   /* USER CODE END TIM21_Init 1 */
   htim21.Instance = TIM21;
-  htim21.Init.Prescaler = 0;
+  htim21.Init.Prescaler = 3200-1;
   htim21.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim21.Init.Period = 65535;
+  htim21.Init.Period = 6;
   htim21.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim21.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim21) != HAL_OK)
@@ -415,7 +417,7 @@ static void MX_TIM21_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim21, &sMasterConfig) != HAL_OK)
   {
