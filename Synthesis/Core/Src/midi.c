@@ -1,7 +1,8 @@
 #include "midi.h"
+#include <math.h>
 
 extern UART_HandleTypeDef hlpuart1;
-extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart1;
 
 uint8_t note_counters[128];
 
@@ -28,7 +29,7 @@ void channel_pressure(uint8_t channel, uint8_t pressure) {
 }
 
 void MIDI_SendByte(uint8_t byte) {
-    HAL_UART_Transmit(&huart2, &byte, 1, HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart1, &byte, 1, HAL_MAX_DELAY);
 }
 
 
@@ -58,16 +59,22 @@ void listen(NoteListener * note) {
 uint8_t midi_buffer;	// Buffer for incoming midi data
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart->Instance == USART2) { // Ensure this is USART2's interrupt
-        MIDI_ProcessByte(midi_buffer); // Your custom MIDI parsing logic
+    if (huart->Instance == USART1) { // Ensure this is USART1's interrupt
+        // Restart UART reception to keep listening - this is important to do BEFORE processbyte because processbyte could start the synthesis and interrupts wont be enabled until event callback returns.
+        HAL_UART_Receive_IT(&huart1, &midi_buffer, 1);
 
-        // Restart UART reception to keep listening
-        HAL_UART_Receive_IT(&huart2, &midi_buffer, 1);
+        MIDI_ProcessByte(midi_buffer); // Your custom MIDI parsing logic
     }
 }
 
-void MIDI_Init(void) {
-    HAL_UART_Receive_IT(&huart2, &midi_buffer, 1); // Start receiving
+//MODIFIED BY CONNOR: - this is a quick fix and needs to be more thoroughly implemented
+void (*event_callback)(uint8_t, uint8_t);
+
+
+void MIDI_Init(void (*callbackFunc)(uint8_t, uint8_t)) {
+    HAL_UART_Receive_IT(&huart1, &midi_buffer, 1); // Start receiving
+
+    event_callback = callbackFunc;
 
     for (int i = 0; i < 128; i++) note_counters[i] = 0;
 }
@@ -116,14 +123,17 @@ float ToFrequency(uint8_t note) {
 	return 440 * pow(2.0f, (float) (note - 69) / 12);
 }
 
+
 void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2) {
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
 			midi_reg.notes[midiData1] = 0;
+			event_callback(midiData2, 0);
 			break;
 
 		case 0x90: // Note On
 			midi_reg.notes[midiData2] = midiData2;
+			event_callback(midiData2, 1);
 			break;
 
 		case 0xD0: // Channel Pressure
@@ -135,5 +145,6 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 			break;
 	}
 }
+
 
 

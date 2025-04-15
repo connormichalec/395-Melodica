@@ -17,6 +17,7 @@ void audio_signal_init(TIM_HandleTypeDef * _htim8, DAC_HandleTypeDef * _hdac);
  */
 void audio_signal_loop();
 
+void note_callbk(uint8_t note, uint8_t event);
 
 
 #endif /* INC_AUDIO_H_ */
