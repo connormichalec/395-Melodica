@@ -73,6 +73,8 @@ void Error_Handler(void);
 #define Note_input_1_GPIO_Port GPIOA
 #define Note_input_2_Pin GPIO_PIN_15
 #define Note_input_2_GPIO_Port GPIOA
+#define Looper_input_Pin GPIO_PIN_3
+#define Looper_input_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

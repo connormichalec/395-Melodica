@@ -11,8 +11,11 @@ void note_on(uint8_t channel, uint8_t key, uint8_t velocity) {
 	MIDI_SendByte(NOTE_ON | (channel & 0b00001111));
     MIDI_SendByte((uint8_t) 0b01111111 & key);
     MIDI_SendByte((uint8_t) 0b01111111 & velocity);
-	looper.write_ons[looper.on_write_index] = timestamped_byte(key, looper.tick);
-	looper.on_write_index += 1;
+
+    if (looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) {
+		looper.write_ons[looper.on_write_index] = timestamped_byte(key, looper.tick);
+		looper.on_write_index += 1;
+    }
 }
 
 void note_off(uint8_t channel, uint8_t key, uint8_t velocity) {
@@ -23,6 +26,32 @@ void note_off(uint8_t channel, uint8_t key, uint8_t velocity) {
 		MIDI_SendByte((uint8_t) 0b01111111 & key);
 		MIDI_SendByte((uint8_t) 0b01111111 & velocity);
 	}
+
+    if (looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) {
+		looper.write_offs[looper.off_write_index] = timestamped_byte(key, looper.tick);
+		looper.off_write_index += 1;
+    }
+}
+
+void note_on_forcerecord(uint8_t channel, uint8_t key, uint8_t velocity) {
+	note_counters[key]++;
+	MIDI_SendByte(NOTE_ON | (channel & 0b00001111));
+    MIDI_SendByte((uint8_t) 0b01111111 & key);
+    MIDI_SendByte((uint8_t) 0b01111111 & velocity);
+
+	looper.write_ons[looper.on_write_index] = timestamped_byte(key, looper.tick);
+	looper.on_write_index += 1;
+}
+
+void note_off_forcerecord(uint8_t channel, uint8_t key, uint8_t velocity) {
+	if (note_counters[key] != 0) note_counters[key]--;
+
+	if (note_counters[key] == 0) {
+		MIDI_SendByte(NOTE_OFF | (channel & 0b00001111));
+		MIDI_SendByte((uint8_t) 0b01111111 & key);
+		MIDI_SendByte((uint8_t) 0b01111111 & velocity);
+	}
+
 	looper.write_offs[looper.off_write_index] = timestamped_byte(key, looper.tick);
 	looper.off_write_index += 1;
 }
@@ -35,8 +64,6 @@ void channel_pressure(uint8_t channel, uint8_t pressure) {
 void MIDI_SendByte(uint8_t byte) {
     HAL_UART_Transmit(&huart2, &byte, 1, HAL_MAX_DELAY);
 }
-
-
 
 NoteListener new_note(uint8_t key, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin) {
 	NoteListener output;
@@ -117,7 +144,7 @@ void MIDI_ProcessByte(uint8_t byte) {
 	}
 }
 
-void ToFrequency(uint8_t note) {
+float ToFrequency(uint8_t note) {
 	return 440 * pow(2.0f, (float) (note - 69) / 12);
 }
 
