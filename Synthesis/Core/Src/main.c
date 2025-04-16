@@ -103,7 +103,10 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   MIDI_Init(&note_callbk);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, 0);
+
+  // For debugging: - good use in stm32f4xx_it.c it can be set to go high when hard fault occurs
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, 0);
+
 
   audio_signal_init(&htim8, &hdac);
   audio_signal_loop();

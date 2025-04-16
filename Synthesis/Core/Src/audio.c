@@ -25,6 +25,7 @@ uint16_t buffer[BUFFER_SIZE];			// For ring buffer
 void * S_htim8;
 void * S_hdac;
 
+
 void note_callbk(uint8_t note, uint8_t event) {
 	keyboard_update(note,event);
 }
@@ -45,12 +46,10 @@ void audio_signal_init(TIM_HandleTypeDef * _htim8, DAC_HandleTypeDef * _hdac) {
 void fill_buffer(uint16_t *buffer, long start, long end) {
 	float val;
 
-
-
 	// Fill all samples in buf
     for (int i = start; i < end; i++) {
 
-    	val = signal_next_sample()*0.5f;
+    	val = signal_next_sample();
 
     	// DAC SET TO 12 bit SCALE ACCORDINGLY:
     	buffer[i] = (uint16_t)((2047) * val + 2048); // Centered properly
@@ -85,12 +84,13 @@ void audio_signal_loop() {
 
     while (1) {
     	if(fill_buffer_1) {
-    		fill_buffer(buffer, BUFFER_SIZE/2, BUFFER_SIZE);
     		fill_buffer_1 = 0;
+    		fill_buffer(buffer, BUFFER_SIZE/2, BUFFER_SIZE);
     	}
     	else if(fill_buffer_0) {
-    		fill_buffer(buffer, 0, BUFFER_SIZE/2);
     		fill_buffer_0 = 0;
+    		fill_buffer(buffer, 0, BUFFER_SIZE/2);
     	}
     }
 }
+

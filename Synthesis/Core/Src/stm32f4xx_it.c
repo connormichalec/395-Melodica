@@ -91,6 +91,14 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+
+	  //TODO: Uncommet system reset on hardfault
+	  //Automatically reset synthesis when a hard fault occurs, this could be done by simply wiring GPIO Pin 7 to the reset pin on the PCB potenitally
+	  //NVIC_SystemReset();
+
+	  //Write pin when hardfault:
+	  //HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, 1);
+
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
 }
