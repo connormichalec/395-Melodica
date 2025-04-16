@@ -57,8 +57,8 @@ void note_off_forcerecord(uint8_t channel, uint8_t key, uint8_t velocity) {
 }
 
 void channel_pressure(uint8_t channel, uint8_t pressure) {
-    //MIDI_SendByte(CHANNEL_PRESSURE | (channel & 0b00001111));
-    //MIDI_SendByte((uint8_t) 0b01111111 & pressure);
+    MIDI_SendByte(CHANNEL_PRESSURE | (channel & 0b00001111));
+    MIDI_SendByte((uint8_t) 0b01111111 & pressure);
 }
 
 void MIDI_SendByte(uint8_t byte) {
