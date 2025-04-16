@@ -8,25 +8,23 @@
 #include "signal.h"
 #include "oscillator.h"
 #include "midi.h"
-#include "ADSR.h"
+#include "voice.h"
 
 #define MIDI_NUM_NOTES 128
 
 int sample_rate;				// Sample rate of DAC
 
-// This array keeps track of of what oscillator index a key is tacked to. When a keypress happens that key will be set to an osc idx.
-int key_oscillators[MIDI_NUM_NOTES];
-// This array keeps track of ADSRs currently assigned to each key oscillator.
-int key_adsr[MIDI_NUM_NOTES];
+// This array keeps track of of what voice index a key is tacked to. When a keypress happens that key will be set to a voice idx
+int key_voices[MIDI_NUM_NOTES];
 
 
 void initialize_signal(int sample_rate_) {
 	sample_rate = sample_rate_;
-	init_oscillators();
-	init_adsrs();
+	init_voices();
+
 	for(int i = 0; i<MIDI_NUM_NOTES; i++) {
-		// -1 means no oscillator assigned
-		key_oscillators[i] = -1;
+		// -1 means no voice assigned
+		key_voices[i] = -1;
 	}
 }
 
@@ -35,13 +33,14 @@ void keyboard_update(uint8_t note, uint8_t state) {
 
 	if(state) {
 		// Key turned on, assign an oscillator to that key.
-		int idx = enable_oscillator(SAW, ToFrequency(note));
-		key_oscillators[note] = idx;
+		int idx = enable_voice(SAW, ToFrequency(note), 0.15f);  // apply a slight detune to voice
+		key_voices[note] = idx;
 	}
 	else {
 		// Key turned off, disable oscillator assigned to that key. (TODO: Dont disable oscillator, just update adsr)
-		int idx = key_oscillators[note];
-		disable_oscillator(get_oscillator(idx));
+		int idx = key_voices[note];
+		disable_voice(get_voice(idx));
+		key_voices[note] = -1;
 	}
 }
 

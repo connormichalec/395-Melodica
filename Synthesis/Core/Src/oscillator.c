@@ -9,8 +9,6 @@
 #include "oscillator.h"
 
 
-#define NUM_OSCILLATORS 10
-
 
 
 //TODO: Have a seperate array of all the oscillators enabled (updated when enabled/disabled) so you dont have to go through all of them just to sample the ones currently active
