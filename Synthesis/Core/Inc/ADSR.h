@@ -8,6 +8,9 @@
 #ifndef INC_ADSR_H_
 #define INC_ADSR_H_
 
+// Max num of adsrs avail
+#define NUM_ADSRS 50
+
 typedef enum {
 	NONE,
 	ATTACK,

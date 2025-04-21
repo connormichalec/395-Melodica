@@ -8,9 +8,6 @@
 #include "ADSR.h"
 
 
-// Max num of adsrs avail
-#define NUM_ADSRS 50
-
 ADSR adsrs[NUM_ADSRS];
 
 void init_adsrs() {
