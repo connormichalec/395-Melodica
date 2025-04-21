@@ -56,6 +56,17 @@ void note_off_forcerecord(uint8_t channel, uint8_t key, uint8_t velocity) {
 	looper.off_write_index += 1;
 }
 
+void note_off_all() {
+	for(uint8_t i = 0; i < 128; i++) {
+		note_counters[i] = 0;
+		MIDI_SendByte(NOTE_OFF | (0 & 0b00001111));
+		MIDI_SendByte((uint8_t) 0b01111111 & i);
+		MIDI_SendByte((uint8_t) 0b01111111 & 0);
+	}
+}
+
+void record_note_off_all() {}
+
 void channel_pressure(uint8_t channel, uint8_t pressure) {
     MIDI_SendByte(CHANNEL_PRESSURE | (channel & 0b00001111));
     MIDI_SendByte((uint8_t) 0b01111111 & pressure);

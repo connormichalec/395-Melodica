@@ -137,6 +137,7 @@ int main(void)
 
   uint16_t breath_threshold;
   uint8_t BREATH_THRESHOLD_SET = 0;
+  int16_t last_sent_pressure = 0;
 
   //char adc_string[50];
   while (1)
@@ -150,7 +151,11 @@ int main(void)
 		  }
 		  uint16_t filtered_adc = exponential_filter(adc_reg, adc_exp_reg, 800);
 		  pressure = remap(filtered_adc, breath_threshold, 1, 8);
-		  channel_pressure(0, pressure);
+		  int16_t difference = last_sent_pressure - pressure;
+		  if (difference < -10 || difference > 10) {
+			  channel_pressure(0, pressure);
+			  last_sent_pressure = pressure;
+		  }
 		  adc_conv_complete_flag = 0;
 	  }
 
@@ -470,28 +475,18 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Note_input_0_Pin Note_input_1_Pin */
-  GPIO_InitStruct.Pin = Note_input_0_Pin|Note_input_1_Pin;
+  /*Configure GPIO pins : Note_input_0_Pin Note_input_1_Pin Note_input_2_Pin */
+  GPIO_InitStruct.Pin = Note_input_0_Pin|Note_input_1_Pin|Note_input_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Note_input_2_Pin */
-  GPIO_InitStruct.Pin = Note_input_2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Note_input_2_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : Looper_input_Pin */
-  GPIO_InitStruct.Pin = Looper_input_Pin;
+  /*Configure GPIO pins : Looper_input_Pin PB4 PB5 PB6
+                           PB7 */
+  GPIO_InitStruct.Pin = Looper_input_Pin|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
+                          |GPIO_PIN_7;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(Looper_input_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PB4 PB5 PB6 PB7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */

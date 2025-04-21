@@ -43,7 +43,9 @@ typedef struct {
 
 	looper_state state;			// Keeps track of state of the FSM
 	uint8_t button_pressed;		// Tracks state of whether the looper button is pressed (for posedge detection)
-	uint8_t recording_length;
+	uint32_t recording_length;
+	uint8_t debounce_tick;
+	uint16_t hold_tick;
 
 } Looper;
 

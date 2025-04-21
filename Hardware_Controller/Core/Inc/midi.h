@@ -49,6 +49,12 @@ void note_on(uint8_t channel, uint8_t key, uint8_t velocity);
 // Message to turn a note off
 void note_off(uint8_t channel, uint8_t key, uint8_t velocity);
 
+void note_on_forcerecord(uint8_t channel, uint8_t key, uint8_t velocity);
+void note_off_forcerecord(uint8_t channel, uint8_t key, uint8_t velocity);
+
+void record_note_off_all();
+void note_off_all();
+
 // Message to change channel aftertouch
 void channel_pressure(uint8_t channel, uint8_t pressure);
 

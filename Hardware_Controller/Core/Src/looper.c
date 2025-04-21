@@ -34,7 +34,7 @@ void LOOPER_INIT() {
 		looper.offs_[i] = timestamped_byte(0, -1);
 	}
 
-	looper.length = 1024 * 3;
+	looper.length = -1;
 	looper.buffer_state = 0;
 	looper.off_read_index = 0;
 	looper.off_write_index = 0;
@@ -49,45 +49,68 @@ void LOOPER_INIT() {
 	looper.state = LOOPER_INACTIVE;
 	looper.button_pressed = 0;
 	looper.recording_length = 0;
+	looper.debounce_tick = 20;
+	looper.hold_tick = 0;
 }
 
 void looper_tick() {
-	// Track button state
-	uint8_t new_button_state = HAL_GPIO_ReadPin(LOOPER_GPIO_PORT, LOOPER_GPIO_PIN);
-
-
-	if (!looper.button_pressed && new_button_state) {	// Detect positive edge of button presses
-		// FSM CONTROL
-		switch (looper.state) {
-			case LOOPER_INACTIVE:
-				looper.recording_length = 0;
-				looper.state = LOOPER_RECORDING_INIT;
-				break;
-
-			case LOOPER_RECORDING_INIT:
-				looper.length = looper.recording_length;
-				looper.state = LOOPER_LOOPING;
-				break;
-
-			case LOOPER_RECORDING_REPEAT:
-				looper.state = LOOPER_LOOPING;
-				break;
-
-			case LOOPER_LOOPING:
-				looper.state = LOOPER_RECORDING_REPEAT;
-				break;
-		}
-	}
 
 
 	// Loop logic
 	if (__HAL_TIM_GET_FLAG(&htim21, TIM_FLAG_UPDATE)) {		// Update with timer peripheral
 		__HAL_TIM_CLEAR_FLAG(&htim21, TIM_FLAG_UPDATE);
+		// Track button state
+		uint8_t new_button_state = HAL_GPIO_ReadPin(LOOPER_GPIO_PORT, LOOPER_GPIO_PIN);
+		uint8_t button_edge = (!looper.button_pressed && new_button_state); // rising edge
+
+		looper.button_pressed = new_button_state; // Update this BEFORE using it to avoid race logic
+		if (looper.debounce_tick > 0) looper.debounce_tick--;
+
+		if (button_edge && looper.debounce_tick == 0) {	// Detect positive edge of button presses
+			looper.debounce_tick = 10;
+
+			// FSM CONTROL
+			switch (looper.state) {
+				case LOOPER_INACTIVE:
+					looper.recording_length = 0;
+					looper.state = LOOPER_RECORDING_INIT;
+					break;
+
+				case LOOPER_RECORDING_INIT:
+					record_note_off_all();
+					looper.length = looper.recording_length;
+					looper.tick = looper.recording_length;
+					looper.state = LOOPER_LOOPING;
+					break;
+
+				case LOOPER_RECORDING_REPEAT:
+					record_note_off_all();
+					looper.state = LOOPER_LOOPING;
+					break;
+
+				case LOOPER_LOOPING:
+					looper.state = LOOPER_RECORDING_REPEAT;
+					break;
+			}
+		}
+	    if (looper.state == LOOPER_RECORDING_INIT) looper.recording_length++;
+
+	    // Reset condition
+	    if (looper.button_pressed) {
+	    	looper.hold_tick++;
+	    	if (looper.hold_tick >= 512) {
+	    		looper.debounce_tick = 20;
+	    		LOOPER_INIT();
+	    		note_off_all();
+	    	}
+	    } else {
+	    	looper.hold_tick = 0;
+	    }
+
 		// If not actively looping, ignore all of this
 		if (looper.state == LOOPER_INACTIVE) return;
 
 	    looper.tick++;
-	    if (looper.state == LOOPER_RECORDING_INIT) looper.recording_length++;
 
 	    // When end of loop hits, perform buffer swaps
 	    if (looper.tick >= looper.length) {
