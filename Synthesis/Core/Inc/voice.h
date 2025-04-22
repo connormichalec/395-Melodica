@@ -11,8 +11,8 @@
 #include "ADSR.h"
 #include "oscillator.h"
 
-#define VOICE_NUM_OSC 4
-#define NUM_VOICES 8
+#define VOICE_NUM_OSC 3
+#define NUM_VOICES 3
 
 // TODO: Implement function pointres in struct for more streamlined interfacing (liek a class)
 typedef struct {

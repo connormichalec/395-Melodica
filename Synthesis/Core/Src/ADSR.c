@@ -14,19 +14,29 @@ void init_adsrs() {
 
 }
 
-float factor_scale = 0.0001f;
+// Normalize timing factors to be more understandable
+float factor_scale = 0.00001f;
 
 // All functions return from 0-1
 
 float attack_func(ADSR * adsr) {
-	// linear from 0 to attack level
 
-	float val = adsr->cur_step * adsr->attack_factor * factor_scale;
+	float val;
+
+	// Assume instant
+	if(adsr->attack_factor<=0.02f) {
+		val = adsr->attack_level;
+		ADSR_next(adsr);
+		adsr->last_sus_val = val;
+		return(val);
+	}
+
+	val = adsr->cur_step * (1/adsr->attack_factor) * factor_scale;
 
 	if(val>=adsr->attack_level)
 		ADSR_next(adsr);
 
-	adsr->last_sus_val = val;  // only to be overwritten by sustain
+	adsr->last_sus_val = val;
 
 	return(val);
 }
@@ -35,7 +45,18 @@ float decay_func(ADSR * adsr) {
 	// linear decay from attack level to sustain level after decay time
 	// rise/run!!
 
-	float val = adsr->attack_level + adsr->cur_step * -adsr->decay_factor * factor_scale;
+	float val;
+
+	// Assume instant
+	if(adsr->decay_factor<=0.02f) {
+		val = adsr->sustain_level;
+		adsr->last_sus_val = val;
+		ADSR_next(adsr);
+		return val;
+	}
+
+	val = adsr->attack_level + adsr->cur_step * -(1/adsr->decay_factor * factor_scale);
+	adsr->last_sus_val = val;
 
 	if(val<=adsr->sustain_level)
 		ADSR_next(adsr);
@@ -55,9 +76,18 @@ float sustain_func(ADSR * adsr) {
 }
 
 float rel_func(ADSR * adsr) {
-	// linearly release from last held value to 0, at 0 progress to next (done) state.
 
-	float val = adsr->last_sus_val + adsr->cur_step * -adsr->release_factor * factor_scale;
+
+	float val;
+
+	// Assume instant:
+	if(adsr->release_factor<=0.02f) {
+		val = 0.0f;
+		ADSR_next(adsr);
+		return val;
+	}
+
+	val = adsr->last_sus_val + adsr->cur_step * -((1/adsr->release_factor) * factor_scale);
 
 	if(val<=0)
 		ADSR_next(adsr);

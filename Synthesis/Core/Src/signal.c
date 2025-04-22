@@ -38,8 +38,7 @@ void keyboard_update(uint8_t note, uint8_t state) {
 		// Key turned off, progress set ADSR to "release" state
 		int idx = key_voices[note];
 		key_voices[note] = -1;
-		disable_voice(get_voice(idx));
-		//ADSR_set_state(get_voice(idx)->adsr,RELEASE);
+		ADSR_set_state(get_voice(idx)->adsr,RELEASE);
 	}
 }
 
@@ -59,7 +58,7 @@ float signal_next_sample() {
 	}
 
 	// Tick voices:
-	//tick_voices();
+	tick_voices();
 
 
 
@@ -85,7 +84,7 @@ float signal_next_sample() {
 
 
 					val = val + o->oscillatorFunction(o->phase) * osc_scaling_fctr;					// Get sample value for that part of the phase
-					//val = val * get_voice_ADSR_val(v);
+					val = val * get_voice_ADSR_val(v);
 
 				}
 			}

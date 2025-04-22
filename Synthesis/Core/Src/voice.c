@@ -33,7 +33,7 @@ int getFirstDisabledVoiceIdx() {
 
 void init_voices() {
 	init_oscillators();
-	//init_adsrs();
+	init_adsrs();
 
 	for(int i = 0; i<NUM_VOICES; i++) {
 		for(int x = 0; x<VOICE_NUM_OSC; x++) {
@@ -59,11 +59,11 @@ void tick_voice(Voice * voice) {
 		return;
 
 	//Tick ADSRs:
-	//ADSR_tick(voice->adsr);
+	ADSR_tick(voice->adsr);
 
 	//If ADSR is set to DONE state, disable this voice as it is done playing until re-enabled.
-	//if(voice->adsr->cur_state == DONE)
-	//	disable_voice(voice);
+	if(voice->adsr->cur_state == DONE)
+		disable_voice(voice);
 
 }
 
@@ -99,10 +99,10 @@ int enable_voice(oscillatorTypes type, float frequency, float detune) {
 	}
 
 	// Create adsr for this voice:
-	//v->adsr = create_ADSR(0.5f, 1.0f, 0.5f, 1.0f, 0.5f);
+	v->adsr = create_ADSR(0.0f, 1.0f, 0.0f, 1.0f, 0.3f);
 
 	// Go to attack phase of adsr
-	//ADSR_next(v->adsr);
+	ADSR_next(v->adsr);
 
 	num_voices_enabled++;
 	return idx;
