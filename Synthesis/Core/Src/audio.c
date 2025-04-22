@@ -9,7 +9,6 @@
 
 #include "audio.h"
 #include "signal.h"
-#include "oscillator.h"
 #include <math.h>
 #include "midi.h"
 
@@ -46,15 +45,19 @@ void audio_signal_init(TIM_HandleTypeDef * _htim8, DAC_HandleTypeDef * _hdac) {
 void fill_buffer(uint16_t *buffer, long start, long end) {
 	float val;
 
+
 	// Fill all samples in buf
     for (int i = start; i < end; i++) {
 
+    	__disable_irq();
     	val = signal_next_sample();
+    	__enable_irq();
+
 
     	// DAC SET TO 12 bit SCALE ACCORDINGLY:
     	buffer[i] = (uint16_t)((2047) * val + 2048); // Centered properly
-    }
 
+    }
 }
 
 // 0 for first half, 1 for second half:

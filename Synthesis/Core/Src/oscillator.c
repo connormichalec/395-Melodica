@@ -81,7 +81,7 @@ int enable_oscillator(oscillatorTypes oscillator, float frequency) {
 
 void disable_oscillator(Oscillator * oscillator) {
 	// Check if oscillator is actually enabmled:
-	if(!oscillator->enabled)
+	if(oscillator==NULL || !oscillator->enabled)
 		return;
 
 	oscillator->oscillatorFunction = NULL;
@@ -93,5 +93,8 @@ void disable_oscillator(Oscillator * oscillator) {
 }
 
 Oscillator * get_oscillator(int oscillator_idx) {
+	if(oscillator_idx==-1)
+		return NULL;
+
 	return &oscillators[oscillator_idx];
 }
