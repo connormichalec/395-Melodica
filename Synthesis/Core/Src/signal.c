@@ -10,42 +10,29 @@
 #include "midi.h"
 #include "voice.h"
 
-#define MIDI_NUM_NOTES 128
-
 int sample_rate;				// Sample rate of DAC
-
-// This array keeps track of of what voice index a key is tacked to. When a keypress happens that key will be set to a voice idx
-int key_voices[MIDI_NUM_NOTES];
 
 
 void initialize_signal(int sample_rate_) {
 	sample_rate = sample_rate_;
 	init_voices();
-
-	for(int i = 0; i<MIDI_NUM_NOTES; i++) {
-		// -1 means no voice assigned
-		key_voices[i] = -1;
-	}
 }
 
 void keyboard_update(uint8_t note, uint8_t state) {
 	if(state) {
-		// Key turned on, assign an oscillator to that key.
-		int idx = enable_voice(SAW, ToFrequency(note), 0.2f);  // apply a slight detune to voice
-		key_voices[note] = idx;
+		// Key turned on, assign a voice to that key.
+		enable_voice(SAW, note, 0.2f);  // apply a slight detune to voice
 	}
 	else {
 		// Key turned off, progress set ADSR to "release" state
-		int idx = key_voices[note];
-		key_voices[note] = -1;
-		ADSR_set_state(get_voice(idx)->adsr,RELEASE);
+		ADSR_set_state(get_voice_from_note(note)->adsr,RELEASE);
 	}
 }
 
 float signal_next_sample() {
 
 	// Otherwise all oscillators will max out volume automatically and so adding them would not work.
-	float osc_scaling_fctr = 0.01f;			// how much to scale each oscillator by - TODO: replace this with a more professional solution.
+	float voice_scaling_fctr = 0.1f;			// how much to scale each voice by - TODO: replace this with a more professional solution.
 
 	float val = 0.0f;
 
@@ -65,9 +52,11 @@ float signal_next_sample() {
 	// Go through all voices:
 	for(int q = 0; q <get_num_voices(); q++) {
 
-		Voice * v = get_voice(q);
+		Voice * v = get_voice_from_idx(q);
 
 		if(v->enabled) {
+
+			float voice_val = 0.0f;
 
 			// Get all oscillators of that voice:
 			for(int i = 0; i<v->num_osc; i++) {
@@ -83,11 +72,15 @@ float signal_next_sample() {
 						o->phase = 0.0f;															// reset phase to 0 if phase gets to 1.
 
 
-					val = val + o->oscillatorFunction(o->phase) * osc_scaling_fctr;					// Get sample value for that part of the phase
-					val = val * get_voice_ADSR_val(v);
+					voice_val = voice_val + o->oscillatorFunction(o->phase);									// Get sample value for that part of the phase
 
 				}
 			}
+			// Apply ADSR factor:
+			voice_val = voice_val * get_voice_ADSR_val(v);
+
+			// Apply voice scaling factor to normalize and add to final val
+			val = val + voice_val * voice_scaling_fctr;
 
 		}
 

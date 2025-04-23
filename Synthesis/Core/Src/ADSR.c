@@ -89,7 +89,7 @@ float rel_func(ADSR * adsr) {
 
 	val = adsr->last_sus_val + adsr->cur_step * -((1/adsr->release_factor) * factor_scale);
 
-	if(val<=0)
+	if(val<=0.1f)
 		ADSR_next(adsr);
 
 	return(val);
@@ -171,5 +171,17 @@ ADSR * create_ADSR(float attack_factor, float attack_level, float decay_factor, 
 }
 
 void delete_ADSR(ADSR * adsr) {
+	if(adsr==NULL)
+		return;
+
+	adsr->attack_factor = 0.0f;
+	adsr->attack_level = 0.0f;
+	adsr->decay_factor = 0.0f;
+	adsr->sustain_level = 0.0f;
+	adsr->release_factor = 0.0f;
+	adsr->cur_val = 0.0f;
+	adsr->cur_step = 0;
+	adsr->cur_state = DONE;
+
 	free(adsr);
 }

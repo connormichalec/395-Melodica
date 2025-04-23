@@ -9,6 +9,7 @@
 
 #include "voice.h"
 #include <stddef.h>
+#include "midi.h"
 
 // Number of voices
 Voice voices[NUM_VOICES];
@@ -42,6 +43,7 @@ void init_voices() {
 		voices[i].enabled = 0;
 		voices[i].adsr = NULL;
 		voices[i].num_osc = 0;
+		voices[i].NOTE = -1;
 	}
 }
 
@@ -71,9 +73,31 @@ float get_voice_ADSR_val(Voice * voice) {
 	return(voice->adsr->cur_val);
 }
 
-int enable_voice(oscillatorTypes type, float frequency, float detune) {
-	// assign adsr to voice
+float detune_scale = 7.0f;
+void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune) {
+	v->enabled = 1;
 
+
+	for(int i =0; i<VOICE_NUM_OSC; i++) {
+		// Create multiple oscillators detuned by detune amt
+
+		// Alternate whether detune adds or subtracts to frequency based on if i is odd or even (creates even spread):
+		// detune/VOICE_NUM_OSC so that there is the same amount of detune regardless of the amount of oscillators.
+		float freq = i%2==0 ? (frequency + (float)i * (detune*detune_scale)/VOICE_NUM_OSC) : (frequency - (float)i * (detune*detune_scale)/VOICE_NUM_OSC);
+
+		v->osc[i] = get_oscillator(enable_oscillator(type, freq));
+		v->num_osc++;
+	}
+
+	// Create adsr for this voice:
+	v->adsr = create_ADSR(0.2f, 1.0f, 0.0f, 1.0f, 0.4f);
+
+	// Go to attack phase of adsr
+	ADSR_next(v->adsr);
+
+}
+
+int enable_voice(oscillatorTypes type, int note, float detune) {
 	int idx = getFirstDisabledVoiceIdx();
 
 	// No voices avail
@@ -84,27 +108,22 @@ int enable_voice(oscillatorTypes type, float frequency, float detune) {
 		return -1;
 	}
 
-	Voice * v = get_voice(idx);
+	Voice * v = get_voice_from_idx(idx);
 
-	v->enabled = 1;
-
-
-	for(int i =0; i<VOICE_NUM_OSC; i++) {
-		// Create multiple oscillators detuned by detune amt
-
-		// Alternate whether detune adds or subtracts to frequency based on if i is odd or even (creates even spread):
-		float freq = i%2==0 ? (frequency + (float)i * detune) : (frequency - (float)i * detune);
-		v->osc[i] = get_oscillator(enable_oscillator(type, freq));
-		v->num_osc++;
+	// Check if this note is already active:
+	if(get_voice_from_note(note)!=NULL) {
+		// Already a voice with this note, disable that voice:
+		disable_voice(get_voice_from_note(note));
 	}
 
-	// Create adsr for this voice:
-	v->adsr = create_ADSR(0.0f, 1.0f, 0.0f, 1.0f, 0.3f);
 
-	// Go to attack phase of adsr
-	ADSR_next(v->adsr);
+	// Create new voice with this note:
+	v->NOTE = note;
+
+	construct_voice(type, v, ToFrequency(note), detune);
 
 	num_voices_enabled++;
+
 	return idx;
 }
 
@@ -121,19 +140,33 @@ void disable_voice(Voice * voice) {
 
 	voice->num_osc = 0;
 
-	//elete_ADSR(voice->adsr);
+	delete_ADSR(voice->adsr);
 
+	voice->adsr = NULL;
 	voice->enabled = 0;
+	voice->NOTE = -1;
 
 	num_voices_enabled--;
 
 }
 
-Voice * get_voice(int voice_idx) {
+Voice * get_voice_from_idx(int voice_idx) {
 	if(voice_idx==-1)
 		return NULL;
 
 	return &voices[voice_idx];
+}
+
+Voice * get_voice_from_note(int note) {
+	if(note==-1)
+		return NULL;
+
+	for(int i = 0; i<NUM_VOICES; i++) {
+		if(voices[i].NOTE==note) {
+			return(&voices[i]);
+		}
+	}
+	return NULL;
 }
 
 

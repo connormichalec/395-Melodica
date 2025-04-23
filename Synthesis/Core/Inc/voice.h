@@ -11,8 +11,8 @@
 #include "ADSR.h"
 #include "oscillator.h"
 
-#define VOICE_NUM_OSC 3
-#define NUM_VOICES 3
+#define VOICE_NUM_OSC 2
+#define NUM_VOICES 6
 
 // TODO: Implement function pointres in struct for more streamlined interfacing (liek a class)
 typedef struct {
@@ -20,6 +20,7 @@ typedef struct {
 	int num_osc;
 	ADSR * adsr;
 	int enabled;
+	int NOTE;			// Note that this voice is tracked to, set to -1 when not used.
 } Voice;
 
 /**
@@ -53,16 +54,21 @@ int get_num_voices();
  */
 int num_enabled_voices();
 
+void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune);
+
+
 /**
- *
+ * Enable voice using a MIDI note no
  */
-int enable_voice(oscillatorTypes type, float frequency, float detune);
+int enable_voice(oscillatorTypes type, int note, float detune);
 
 /**
  *
  */
 void disable_voice(Voice * voice);
 
-Voice * get_voice(int voice_idx);
+Voice * get_voice_from_idx(int voice_idx);
+
+Voice * get_voice_from_note(int note);
 
 #endif /* INC_VOICE_H_ */
