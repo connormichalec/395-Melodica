@@ -14,7 +14,7 @@
 
 void initialize_signal(int sample_rate_);
 
-void keyboard_update(uint8_t note, uint8_t state);
+void keyboard_update(uint8_t val, uint8_t state);
 
 float signal_next_sample();
 

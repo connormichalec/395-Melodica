@@ -43,6 +43,7 @@ void init_voices() {
 		voices[i].enabled = 0;
 		voices[i].adsr = NULL;
 		voices[i].num_osc = 0;
+		voices[i].pressure = 0.0f;
 		voices[i].NOTE = -1;
 	}
 }
@@ -76,6 +77,7 @@ float get_voice_ADSR_val(Voice * voice) {
 float detune_scale = 7.0f;
 void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune) {
 	v->enabled = 1;
+	v->pressure = 0.0f;	// by default pressure should be 0 until update is received
 
 
 	for(int i =0; i<VOICE_NUM_OSC; i++) {
@@ -90,7 +92,7 @@ void construct_voice(oscillatorTypes type, Voice * v, float frequency, float det
 	}
 
 	// Create adsr for this voice:
-	v->adsr = create_ADSR(0.2f, 1.0f, 0.0f, 1.0f, 0.4f);
+	v->adsr = create_ADSR(0.0f, 1.0f, 0.0f, 1.0f, 0.1f);
 
 	// Go to attack phase of adsr
 	ADSR_next(v->adsr);
@@ -145,9 +147,18 @@ void disable_voice(Voice * voice) {
 	voice->adsr = NULL;
 	voice->enabled = 0;
 	voice->NOTE = -1;
+	voice->pressure = 0.0f;
 
 	num_voices_enabled--;
 
+}
+
+void update_voice_pressure(Voice * v, float newVal) {
+	v->pressure = newVal;
+}
+
+float get_voice_pressure(Voice * v) {
+	return v->pressure;
 }
 
 Voice * get_voice_from_idx(int voice_idx) {

@@ -12,7 +12,8 @@
 
 typedef enum {
 	SIN,
-	SAW
+	SAW,
+	SQUARE
 } oscillatorTypes;
 
 typedef struct {

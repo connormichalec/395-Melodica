@@ -20,6 +20,7 @@ typedef struct {
 	int num_osc;
 	ADSR * adsr;
 	int enabled;
+	float pressure;		// Updated when channel prssure is set for this voices channel
 	int NOTE;			// Note that this voice is tracked to, set to -1 when not used.
 } Voice;
 
@@ -66,6 +67,10 @@ int enable_voice(oscillatorTypes type, int note, float detune);
  *
  */
 void disable_voice(Voice * voice);
+
+float get_voice_pressure(Voice * v);
+
+void update_voice_pressure(Voice * v, float newVal);
 
 Voice * get_voice_from_idx(int voice_idx);
 
