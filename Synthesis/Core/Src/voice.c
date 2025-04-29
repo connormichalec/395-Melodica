@@ -46,6 +46,8 @@ void init_voices() {
 		voices[i].num_osc = 0;
 		voices[i].NOTE = -1;
 		voices[i].channel = -1;
+		voices[i].base_freq = 0;
+		voices[i].detune = 0.0f;
 	}
 }
 
@@ -80,22 +82,20 @@ int get_voice_channel(Voice * voice) {
 }
 
 
-float detune_scale = 7.0f;
 void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune) {
 	v->enabled = 1;
 	v->channel = 0;
 
+	v->base_freq = frequency;
+
 
 	for(int i =0; i<VOICE_NUM_OSC; i++) {
-		// Create multiple oscillators detuned by detune amt
-
-		// Alternate whether detune adds or subtracts to frequency based on if i is odd or even (creates even spread):
-		// detune/VOICE_NUM_OSC so that there is the same amount of detune regardless of the amount of oscillators.
-		float freq = i%2==0 ? (frequency + (float)i * (detune*detune_scale)/VOICE_NUM_OSC) : (frequency - (float)i * (detune*detune_scale)/VOICE_NUM_OSC);
-
-		v->osc[i] = get_oscillator(enable_oscillator(type, freq));
+		v->osc[i] = get_oscillator(enable_oscillator(type, frequency));
 		v->num_osc++;
 	}
+
+	// Set detune:
+	set_voice_detune(v, detune);
 
 	// Create adsr for this voice:
 	v->adsr = create_ADSR(0.0f, 1.0f, 0.0f, 1.0f, 0.1f);
@@ -154,10 +154,30 @@ void disable_voice(Voice * voice) {
 	voice->enabled = 0;
 	voice->NOTE = -1;
 	voice->channel = -1;
+	voice->base_freq = 0;
+	voice->detune = 0.0f;
 
 	num_voices_enabled--;
 
 }
+
+float get_voice_detune(Voice * voice) {
+	return(voice->detune);
+}
+
+float detune_scale = 7.0f;
+void set_voice_detune(Voice * voice, float detune) {
+	voice->detune = detune;
+	float frequency = voice->base_freq;
+	// Update oscillator frequencies accordingly:
+	for(int i =0; i<VOICE_NUM_OSC; i++) {
+		// Alternate whether detune adds or subtracts to frequency based on if i is odd or even (creates even spread):
+		// detune/VOICE_NUM_OSC so that there is the same amount of detune regardless of the amount of oscillators.
+		voice->osc[i]->frequency = i%2==0 ? (frequency + (float)i * (detune*detune_scale)/VOICE_NUM_OSC) : (frequency - (float)i * (detune*detune_scale)/VOICE_NUM_OSC);
+
+	}
+}
+
 
 
 Voice * get_voice_from_idx(int voice_idx) {

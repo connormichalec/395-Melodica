@@ -54,4 +54,14 @@ int enable_oscillator(oscillatorTypes oscillator, float frequency);
  */
 void disable_oscillator(Oscillator * oscillator);
 
+/**
+ * Set osc freq
+ */
+void set_osc_freq(Oscillator * oscillator, float freq);
+
+/**
+ * Get osc freq
+ */
+float get_osc_freq(Oscillator * oscillator);
+
 #endif /* SRC_OSCILLATOR_H_ */

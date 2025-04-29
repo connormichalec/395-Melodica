@@ -22,6 +22,8 @@ typedef struct {
 	ADSR * adsr;
 	int enabled;
 	int channel;
+	float detune;
+	float base_freq;	// Frequency that the oscillators should be detuned around
 	Filter * filters;	// Filters added via linked list to voice (head of linked list, null when no filters)
 	int NOTE;			// Note that this voice is tracked to, set to -1 when not used.
 } Voice;
@@ -71,6 +73,10 @@ int enable_voice(oscillatorTypes type, int note, float detune);
 void disable_voice(Voice * voice);
 
 int get_voice_channel(Voice * voice);
+
+void set_voice_detune(Voice * voice, float detune);
+
+float get_voice_detune(Voice * voice);
 
 Voice * get_voice_from_idx(int voice_idx);
 
