@@ -7,69 +7,94 @@ extern Looper looper;
 uint8_t note_counters[128];
 
 void note_on(uint8_t channel, uint8_t key, uint8_t velocity) {
-	note_counters[key]++;
+	if (channel == 0) note_counters[key]++;
 	MIDI_SendByte(NOTE_ON | (channel & 0b00001111));
     MIDI_SendByte((uint8_t) 0b01111111 & key);
     MIDI_SendByte((uint8_t) 0b01111111 & velocity);
 
-    if (looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) {
-		looper.write_ons[looper.on_write_index] = timestamped_byte(key, looper.tick);
-		looper.on_write_index += 1;
+    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+		looper.ons[looper.write_on_idx] = timestamped_byte(key, looper.tick);
+		looper.write_on_idx += 1;
     }
 }
 
 void note_off(uint8_t channel, uint8_t key, uint8_t velocity) {
-	if (note_counters[key] != 0) note_counters[key]--;
+	if (channel == 0 && note_counters[key] != 0) note_counters[key]--;
 
-	if (note_counters[key] == 0) {
+	if (channel != 0 || note_counters[key] == 0) {
 		MIDI_SendByte(NOTE_OFF | (channel & 0b00001111));
 		MIDI_SendByte((uint8_t) 0b01111111 & key);
 		MIDI_SendByte((uint8_t) 0b01111111 & velocity);
+
+	    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+			looper.offs[looper.write_off_idx] = timestamped_byte(key, looper.tick);
+			looper.write_off_idx += 1;
+	    }
 	}
 
-    if (looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) {
-		looper.write_offs[looper.off_write_index] = timestamped_byte(key, looper.tick);
-		looper.off_write_index += 1;
-    }
-}
 
-void note_on_forcerecord(uint8_t channel, uint8_t key, uint8_t velocity) {
-	note_counters[key]++;
-	MIDI_SendByte(NOTE_ON | (channel & 0b00001111));
-    MIDI_SendByte((uint8_t) 0b01111111 & key);
-    MIDI_SendByte((uint8_t) 0b01111111 & velocity);
-
-	looper.write_ons[looper.on_write_index] = timestamped_byte(key, looper.tick);
-	looper.on_write_index += 1;
-}
-
-void note_off_forcerecord(uint8_t channel, uint8_t key, uint8_t velocity) {
-	if (note_counters[key] != 0) note_counters[key]--;
-
-	if (note_counters[key] == 0) {
-		MIDI_SendByte(NOTE_OFF | (channel & 0b00001111));
-		MIDI_SendByte((uint8_t) 0b01111111 & key);
-		MIDI_SendByte((uint8_t) 0b01111111 & velocity);
-	}
-
-	looper.write_offs[looper.off_write_index] = timestamped_byte(key, looper.tick);
-	looper.off_write_index += 1;
 }
 
 void note_off_all() {
-	for(uint8_t i = 0; i < 128; i++) {
-		note_counters[i] = 0;
-		MIDI_SendByte(NOTE_OFF | (0 & 0b00001111));
-		MIDI_SendByte((uint8_t) 0b01111111 & i);
-		MIDI_SendByte((uint8_t) 0b01111111 & 0);
+	for (uint8_t chan = 0; chan < LOOPER_CHANNELS; chan++) {
+		for(uint8_t i = 0; i < 128; i++) {
+			note_counters[i] = 0;
+			MIDI_SendByte(NOTE_OFF | (chan & 0b00001111));
+			MIDI_SendByte((uint8_t) 0b01111111 & i);
+			MIDI_SendByte((uint8_t) 0b01111111 & 0);
+		}
 	}
 }
 
-void record_note_off_all() {}
+void record_note_off_all() {
+	// For the currently recording channel, find all not-disabled notes and disable them
+
+	// ALGORITHM
+	//	- Start at starting index of current active channel
+	//	- Loop until max timestamp is found
+	//	- How to keep track of if a note has been turned off?
+	//		- Have a byte for each note. Use counters for enabled notes
+	//		- Note on adds to the counter, note off removes
+	//		- For any counter that isn't 0, append a note off
+
+	uint8_t notes[128];
+
+	uint16_t idx = looper.start_on_indices[looper.active_channel];
+	uint32_t timestamp = extract_timestamp(looper.ons[idx]);
+	while (timestamp != MAX_TIMESTAMP) {
+		uint8_t note = extract_byte(looper.ons[idx]);
+		notes[note]++;
+
+		idx++;
+		timestamp = extract_timestamp(looper.ons[idx]);
+	}
+
+	idx = looper.start_off_indices[looper.active_channel];
+	timestamp = extract_timestamp(looper.offs[idx]);
+	while (timestamp != MAX_TIMESTAMP) {
+		uint8_t note = extract_byte(looper.offs[idx]);
+		notes[note]--;
+
+		idx++;
+		timestamp = extract_timestamp(looper.offs[idx]);
+	}
+
+	for (int i = 0; i < 128; i++) {
+		if (notes[i] != 0) {
+			looper.offs[looper.write_off_idx] = timestamped_byte(i, looper.tick - 1);
+			looper.write_off_idx++;
+		}
+	}
+}
 
 void channel_pressure(uint8_t channel, uint8_t pressure) {
     MIDI_SendByte(CHANNEL_PRESSURE | (channel & 0b00001111));
     MIDI_SendByte((uint8_t) 0b01111111 & pressure);
+
+    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+		looper.channel_pressures[looper.write_pressure_idx] = timestamped_byte(pressure, looper.tick);
+		looper.write_pressure_idx += 1;
+    }
 }
 
 void MIDI_SendByte(uint8_t byte) {

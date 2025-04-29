@@ -152,7 +152,7 @@ int main(void)
 		  uint16_t filtered_adc = exponential_filter(adc_reg, adc_exp_reg, 800);
 		  pressure = remap(filtered_adc, breath_threshold, 1, 8);
 		  int16_t difference = last_sent_pressure - pressure;
-		  if (difference < -10 || difference > 10) {
+		  if (difference < -3 || difference > 3) {
 			  channel_pressure(0, pressure);
 			  last_sent_pressure = pressure;
 		  }

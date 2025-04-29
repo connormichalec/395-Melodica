@@ -14,7 +14,11 @@
 #define LOOPER_GPIO_PORT GPIOB
 #define LOOPER_GPIO_PIN GPIO_PIN_3
 
-#define NOTE_STORAGE_COUNT 128
+#define NOTE_MSG_COUNT 256
+#define CHANNEL_PRESSURE_MSG_COUNT 512
+#define LOOPER_CHANNELS 8
+
+#define MAX_TIMESTAMP 0xFFFFFF
 
 // Used to keep track of the state of the looper FSM
 typedef enum {
@@ -28,24 +32,27 @@ looper_state;
 typedef struct {
 	uint32_t length;
 	uint32_t tick;							// Keeps track of what tick the looper is on
-	uint32_t ons_[NOTE_STORAGE_COUNT * 2];  // Note on and off commands.
-	uint32_t offs_[NOTE_STORAGE_COUNT * 2];
-	uint32_t * read_ons;
-	uint32_t * read_offs;
-	uint32_t * write_ons;
-	uint32_t * write_offs;
-
-	uint8_t buffer_state;					// Determines whether buffer 0 or 1 is being written to
-	uint16_t on_read_index;
-	uint16_t on_write_index;
-	uint16_t off_read_index;
-	uint16_t off_write_index;
+	uint32_t ons[NOTE_MSG_COUNT];
+	uint32_t offs[NOTE_MSG_COUNT];
+	uint32_t channel_pressures[CHANNEL_PRESSURE_MSG_COUNT];
+	uint16_t start_on_indices[LOOPER_CHANNELS];
+	uint16_t start_off_indices[LOOPER_CHANNELS];
+	uint16_t start_pressure_indices[LOOPER_CHANNELS];
+	uint16_t playback_on_indices[LOOPER_CHANNELS];
+	uint16_t playback_off_indices[LOOPER_CHANNELS];
+	uint16_t playback_pressure_indices[LOOPER_CHANNELS];
+	uint16_t playback_start_ticks[LOOPER_CHANNELS];
+	uint16_t write_on_idx;
+	uint16_t write_off_idx;
+	uint16_t write_pressure_idx;
 
 	looper_state state;			// Keeps track of state of the FSM
 	uint8_t button_pressed;		// Tracks state of whether the looper button is pressed (for posedge detection)
 	uint32_t recording_length;
 	uint8_t debounce_tick;
 	uint16_t hold_tick;
+
+	uint8_t active_channel;	// Number of the current channel being recorded to
 
 } Looper;
 
