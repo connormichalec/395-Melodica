@@ -29,28 +29,37 @@ extern TIM_HandleTypeDef htim21;
 Looper looper;
 
 void LOOPER_INIT() {
-	for (int i = 0; i < NOTE_STORAGE_COUNT * 2; i++) {
-		looper.ons_[i] = timestamped_byte(0, -1);
-		looper.offs_[i] = timestamped_byte(0, -1);
+	for (int i = 0; i < NOTE_MSG_COUNT; i++) {
+		looper.ons[i] = timestamped_byte(0, MAX_TIMESTAMP);
+		looper.offs[i] = timestamped_byte(0, MAX_TIMESTAMP);
+	}
+
+	for (int i = 0; i < CHANNEL_PRESSURE_MSG_COUNT; i++)
+		looper.channel_pressures[i] = timestamped_byte(0, MAX_TIMESTAMP);
+
+	looper.start_on_indices[0] = 0;
+	looper.start_off_indices[0] = 0;
+	looper.start_pressure_indices[0] = 0;
+	looper.playback_start_ticks[0] = 0;
+	for (int i = 1; i < LOOPER_CHANNELS; i++) {
+		looper.start_on_indices[i] = -1;
+		looper.start_off_indices[i] = -1;
+		looper.start_pressure_indices[i] = -1;
+		looper.playback_start_ticks[i] = -1;
 	}
 
 	looper.length = -1;
-	looper.buffer_state = 0;
-	looper.off_read_index = 0;
-	looper.off_write_index = 0;
-	looper.on_read_index = 0;
-	looper.on_write_index = 0;
+	looper.write_off_idx = 0;
+	looper.write_on_idx = 0;
+	looper.write_pressure_idx = 0;
 	looper.tick = 0;
-	looper.write_ons = looper.ons_;
-	looper.write_offs = looper.offs_;
-	looper.read_ons = looper.ons_ + NOTE_STORAGE_COUNT;
-	looper.read_offs = looper.offs_ + NOTE_STORAGE_COUNT;
 
 	looper.state = LOOPER_INACTIVE;
 	looper.button_pressed = 0;
 	looper.recording_length = 0;
 	looper.debounce_tick = 20;
 	looper.hold_tick = 0;
+	looper.active_channel = 0;	// Number is one less than channel being recorded to (because 0 is used for live play). Corresponds to active index
 }
 
 void looper_tick() {
@@ -77,19 +86,38 @@ void looper_tick() {
 					break;
 
 				case LOOPER_RECORDING_INIT:
-					record_note_off_all();
 					looper.length = looper.recording_length;
 					looper.tick = looper.recording_length;
 					looper.state = LOOPER_LOOPING;
+
+					record_note_off_all();
+					looper.write_on_idx++;		// Writes a breakpoint into the array
+					looper.write_off_idx++;
+					looper.write_pressure_idx++;
+					looper.active_channel++;
+					looper.start_on_indices[looper.active_channel] = looper.write_on_idx;
+					looper.start_off_indices[looper.active_channel] = looper.write_off_idx;
+					looper.start_pressure_indices[looper.active_channel] = looper.write_pressure_idx;
+
 					break;
 
 				case LOOPER_RECORDING_REPEAT:
-					record_note_off_all();
 					looper.state = LOOPER_LOOPING;
+
+					record_note_off_all();
+					looper.write_on_idx++;		// Writes a breakpoint into the array
+					looper.write_off_idx++;
+					looper.write_pressure_idx++;
+					looper.active_channel++;
+					looper.start_on_indices[looper.active_channel] = looper.write_on_idx;
+					looper.start_off_indices[looper.active_channel] = looper.write_off_idx;
+					looper.start_pressure_indices[looper.active_channel] = looper.write_pressure_idx;
+
 					break;
 
 				case LOOPER_LOOPING:
 					looper.state = LOOPER_RECORDING_REPEAT;
+					looper.playback_start_ticks[looper.active_channel] = looper.tick;
 					break;
 			}
 		}
@@ -112,41 +140,59 @@ void looper_tick() {
 
 	    looper.tick++;
 
-	    // When end of loop hits, perform buffer swaps
+	    // When end of loop hits, reset things
 	    if (looper.tick >= looper.length) {
 	        looper.tick = 0;
-
-	        // Swap which buffer is being written to / read from
-	        looper.buffer_state = !looper.buffer_state;
-	        looper.write_ons = looper.ons_ + looper.buffer_state * NOTE_STORAGE_COUNT;
-	        looper.write_offs = looper.offs_ + looper.buffer_state * NOTE_STORAGE_COUNT;
-	        looper.read_ons = looper.ons_ + !looper.buffer_state * NOTE_STORAGE_COUNT;
-	        looper.read_offs = looper.offs_ + !looper.buffer_state * NOTE_STORAGE_COUNT;
-
-	        looper.on_read_index = 0;
-	        looper.on_write_index = 0;
-	        looper.off_read_index = 0;
-	        looper.off_write_index = 0;
+			looper.playback_on_indices[0] = looper.start_on_indices[0];
+			looper.playback_off_indices[0] = looper.start_off_indices[0];
+			looper.playback_pressure_indices[0] = looper.start_pressure_indices[0];
 	    }
 
-	    // Wait for a note on to be hit in the loop
-	    uint32_t next_on_timestamp = extract_timestamp(looper.read_ons[looper.on_read_index]);
-	    while (next_on_timestamp == looper.tick) {
-	        uint32_t note = extract_byte(looper.read_ons[looper.on_read_index]);
-	        note_on_forcerecord(0, note, 60);
+		for (int i = 1; i < LOOPER_CHANNELS; i++) {
+			if (looper.tick == looper.playback_start_ticks[i]) {
+				looper.playback_on_indices[i] = looper.start_on_indices[i];
+				looper.playback_off_indices[i] = looper.start_off_indices[i];
+				looper.playback_pressure_indices[i] = looper.start_pressure_indices[i];
+			}
+		}
 
-	        looper.on_read_index += 1;
-	        next_on_timestamp = extract_timestamp(looper.read_ons[looper.on_read_index]);
-	    }
+	    /// PLAYBACK ///
 
-	    // Wait for a note off to be hit in the loop
-	    uint32_t next_off_timestamp = extract_timestamp(looper.read_offs[looper.off_read_index]);
-	    while (next_off_timestamp == looper.tick) {
-	        uint32_t note = extract_byte(looper.read_offs[looper.off_read_index]);
-	        note_off_forcerecord(0, note, 0);
+	    // Loop through all active channels
+	    for (int chan = 0; chan < looper.active_channel; chan++) {
+	    	uint16_t * read_idx = &looper.playback_on_indices[chan];
 
-	        looper.off_read_index += 1;
-	        next_off_timestamp = extract_timestamp(looper.read_offs[looper.off_read_index]);
+			// Wait for a note on to be hit in the loop
+			uint32_t next_on_timestamp = extract_timestamp(looper.ons[*read_idx]);
+			while (next_on_timestamp == looper.tick) {
+				uint32_t note = extract_byte(looper.ons[*read_idx]);
+				note_on(chan + 1, note, 60);
+
+				*read_idx += 1;
+				next_on_timestamp = extract_timestamp(looper.ons[*read_idx]);
+			}
+
+			// Wait for a note off to be hit in the loop
+			read_idx = &looper.playback_off_indices[chan];
+			uint32_t next_off_timestamp = extract_timestamp(looper.offs[*read_idx]);
+			while (next_off_timestamp == looper.tick) {
+				uint32_t note = extract_byte(looper.offs[*read_idx]);
+				note_off(chan + 1, note, 0);
+
+				*read_idx += 1;
+				next_off_timestamp = extract_timestamp(looper.offs[*read_idx]);
+			}
+
+			// Wait for a channel pressure message to be hit
+			read_idx = &looper.playback_pressure_indices[chan];
+			uint32_t next_pressure_timestamp = extract_timestamp(looper.channel_pressures[*read_idx]);
+			while (next_pressure_timestamp == looper.tick) {
+				uint8_t pressure = extract_byte(looper.channel_pressures[*read_idx]);
+				channel_pressure(chan + 1, pressure);
+
+				*read_idx += 1;
+				next_pressure_timestamp = extract_timestamp(looper.channel_pressures[*read_idx]);
+			}
 	    }
 	}
 }
