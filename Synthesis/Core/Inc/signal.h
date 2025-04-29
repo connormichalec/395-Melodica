@@ -18,4 +18,6 @@ void keyboard_update(uint8_t val, uint8_t state);
 
 float signal_next_sample();
 
+float get_channel_pressure(int channel);
+
 #endif /* SRC_SIGNAL_H_ */

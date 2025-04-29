@@ -10,6 +10,7 @@
 #include "voice.h"
 #include <stddef.h>
 #include "midi.h"
+#include "signal.h"
 
 // Number of voices
 Voice voices[NUM_VOICES];
@@ -45,6 +46,7 @@ void init_voices() {
 		voices[i].num_osc = 0;
 		voices[i].pressure = 0.0f;
 		voices[i].NOTE = -1;
+		voices[i].channel = -1;
 	}
 }
 
@@ -60,6 +62,12 @@ void tick_voices() {
 void tick_voice(Voice * voice) {
 	if(!voice->enabled)
 		return;
+
+	float pres = get_channel_pressure(voice->channel);
+	// If channel pressure different from current voice pressure update to match
+	if(pres!=voice->pressure) {
+		voice->pressure = pres;
+	}
 
 	//Tick ADSRs:
 	ADSR_tick(voice->adsr);
@@ -78,6 +86,7 @@ float detune_scale = 7.0f;
 void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune) {
 	v->enabled = 1;
 	v->pressure = 0.0f;	// by default pressure should be 0 until update is received
+	v->channel = 0;
 
 
 	for(int i =0; i<VOICE_NUM_OSC; i++) {
@@ -148,14 +157,16 @@ void disable_voice(Voice * voice) {
 	voice->enabled = 0;
 	voice->NOTE = -1;
 	voice->pressure = 0.0f;
+	voice->channel = -1;
 
 	num_voices_enabled--;
 
 }
 
+/*
 void update_voice_pressure(Voice * v, float newVal) {
 	v->pressure = newVal;
-}
+}*/
 
 float get_voice_pressure(Voice * v) {
 	return v->pressure;

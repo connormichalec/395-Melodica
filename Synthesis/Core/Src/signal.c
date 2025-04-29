@@ -14,6 +14,10 @@
 int sample_rate;				// Sample rate of DAC
 
 
+#define NUM_CHANNELS 1
+
+float channel_pressures[NUM_CHANNELS];
+
 
 // From chatgpt:
 #define LUT_SIZE 128
@@ -45,10 +49,17 @@ float log_LUT(float x) {
 
 
 
+float get_channel_pressure(int channel) {
+	return channel_pressures[channel];
+}
 
 void initialize_signal(int sample_rate_) {
 	sample_rate = sample_rate_;
 	init_voices();
+
+	for(int i =0; i<NUM_CHANNELS; i++) {
+		channel_pressures[i] = 0.0f;
+	}
 
 	// Used later in volume pressure demo, number is steepness of curve for pressure "sensitivity"
 	generateLogLUT(10);
@@ -67,11 +78,7 @@ void keyboard_update(uint8_t val, uint8_t state) {
 		// note pressure update, (not implemented: update pressure for voices of that channel)
 
 		// Update for all voices(todo: only voice of prssure channel is assign to - for looping):
-		for(int q = 0; q <get_num_voices(); q++) {
-
-			Voice * v = get_voice_from_idx(q);
-			update_voice_pressure(v, (float)val/(float)127);
-		}
+		channel_pressures[0] = (float) val / (float) 127;
 
 
 	}
