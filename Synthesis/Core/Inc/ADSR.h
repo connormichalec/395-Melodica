@@ -8,38 +8,47 @@
 #ifndef INC_ADSR_H_
 #define INC_ADSR_H_
 
-// Max num of adsrs avail
-#define NUM_ADSRS 50
-
 typedef enum {
 	NONE,
 	ATTACK,
+	DECAY,
 	SUSTAIN,
-	RELEASE
+	RELEASE,
+	DONE
 } ADSRstate;
 
 
 typedef struct {
-	float attack;
-	float sustain;
-	float rel;
+	float attack_factor;
+	float attack_level;
+	float decay_factor;
+	float sustain_level;
+	float release_factor;
 	float cur_val;
-	int cur_step;
-	int adsr_idx;
+	float last_sus_val; 			// Contains the last value either held by attack or sustain to be used for release calculation
+	long cur_step;
 	ADSRstate cur_state;
 } ADSR;
 
 void init_adsrs();
 
-void adsrs_tick();
+void ADSR_tick(ADSR * adsr);
 
-int get_num_adsrs();
+/**
+ * Go to next adsr state (for example if note is pressed calling this will change it from NONE to ATTACK)
+ */
+void ADSR_next(ADSR * adsr);
+
+/**
+ * Go to specific ADSR state
+ */
+void ADSR_set_state(ADSR * adsr, ADSRstate state);
 
 float get_adsr_val(ADSR * adsr);
 
-ADSR * get_adsr(int adsr_idx);
+ADSR * create_ADSR(float attack_factor, float attack_level, float decay_factor, float sustain_level, float release_factor);
 
-int create_ADSR(float attack, float sustain, float rel);
+void delete_ADSR(ADSR * adsr);
 
 
 #endif /* INC_ADSR_H_ */

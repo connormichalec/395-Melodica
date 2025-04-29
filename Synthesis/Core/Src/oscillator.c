@@ -27,6 +27,11 @@ float saw_oscillator(float phase) {
 	return(phase);
 }
 
+float square_oscillator(float phase) {
+	// High for half the phase, low for other half of phase.
+	return(phase < 0.5f);
+}
+
 void init_oscillators() {
 	for(int i = 0; i < NUM_OSCILLATORS; i++) {
 		oscillators[i].enabled = 0;
@@ -68,6 +73,9 @@ int enable_oscillator(oscillatorTypes oscillator, float frequency) {
 	case SAW:
 		o->oscillatorFunction = &saw_oscillator;
 		break;
+	case SQUARE:
+		o->oscillatorFunction = &square_oscillator;
+		break;
 	}
 
 	o->phase = 0.0f;
@@ -81,7 +89,7 @@ int enable_oscillator(oscillatorTypes oscillator, float frequency) {
 
 void disable_oscillator(Oscillator * oscillator) {
 	// Check if oscillator is actually enabmled:
-	if(!oscillator->enabled)
+	if(oscillator==NULL || !oscillator->enabled)
 		return;
 
 	oscillator->oscillatorFunction = NULL;
@@ -93,5 +101,8 @@ void disable_oscillator(Oscillator * oscillator) {
 }
 
 Oscillator * get_oscillator(int oscillator_idx) {
+	if(oscillator_idx==-1)
+		return NULL;
+
 	return &oscillators[oscillator_idx];
 }

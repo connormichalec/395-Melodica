@@ -138,6 +138,7 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 
 		case 0xD0: // Channel Pressure
 			midi_reg.pressure = midiData1;
+			event_callback(midiData1, 2);
 			break;
 
 		default:
