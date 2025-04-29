@@ -109,7 +109,6 @@ int main(void)
 
 
   audio_signal_init(&htim8, &hdac);
-  audio_signal_loop();
 
   /* USER CODE END 2 */
 
@@ -118,7 +117,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	 audio_signal_loop_tick();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

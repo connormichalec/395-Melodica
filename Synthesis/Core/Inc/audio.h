@@ -16,9 +16,9 @@
 void audio_signal_init(TIM_HandleTypeDef * _htim8, DAC_HandleTypeDef * _hdac);
 
 /**
- * Main loop for audio signal generation.
+ * Main loop tick for audio signal generation.
  */
-void audio_signal_loop();
+void audio_signal_loop_tick();
 
 /**
  * Callback to be triggerd by midi.c when key press occurs, this will eventually assign an oscillator to that key.
