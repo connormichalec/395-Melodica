@@ -44,7 +44,6 @@ void init_voices() {
 		voices[i].enabled = 0;
 		voices[i].adsr = NULL;
 		voices[i].num_osc = 0;
-		voices[i].pressure = 0.0f;
 		voices[i].NOTE = -1;
 		voices[i].channel = -1;
 	}
@@ -63,12 +62,6 @@ void tick_voice(Voice * voice) {
 	if(!voice->enabled)
 		return;
 
-	float pres = get_channel_pressure(voice->channel);
-	// If channel pressure different from current voice pressure update to match
-	if(pres!=voice->pressure) {
-		voice->pressure = pres;
-	}
-
 	//Tick ADSRs:
 	ADSR_tick(voice->adsr);
 
@@ -82,10 +75,14 @@ float get_voice_ADSR_val(Voice * voice) {
 	return(voice->adsr->cur_val);
 }
 
+int get_voice_channel(Voice * voice) {
+	return(voice->channel);
+}
+
+
 float detune_scale = 7.0f;
 void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune) {
 	v->enabled = 1;
-	v->pressure = 0.0f;	// by default pressure should be 0 until update is received
 	v->channel = 0;
 
 
@@ -156,21 +153,12 @@ void disable_voice(Voice * voice) {
 	voice->adsr = NULL;
 	voice->enabled = 0;
 	voice->NOTE = -1;
-	voice->pressure = 0.0f;
 	voice->channel = -1;
 
 	num_voices_enabled--;
 
 }
 
-/*
-void update_voice_pressure(Voice * v, float newVal) {
-	v->pressure = newVal;
-}*/
-
-float get_voice_pressure(Voice * v) {
-	return v->pressure;
-}
 
 Voice * get_voice_from_idx(int voice_idx) {
 	if(voice_idx==-1)

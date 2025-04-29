@@ -142,7 +142,7 @@ float signal_next_sample() {
 			voice_val = voice_val * get_voice_ADSR_val(v);
 
 			// Apply voice pressure factor as a scaling for volume: - apply a log curve to this to not have to blow as hard
-			voice_val = voice_val * log_LUT(get_voice_pressure(v));
+			voice_val = voice_val * log_LUT(channel_pressures[get_voice_channel(v)]);
 
 			// Apply voice scaling factor to normalize and add to final val
 			val = val + voice_val * voice_scaling_fctr;

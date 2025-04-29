@@ -10,6 +10,7 @@
 
 #include "ADSR.h"
 #include "oscillator.h"
+#include "filter.h"
 
 #define VOICE_NUM_OSC 2
 #define NUM_VOICES 6
@@ -21,7 +22,7 @@ typedef struct {
 	ADSR * adsr;
 	int enabled;
 	int channel;
-	float pressure;		// Updated when channel prssure is set for this voices channel
+	Filter * filters;	// Filters added via linked list to voice (head of linked list, null when no filters)
 	int NOTE;			// Note that this voice is tracked to, set to -1 when not used.
 } Voice;
 
@@ -69,10 +70,7 @@ int enable_voice(oscillatorTypes type, int note, float detune);
  */
 void disable_voice(Voice * voice);
 
-
-float get_voice_pressure(Voice * v);
-
-//void update_voice_pressure(Voice * v, float newVal);
+int get_voice_channel(Voice * voice);
 
 Voice * get_voice_from_idx(int voice_idx);
 
