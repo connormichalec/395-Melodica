@@ -45,6 +45,11 @@ void tick_voices();
 float get_voice_ADSR_val(Voice * voice);
 
 /**
+ * Adds an adsr to this voice
+ */
+void add_voice_ADSR(Voice * voice, float attack_factor, float attack_level, float decay_factor, float sustain_level, float release_factor);
+
+/**
  * Used to manage voice functions
  */
 void tick_voice(Voice * voice);

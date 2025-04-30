@@ -75,11 +75,22 @@ void tick_voice(Voice * voice) {
 }
 
 float get_voice_ADSR_val(Voice * voice) {
+	if(voice->adsr==NULL)
+		return 1.0;
 	return(voice->adsr->cur_val);
 }
 
+
 int get_voice_channel(Voice * voice) {
 	return(voice->channel);
+}
+
+void add_voice_ADSR(Voice * voice, float attack_factor, float attack_level, float decay_factor, float sustain_level, float release_factor) {
+	// Create adsr for this voice:
+	voice->adsr = create_ADSR(attack_factor,attack_level,decay_factor,sustain_level,release_factor);
+
+	// Go to attack phase of adsr
+	ADSR_next(voice->adsr);
 }
 
 void add_voice_filter(Voice * voice, FilterType type, float cutoff, float resonance) {
@@ -136,13 +147,6 @@ void construct_voice(oscillatorTypes type, Voice * v, float frequency, float det
 
 	// Set detune:
 	set_voice_detune(v, detune);
-
-	// Create adsr for this voice:
-	v->adsr = create_ADSR(0.0f, 1.0f, 0.0f, 1.0f, 0.1f);
-
-	// Go to attack phase of adsr
-	ADSR_next(v->adsr);
-
 }
 
 int enable_voice(oscillatorTypes type, int note, float detune) {

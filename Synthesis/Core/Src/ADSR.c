@@ -9,6 +9,11 @@
 #include <stdlib.h>
 
 
+
+
+// TODO:
+// Make ADSRs a linked list (like filters are) so multiple can be added to the voice, this can be utilized so that more than one adsrs can be used for things like filters
+
 void init_adsrs() {
 	// nothing needed
 

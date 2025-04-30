@@ -71,6 +71,7 @@ void keyboard_update(uint8_t val, uint8_t state) {
 		// Key turned on, assign a voice to that key.
 		int i = enable_voice(SAW, val, 0.2f);  							// apply a slight detune to voice
 		add_voice_filter(get_voice_from_idx(i),LOWPASS, 0.0f, 0.0f);	// Add a lowpass filter by default
+		add_voice_ADSR(get_voice_from_idx(i), 0.0f, 1.0f, 0.0f, 1.0f, 0.1f);					// Add adsr with small release
 	}
 	else if (state == 0) {
 		// Key turned off, progress set ADSR to "release" state
@@ -89,7 +90,7 @@ void keyboard_update(uint8_t val, uint8_t state) {
 float signal_next_sample() {
 
 	// Otherwise all oscillators will max out volume automatically and so adding them would not work.
-	float voice_scaling_fctr = 0.1f;			// how much to scale each voice by - TODO: replace this with a more professional solution.
+	float voice_scaling_fctr = 0.02f;			// how much to scale each voice by - TODO: replace this with a more professional solution.
 
 	float val = 0.0f;
 
