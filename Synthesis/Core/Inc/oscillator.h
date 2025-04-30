@@ -8,7 +8,7 @@
 #ifndef SRC_OSCILLATOR_H_
 #define SRC_OSCILLATOR_H_
 
-#define NUM_OSCILLATORS 12
+#define NUM_OSCILLATORS 18
 
 typedef enum {
 	SIN,
