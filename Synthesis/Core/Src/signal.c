@@ -9,6 +9,7 @@
 #include "oscillator.h"
 #include "midi.h"
 #include <math.h>
+#include "filter.h"
 #include "voice.h"
 
 int sample_rate;				// Sample rate of DAC
@@ -68,7 +69,8 @@ void initialize_signal(int sample_rate_) {
 void keyboard_update(uint8_t val, uint8_t state) {
 	if(state == 1) {
 		// Key turned on, assign a voice to that key.
-		enable_voice(SAW, val, 0.2f);  // apply a slight detune to voice
+		int i = enable_voice(SAW, val, 0.4f);  							// apply a slight detune to voice
+		add_voice_filter(get_voice_from_idx(i),LOWPASS, 0.0f, 0.0f);	// Add a lowpass filter by default
 	}
 	else if (state == 0) {
 		// Key turned off, progress set ADSR to "release" state
@@ -138,12 +140,23 @@ float signal_next_sample() {
 
 			// SIGNAL CHAIN:
 
+			// Apply voice filters
+			Filter * f = get_voice_filters(v);
+			while(f!=NULL) {
+				voice_val = f->filterFunciton(f, voice_val);
+				f = f->next;
+			}
+
 			// Apply ADSR factor:
 			voice_val = voice_val * get_voice_ADSR_val(v);
 
 			// Apply voice pressure factor as a scaling for volume: - apply a log curve to this to not have to blow as hard
-			voice_val = voice_val * log_LUT(channel_pressures[get_voice_channel(v)]);
+			//voice_val = voice_val * log_LUT(channel_pressures[get_voice_channel(v)]);
+
 			//set_voice_detune(v, log_LUT(channel_pressures[get_voice_channel(v)]));
+
+			// set cutoff for first filter:
+			set_filter_cutoff(get_voice_filters(v),log_LUT(channel_pressures[get_voice_channel(v)]));
 
 			// Apply voice scaling factor to normalize and add to final val
 			val = val + voice_val * voice_scaling_fctr;

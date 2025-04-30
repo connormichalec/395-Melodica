@@ -68,9 +68,21 @@ void construct_voice(oscillatorTypes type, Voice * v, float frequency, float det
 int enable_voice(oscillatorTypes type, int note, float detune);
 
 /**
+ * Add filter
+ */
+void add_voice_filter(Voice * voice, FilterType type, float cutoff, float resonance);
+
+/**
  *
  */
 void disable_voice(Voice * voice);
+
+/**
+ * Return linked list of all the filters
+ */
+Filter * get_voice_filters(Voice * v);
+
+int get_num_filters(Voice * v);
 
 int get_voice_channel(Voice * voice);
 

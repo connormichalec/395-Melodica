@@ -48,6 +48,7 @@ void init_voices() {
 		voices[i].channel = -1;
 		voices[i].base_freq = 0;
 		voices[i].detune = 0.0f;
+		voices[i].filters = NULL;		// Head to linked list is null
 	}
 }
 
@@ -81,6 +82,45 @@ int get_voice_channel(Voice * voice) {
 	return(voice->channel);
 }
 
+void add_voice_filter(Voice * voice, FilterType type, float cutoff, float resonance) {
+
+	// New filter
+	Filter * newFilter = create_filter(cutoff, resonance, type);
+
+	// Find linked list end:
+
+	Filter * f = voice->filters;
+	if(f==NULL) {
+		// Root node is null, create new root
+		voice->filters = newFilter;
+		return;
+	}
+	else {
+		while(f->next!=NULL) {
+			f = f->next;
+		}
+	}
+
+	// Append filter to end of linked list:
+	f->next = newFilter;
+}
+
+Filter * get_voice_filters(Voice * v) {
+	return v->filters;
+}
+
+int get_num_filters(Voice * v) {
+	Filter * f =v->filters;
+
+	int idx = 0;
+
+	while(f!=NULL) {
+		idx++;
+		f = f->next;
+	}
+
+	return idx;
+}
 
 void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune) {
 	v->enabled = 1;
@@ -148,7 +188,15 @@ void disable_voice(Voice * voice) {
 
 	voice->num_osc = 0;
 
+	// Delete ADSR
 	delete_ADSR(voice->adsr);
+	// Delete filters:
+	Filter * f = voice->filters;
+	while(f!=NULL) {
+		Filter * fprev = f;
+		f = f->next;
+		delete_filter(fprev);
+	}
 
 	voice->adsr = NULL;
 	voice->enabled = 0;
@@ -156,6 +204,7 @@ void disable_voice(Voice * voice) {
 	voice->channel = -1;
 	voice->base_freq = 0;
 	voice->detune = 0.0f;
+	voice->filters = NULL;
 
 	num_voices_enabled--;
 
