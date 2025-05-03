@@ -11,7 +11,7 @@
 static uint32_t timer;
 static uint8_t note_timer[128];
 
-static int note_delay = 10;
+static int note_delay = 5;
 
 void note_debouncer_init() {
 	memset(note_timer, 0, sizeof(note_timer));

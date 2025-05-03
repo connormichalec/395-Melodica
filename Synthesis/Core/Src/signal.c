@@ -71,7 +71,7 @@ void keyboard_update(uint8_t val, uint8_t state) {
 		// Key turned on, assign a voice to that key.
 		int i = enable_voice(SAW, val, 0.2f);  							// apply a slight detune to voice
 		add_voice_filter(get_voice_from_idx(i),LOWPASS, 0.0f, 0.0f);	// Add a lowpass filter by default
-		add_voice_ADSR(get_voice_from_idx(i), 0.0f, 1.0f, 0.0f, 1.0f, 0.1f);					// Add adsr with small release
+		add_voice_ADSR(get_voice_from_idx(i), 0.0f, 1.0f, 0.0f, 1.0f, 0.03f);					// Add adsr with small release
 	}
 	else if (state == 0) {
 		// Key turned off, progress set ADSR to "release" state
@@ -90,7 +90,7 @@ void keyboard_update(uint8_t val, uint8_t state) {
 float signal_next_sample() {
 
 	// Otherwise all oscillators will max out volume automatically and so adding them would not work.
-	float voice_scaling_fctr = 0.02f;			// how much to scale each voice by - TODO: replace this with a more professional solution.
+	float voice_scaling_fctr = 0.07f;			// how much to scale each voice by - TODO: replace this with a more professional solution.
 
 	float val = 0.0f;
 
@@ -152,12 +152,12 @@ float signal_next_sample() {
 			voice_val = voice_val * get_voice_ADSR_val(v);
 
 			// Apply voice pressure factor as a scaling for volume: - apply a log curve to this to not have to blow as hard
-			//voice_val = voice_val * log_LUT(channel_pressures[get_voice_channel(v)]);
+			voice_val = voice_val * channel_pressures[get_voice_channel(v)];
 
 			//set_voice_detune(v, log_LUT(channel_pressures[get_voice_channel(v)]));
 
 			// set cutoff for first filter:
-			float pres = log_LUT(channel_pressures[get_voice_channel(v)]);
+			float pres = channel_pressures[get_voice_channel(v)];
 			set_filter_cutoff(get_voice_filters(v), pres < 0.1 ? 0.1 : pres);
 
 			// Apply voice scaling factor to normalize and add to final val
