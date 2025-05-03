@@ -13,7 +13,7 @@
 #include "filter.h"
 
 #define VOICE_NUM_OSC 3
-#define NUM_VOICES 6
+#define NUM_VOICES 12
 
 // TODO: Implement function pointres in struct for more streamlined interfacing (liek a class)
 typedef struct {
