@@ -1,5 +1,6 @@
 #include "mux.h"
 #include "midi.h"
+#include "debounce_notes.h"
 
 uint8_t ReadNote(uint8_t key) {
     HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, key & 0x01);
@@ -15,6 +16,9 @@ uint8_t ReadNote(uint8_t key) {
 
 
 void ReadKeyboard(uint8_t status[], uint8_t pressure_on) {
+
+	debounce_notes_tick();
+
 	GPIO_PinState low = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_4);
 	GPIO_PinState mid = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5);
 	GPIO_PinState high = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6);
@@ -24,19 +28,23 @@ void ReadKeyboard(uint8_t status[], uint8_t pressure_on) {
 	for (uint8_t i = 0; i < 37; i++) {
         //new_status = ReadNote(i) && pressure_on;
         new_status = ReadNote(i);
-        if (!status[i] && new_status) {
-        	if (low) note_on(0, 29 + i, 60);
-        	if (mid) note_on(0, 41 + i, 60);
-        	if (high) note_on(0, 53 + i, 60);
-        	if (too_high) note_on(0, 65 + i, 60);
-        }
-        if (status[i] && !new_status) {
-        	if (low) note_off(0, 29 + i, 0);
-        	if (mid) note_off(0, 41 + i, 0);
-        	if (high) note_off(0, 53 + i, 0);
-        	if (too_high) note_off(0, 65 + i, 0);
-        }
-        status[i] = new_status;
+		if(status[i]!=new_status) {
+			if(note_debouncer(i)) {
+				if (!status[i] && new_status) {
+					if (low) note_on(0, 29 + i, 60);
+					if (mid) note_on(0, 41 + i, 60);
+					if (high) note_on(0, 53 + i, 60);
+					if (too_high) note_on(0, 65 + i, 60);
+				}
+				if (status[i] && !new_status) {
+					if (low) note_off(0, 29 + i, 0);
+					if (mid) note_off(0, 41 + i, 0);
+					if (high) note_off(0, 53 + i, 0);
+					if (too_high) note_off(0, 65 + i, 0);
+				}
+				status[i] = new_status;
+			}
+		}
     }
 }
 

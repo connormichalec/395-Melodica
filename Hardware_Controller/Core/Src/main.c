@@ -132,6 +132,8 @@ int main(void)
   MIDI_Init();
   LOOPER_INIT();
 
+  note_debouncer_init();
+
   uint8_t notes[48];
   uint8_t pressure = 0;
 
