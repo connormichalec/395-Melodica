@@ -68,7 +68,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 //MODIFIED BY CONNOR: - this is a quick fix and needs to be more thoroughly implemented
-void (*event_callback)(uint8_t, uint8_t);
+void (*event_callback)(uint8_t, uint8_t, uint8_t);
 
 
 void MIDI_Init(void (*callbackFunc)(uint8_t, uint8_t)) {

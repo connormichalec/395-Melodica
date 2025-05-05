@@ -82,7 +82,7 @@ void keyboard_update(uint8_t val, uint8_t state, uint8_t channel) {
 		// note pressure update, (not implemented: update pressure for voices of that channel)
 
 		// Update pressure assigned to that voice
-		channel_pressures[get_voice_channel(get_voice_from_idx(i))] = (float) val / (float) 127;
+		channel_pressures[channel] = (float) val / (float) 127;
 
 
 	}
