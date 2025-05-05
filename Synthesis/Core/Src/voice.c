@@ -85,6 +85,10 @@ int get_voice_channel(Voice * voice) {
 	return(voice->channel);
 }
 
+void set_voice_channel(Voice * voice, int newChannel) {
+	voice->channel = newChannel;
+}
+
 void add_voice_ADSR(Voice * voice, float attack_factor, float attack_level, float decay_factor, float sustain_level, float release_factor) {
 	// Create adsr for this voice:
 	voice->adsr = create_ADSR(attack_factor,attack_level,decay_factor,sustain_level,release_factor);

@@ -63,15 +63,16 @@ void initialize_signal(int sample_rate_) {
 	}
 
 	// Used later in volume pressure demo, number is steepness of curve for pressure "sensitivity"
-	generateLogLUT(10);
+	generateLogLUT(5);
 }
 
-void keyboard_update(uint8_t val, uint8_t state) {
+void keyboard_update(uint8_t val, uint8_t state, uint8_t channel) {
 	if(state == 1) {
 		// Key turned on, assign a voice to that key.
 		int i = enable_voice(SAW, val, 0.2f);  							// apply a slight detune to voice
 		add_voice_filter(get_voice_from_idx(i),LOWPASS, 0.0f, 0.0f);	// Add a lowpass filter by default
 		add_voice_ADSR(get_voice_from_idx(i), 0.0f, 1.0f, 0.0f, 1.0f, 0.03f);					// Add adsr with small release
+		set_voice_channel(get_voice_from_idx(i), channel);
 	}
 	else if (state == 0) {
 		// Key turned off, progress set ADSR to "release" state
@@ -80,8 +81,8 @@ void keyboard_update(uint8_t val, uint8_t state) {
 	else if (state == 2) {
 		// note pressure update, (not implemented: update pressure for voices of that channel)
 
-		// Update for all voices(todo: only voice of prssure channel is assign to - for looping):
-		channel_pressures[0] = (float) val / (float) 127;
+		// Update pressure assigned to that voice
+		channel_pressures[get_voice_channel(get_voice_from_idx(i))] = (float) val / (float) 127;
 
 
 	}
@@ -152,7 +153,7 @@ float signal_next_sample() {
 			voice_val = voice_val * get_voice_ADSR_val(v);
 
 			// Apply voice pressure factor as a scaling for volume: - apply a log curve to this to not have to blow as hard
-			voice_val = voice_val * channel_pressures[get_voice_channel(v)];
+			voice_val = voice_val * log_LUT(channel_pressures[get_voice_channel(v)]);
 
 			//set_voice_detune(v, log_LUT(channel_pressures[get_voice_channel(v)]));
 

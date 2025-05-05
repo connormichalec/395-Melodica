@@ -66,6 +66,10 @@ int num_enabled_voices();
 
 void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune);
 
+/**
+ * Set voice channel
+ */
+void set_voice_channel(Voice * voice, int newChannel);
 
 /**
  * Enable voice using a MIDI note no

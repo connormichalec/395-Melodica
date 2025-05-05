@@ -128,17 +128,17 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
 			midi_reg.notes[midiData1] = 0;
-			event_callback(midiData2, 0);
+			event_callback(midiData2, 0, midiStatus & 0x0f);
 			break;
 
 		case 0x90: // Note On
 			midi_reg.notes[midiData2] = midiData2;
-			event_callback(midiData2, 1);
+			event_callback(midiData2, 1, midiStatus & 0x0f);
 			break;
 
 		case 0xD0: // Channel Pressure
 			midi_reg.pressure = midiData1;
-			event_callback(midiData1, 2);
+			event_callback(midiData1, 2, midiStatus & 0x0f);
 			break;
 
 		default:
