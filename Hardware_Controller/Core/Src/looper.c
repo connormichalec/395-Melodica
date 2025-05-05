@@ -26,9 +26,9 @@
 #include "looper.h"
 
 extern TIM_HandleTypeDef htim21;
-Looper looper;
+LooperButton looper_button;
 
-void LOOPER_INIT() {
+/*void LOOPER_INIT() {
 	for (int i = 0; i < NOTE_MSG_COUNT; i++) {
 		looper.ons[i] = timestamped_byte(0, MAX_TIMESTAMP);
 		looper.offs[i] = timestamped_byte(0, MAX_TIMESTAMP);
@@ -61,16 +61,48 @@ void LOOPER_INIT() {
 	looper.hold_tick = 0;
 	looper.active_channel = 0;	// Number is one less than channel being recorded to (because 0 is used for live play). Corresponds to active index
 }
+*/
 
-void looper_tick() {
+void button_tick() {
+	// Track button state
+	uint8_t new_button_state = HAL_GPIO_ReadPin(LOOPER_GPIO_PORT, LOOPER_GPIO_PIN);
+	uint8_t button_edge = (!looper_button.button_pressed && new_button_state); // rising edge
 
+	looper_button.button_pressed = new_button_state; // Update this BEFORE using it to avoid race logic
+	if (looper_button.debounce_tick > 0) looper_button.debounce_tick--;
 
-	// Loop logic
-	if (__HAL_TIM_GET_FLAG(&htim21, TIM_FLAG_UPDATE)) {		// Update with timer peripheral
+	if (button_edge && looper_button.debounce_tick == 0) {	// Detect positive edge of button presses
+		looper_button.debounce_tick = 10;
+
+		//Send custom message, gets interpreted as button press
+		MIDI_SendByte(0xF8);
+		MIDI_SendByte(0);
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
+	}
+
+	// Reset condition
+	if (looper_button.button_pressed) {
+		looper_button.hold_tick++;
+		if (looper_button.hold_tick >= 512) {
+			looper_button.debounce_tick = 20;
+			note_off_all();
+			MIDI_SendByte(0xF9);
+			MIDI_SendByte(0);
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+		}
+	} else {
+		looper_button.hold_tick = 0;
+	}
+}
+
+/*void button_tick() {
+	// Using timer
+	if (__HAL_TIM_GET_FLAG(&htim21, TIM_FLAG_UPDATE)) {
 		__HAL_TIM_CLEAR_FLAG(&htim21, TIM_FLAG_UPDATE);
+
 		// Track button state
 		uint8_t new_button_state = HAL_GPIO_ReadPin(LOOPER_GPIO_PORT, LOOPER_GPIO_PIN);
-		uint8_t button_edge = (!looper.button_pressed && new_button_state); // rising edge
+		uint8_t button_edge = (!looper_button.button_pressed && new_button_state); // rising edge
 
 		looper.button_pressed = new_button_state; // Update this BEFORE using it to avoid race logic
 		if (looper.debounce_tick > 0) looper.debounce_tick--;
@@ -121,19 +153,26 @@ void looper_tick() {
 					break;
 			}
 		}
-	    if (looper.state == LOOPER_RECORDING_INIT) looper.recording_length++;
+		if (looper.state == LOOPER_RECORDING_INIT) looper.recording_length++;
 
-	    // Reset condition
-	    if (looper.button_pressed) {
-	    	looper.hold_tick++;
-	    	if (looper.hold_tick >= 512) {
-	    		looper.debounce_tick = 20;
-	    		LOOPER_INIT();
-	    		note_off_all();
-	    	}
-	    } else {
-	    	looper.hold_tick = 0;
-	    }
+		// Reset condition
+		if (looper.button_pressed) {
+			looper.hold_tick++;
+			if (looper.hold_tick >= 512) {
+				looper.debounce_tick = 20;
+				LOOPER_INIT();
+				note_off_all();
+			}
+		} else {
+			looper.hold_tick = 0;
+		}
+	}
+}*/
+
+/*void looper_tick() {
+	// Loop logic
+	if (__HAL_TIM_GET_FLAG(&htim21, TIM_FLAG_UPDATE)) {		// Update with timer peripheral
+		__HAL_TIM_CLEAR_FLAG(&htim21, TIM_FLAG_UPDATE);
 
 		// If not actively looping, ignore all of this
 		if (looper.state == LOOPER_INACTIVE) return;
@@ -196,6 +235,7 @@ void looper_tick() {
 	    }
 	}
 }
+*/
 
 uint32_t timestamped_byte(uint8_t note, uint32_t timestamp) {
 	return (timestamp & 0x00FFFFFF) | (note << 24);

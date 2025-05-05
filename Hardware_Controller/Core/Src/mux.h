@@ -11,3 +11,4 @@
 
 void SetSelectBits(uint8_t key);
 void ReadKeyboard(uint8_t status[], uint8_t pressure_on);
+void tick_buttons();

@@ -23,7 +23,6 @@
 /* USER CODE BEGIN Includes */
 #include "midi.h"
 #include "mux.h"
-#include "string.h"
 #include "adc.h"
 #include "looper.h"
 #include <stdio.h>
@@ -119,7 +118,7 @@ int main(void)
   MX_TIM21_Init();
   /* USER CODE BEGIN 2 */
 
-
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
   HAL_ADCEx_Calibration_Start(&hadc, ADC_SINGLE_ENDED);
   HAL_ADC_Start_DMA(&hadc, (uint32_t*) &adc_reg, 1);
   /* USER CODE END 2 */
@@ -130,7 +129,6 @@ int main(void)
   HAL_TIM_Base_Start(&htim2);
   HAL_TIM_Base_Start(&htim21);
   MIDI_Init();
-  LOOPER_INIT();
 
   uint8_t notes[48];
   uint8_t pressure = 0;
@@ -158,8 +156,12 @@ int main(void)
 		  }
 		  adc_conv_complete_flag = 0;
 	  }
-
-	  looper_tick();
+	  if (__HAL_TIM_GET_FLAG(&htim21, TIM_FLAG_UPDATE)) {
+	  __HAL_TIM_CLEAR_FLAG(&htim21, TIM_FLAG_UPDATE);
+	  	  button_tick();
+	  	  tick_buttons();
+	  }
+	  //looper_tick();
 
     /* USER CODE END WHILE */
 
@@ -468,12 +470,22 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, S0_Pin|S1_Pin|S2_Pin|S3_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+
   /*Configure GPIO pins : S0_Pin S1_Pin S2_Pin S3_Pin */
   GPIO_InitStruct.Pin = S0_Pin|S1_Pin|S2_Pin|S3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Note_input_0_Pin Note_input_1_Pin Note_input_2_Pin */
   GPIO_InitStruct.Pin = Note_input_0_Pin|Note_input_1_Pin|Note_input_2_Pin;

@@ -6,16 +6,15 @@
  */
 
 #pragma once
-
-#include "stm32l0xx_hal.h"
-#include "stm32l0xx_hal_tim.h"
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_tim.h"
 #include "midi.h"
 
 #define LOOPER_GPIO_PORT GPIOB
 #define LOOPER_GPIO_PIN GPIO_PIN_3
 
-#define NOTE_MSG_COUNT 256
-#define CHANNEL_PRESSURE_MSG_COUNT 512
+#define NOTE_MSG_COUNT 512
+#define CHANNEL_PRESSURE_MSG_COUNT 8192
 #define LOOPER_CHANNELS 8
 
 #define MAX_TIMESTAMP 0xFFFFFF
@@ -52,18 +51,13 @@ typedef struct {
 
 } Looper;
 
-typedef struct {
-	uint8_t button_pressed;		// Tracks state of whether the looper button is pressed (for posedge detection)
-	uint8_t debounce_tick;
-	uint16_t hold_tick;
-} LooperButton;
-
 void LOOPER_INIT();
 
 // Periodically updates the looper
 void looper_tick();
 
-void button_tick();
+void looper_press_button();
+
 
 // Generates a packed timestamped note message, stored in a 32-bit int
 //	- Lowest 24 bits are timestamp

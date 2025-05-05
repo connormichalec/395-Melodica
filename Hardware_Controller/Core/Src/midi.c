@@ -12,10 +12,10 @@ void note_on(uint8_t channel, uint8_t key, uint8_t velocity) {
     MIDI_SendByte((uint8_t) 0b01111111 & key);
     MIDI_SendByte((uint8_t) 0b01111111 & velocity);
 
-    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+    /*if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
 		looper.ons[looper.write_on_idx] = timestamped_byte(key, looper.tick);
 		looper.write_on_idx += 1;
-    }
+    }*/
 }
 
 void note_off(uint8_t channel, uint8_t key, uint8_t velocity) {
@@ -26,10 +26,10 @@ void note_off(uint8_t channel, uint8_t key, uint8_t velocity) {
 		MIDI_SendByte((uint8_t) 0b01111111 & key);
 		MIDI_SendByte((uint8_t) 0b01111111 & velocity);
 
-	    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+	    /*if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
 			looper.offs[looper.write_off_idx] = timestamped_byte(key, looper.tick);
 			looper.write_off_idx += 1;
-	    }
+	    }*/
 	}
 
 
@@ -91,10 +91,10 @@ void channel_pressure(uint8_t channel, uint8_t pressure) {
     MIDI_SendByte(CHANNEL_PRESSURE | (channel & 0b00001111));
     MIDI_SendByte((uint8_t) 0b01111111 & pressure);
 
-    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+    /*if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
 		looper.channel_pressures[looper.write_pressure_idx] = timestamped_byte(pressure, looper.tick);
 		looper.write_pressure_idx += 1;
-    }
+    }*/
 }
 
 void MIDI_SendByte(uint8_t byte) {
@@ -141,7 +141,6 @@ void MIDI_Init(void) {
 }
 
 MIDI_State midiState = MIDI_WAITING_FOR_STATUS;
-MIDI_Reg midi_reg;
 uint8_t midiStatus = 0;
 uint8_t midiData1 = 0;
 
@@ -184,26 +183,21 @@ float ToFrequency(uint8_t note) {
 	return 440 * pow(2.0f, (float) (note - 69) / 12);
 }
 
+// From STM32 side, all received messages are coming from the synthesis chip looper. They need to be basically regurgitated back out
 void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2) {
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
-			midi_reg.notes[midiData1] = 0;
-
-			//looper.write_offs[looper.off_write_index] = timestamped_byte(midiData1, looper.tick);
-			//looper.off_write_index++;
+			note_off(midiStatus & 0x0F, midiData1, midiData2);
 
 			break;
 
 		case 0x90: // Note On
-			midi_reg.notes[midiData1] = midiData2;
-
-			//looper.write_ons[looper.on_write_index] = timestamped_byte(midiData1, looper.tick);
-			//looper.on_write_index++;
+			note_on(midiStatus & 0x0F, midiData1, midiData2);
 
 			break;
 
 		case 0xD0: // Channel Pressure
-			midi_reg.pressure = midiData1;
+			channel_pressure(midiStatus & 0x0F, midiData1);
 			break;
 
 		default:

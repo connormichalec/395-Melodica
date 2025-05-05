@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_uart.h"
+#include "looper.h"
 
 // Codes for message types
 typedef enum MessageType {
@@ -53,6 +54,8 @@ void channel_pressure(uint8_t channel, uint8_t pressure);
 // Sends a single byte over UART for a MIDI message
 void MIDI_SendByte(uint8_t byte);
 
+void record_note_off_all();
+
 // Creates a new NoteListener
 NoteListener new_note(uint8_t key, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin);
 
@@ -65,11 +68,6 @@ typedef enum {
     MIDI_WAITING_FOR_DATA1,
     MIDI_WAITING_FOR_DATA2
 } MIDI_State;
-
-typedef struct {
-	uint8_t notes[128];
-	uint8_t pressure;
-} MIDI_Reg;
 
 // Callback function for UART interrupt, initiates reception of MIDI bytes
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);

@@ -1,26 +1,24 @@
 #include "midi.h"
 #include <math.h>
+#include "looper.h"
+#include "signal.h"
 
 extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart1;
+extern Looper looper;
 
 uint8_t note_counters[128];
 
 void note_on(uint8_t channel, uint8_t key, uint8_t velocity) {
-	note_counters[key]++;
 	MIDI_SendByte(NOTE_ON | (channel & 0b00001111));
     MIDI_SendByte((uint8_t) 0b01111111 & key);
     MIDI_SendByte((uint8_t) 0b01111111 & velocity);
 }
 
 void note_off(uint8_t channel, uint8_t key, uint8_t velocity) {
-	if (note_counters[key] != 0) note_counters[key]--;
-
-	if (note_counters[key] == 0) {
-		MIDI_SendByte(NOTE_OFF | (channel & 0b00001111));
-		MIDI_SendByte((uint8_t) 0b01111111 & key);
-		MIDI_SendByte((uint8_t) 0b01111111 & velocity);
-	}
+	MIDI_SendByte(NOTE_OFF | (channel & 0b00001111));
+	MIDI_SendByte((uint8_t) 0b01111111 & key);
+	MIDI_SendByte((uint8_t) 0b01111111 & velocity);
 }
 
 void channel_pressure(uint8_t channel, uint8_t pressure) {
@@ -32,7 +30,46 @@ void MIDI_SendByte(uint8_t byte) {
     HAL_UART_Transmit(&huart1, &byte, 1, HAL_MAX_DELAY);
 }
 
+void record_note_off_all() {
+	// For the currently recording channel, find all not-disabled notes and disable them
 
+	// ALGORITHM
+	//	- Start at starting index of current active channel
+	//	- Loop until max timestamp is found
+	//	- How to keep track of if a note has been turned off?
+	//		- Have a byte for each note. Use counters for enabled notes
+	//		- Note on adds to the counter, note off removes
+	//		- For any counter that isn't 0, append a note off
+
+	uint8_t notes[128];
+
+	uint16_t idx = looper.start_on_indices[looper.active_channel];
+	uint32_t timestamp = extract_timestamp(looper.ons[idx]);
+	while (timestamp != MAX_TIMESTAMP) {
+		uint8_t note = extract_byte(looper.ons[idx]);
+		notes[note]++;
+
+		idx++;
+		timestamp = extract_timestamp(looper.ons[idx]);
+	}
+
+	idx = looper.start_off_indices[looper.active_channel];
+	timestamp = extract_timestamp(looper.offs[idx]);
+	while (timestamp != MAX_TIMESTAMP) {
+		uint8_t note = extract_byte(looper.offs[idx]);
+		notes[note]--;
+
+		idx++;
+		timestamp = extract_timestamp(looper.offs[idx]);
+	}
+
+	for (int i = 0; i < 128; i++) {
+		if (notes[i] != 0) {
+			looper.offs[looper.write_off_idx] = timestamped_byte(i, looper.tick - 1);
+			looper.write_off_idx++;
+		}
+	}
+}
 
 NoteListener new_note(uint8_t key, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin) {
 	NoteListener output;
@@ -80,7 +117,6 @@ void MIDI_Init(void (*callbackFunc)(uint8_t, uint8_t)) {
 }
 
 MIDI_State midiState = MIDI_WAITING_FOR_STATUS;
-MIDI_Reg midi_reg;
 uint8_t midiStatus = 0;
 uint8_t midiData1 = 0;
 
@@ -125,20 +161,35 @@ float ToFrequency(uint8_t note) {
 
 
 void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2) {
+	uint8_t channel = midiStatus & 0x0F;
+
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
-			midi_reg.notes[midiData1] = 0;
 			event_callback(midiData2, 0);
+		    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+				looper.offs[looper.write_off_idx] = timestamped_byte(midiData2, looper.tick);
+				looper.write_off_idx += 1;
+		    }
 			break;
 
 		case 0x90: // Note On
-			midi_reg.notes[midiData2] = midiData2;
 			event_callback(midiData2, 1);
+			if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+				looper.ons[looper.write_on_idx] = timestamped_byte(midiData2, looper.tick);
+				looper.write_on_idx += 1;
+			}
 			break;
 
 		case 0xD0: // Channel Pressure
-			midi_reg.pressure = midiData1;
 			event_callback(midiData1, 2);
+			break;
+
+		case 0xF0:	// Looper button press
+			if (channel == 8) {
+				looper_press_button();
+			} else {
+				LOOPER_INIT();
+			}
 			break;
 
 		default:

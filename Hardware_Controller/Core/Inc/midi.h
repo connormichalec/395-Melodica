@@ -72,11 +72,6 @@ typedef enum {
     MIDI_WAITING_FOR_DATA2
 } MIDI_State;
 
-typedef struct {
-	uint8_t notes[128];
-	uint8_t pressure;
-} MIDI_Reg;
-
 // Callback function for UART interrupt, initiates reception of MIDI bytes
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
