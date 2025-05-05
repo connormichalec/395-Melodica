@@ -105,7 +105,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 //MODIFIED BY CONNOR: - this is a quick fix and needs to be more thoroughly implemented
-void (*event_callback)(uint8_t, uint8_t);
+void (*event_callback)(uint8_t, uint8_t, uint8_t);
 
 
 void MIDI_Init(void (*callbackFunc)(uint8_t, uint8_t)) {
@@ -165,7 +165,7 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
-			event_callback(midiData2, 0);
+			event_callback(midiData2, 0, midiStatus & 0x0f);
 		    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
 				looper.offs[looper.write_off_idx] = timestamped_byte(midiData2, looper.tick);
 				looper.write_off_idx += 1;
@@ -173,7 +173,7 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 			break;
 
 		case 0x90: // Note On
-			event_callback(midiData2, 1);
+			event_callback(midiData2, 1, midiStatus & 0x0f);
 			if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
 				looper.ons[looper.write_on_idx] = timestamped_byte(midiData2, looper.tick);
 				looper.write_on_idx += 1;
@@ -181,7 +181,7 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 			break;
 
 		case 0xD0: // Channel Pressure
-			event_callback(midiData1, 2);
+			event_callback(midiData1, 2, midiStatus & 0x0f);
 			break;
 
 		case 0xF0:	// Looper button press

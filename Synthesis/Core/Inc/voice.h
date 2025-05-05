@@ -10,9 +10,10 @@
 
 #include "ADSR.h"
 #include "oscillator.h"
+#include "filter.h"
 
-#define VOICE_NUM_OSC 2
-#define NUM_VOICES 6
+#define VOICE_NUM_OSC 3
+#define NUM_VOICES 12
 
 // TODO: Implement function pointres in struct for more streamlined interfacing (liek a class)
 typedef struct {
@@ -21,7 +22,9 @@ typedef struct {
 	ADSR * adsr;
 	int enabled;
 	int channel;
-	float pressure;		// Updated when channel prssure is set for this voices channel
+	float detune;
+	float base_freq;	// Frequency that the oscillators should be detuned around
+	Filter * filters;	// Filters added via linked list to voice (head of linked list, null when no filters)
 	int NOTE;			// Note that this voice is tracked to, set to -1 when not used.
 } Voice;
 
@@ -42,6 +45,11 @@ void tick_voices();
 float get_voice_ADSR_val(Voice * voice);
 
 /**
+ * Adds an adsr to this voice
+ */
+void add_voice_ADSR(Voice * voice, float attack_factor, float attack_level, float decay_factor, float sustain_level, float release_factor);
+
+/**
  * Used to manage voice functions
  */
 void tick_voice(Voice * voice);
@@ -58,6 +66,10 @@ int num_enabled_voices();
 
 void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune);
 
+/**
+ * Set voice channel
+ */
+void set_voice_channel(Voice * voice, int newChannel);
 
 /**
  * Enable voice using a MIDI note no
@@ -65,14 +77,27 @@ void construct_voice(oscillatorTypes type, Voice * v, float frequency, float det
 int enable_voice(oscillatorTypes type, int note, float detune);
 
 /**
+ * Add filter
+ */
+void add_voice_filter(Voice * voice, FilterType type, float cutoff, float resonance);
+
+/**
  *
  */
 void disable_voice(Voice * voice);
 
+/**
+ * Return linked list of all the filters
+ */
+Filter * get_voice_filters(Voice * v);
 
-float get_voice_pressure(Voice * v);
+int get_num_filters(Voice * v);
 
-//void update_voice_pressure(Voice * v, float newVal);
+int get_voice_channel(Voice * voice);
+
+void set_voice_detune(Voice * voice, float detune);
+
+float get_voice_detune(Voice * voice);
 
 Voice * get_voice_from_idx(int voice_idx);
 

@@ -25,8 +25,8 @@ void * S_htim8;
 void * S_hdac;
 
 
-void note_callbk(uint8_t note, uint8_t event) {
-	keyboard_update(note,event);
+void note_callbk(uint8_t note, uint8_t event, uint8_t channel) {
+	keyboard_update(note,event,channel);
 }
 
 void fill_buffer(uint16_t *buffer, long start, long end) {

@@ -44,9 +44,11 @@ void init_voices() {
 		voices[i].enabled = 0;
 		voices[i].adsr = NULL;
 		voices[i].num_osc = 0;
-		voices[i].pressure = 0.0f;
 		voices[i].NOTE = -1;
 		voices[i].channel = -1;
+		voices[i].base_freq = 0;
+		voices[i].detune = 0.0f;
+		voices[i].filters = NULL;		// Head to linked list is null
 	}
 }
 
@@ -63,12 +65,6 @@ void tick_voice(Voice * voice) {
 	if(!voice->enabled)
 		return;
 
-	float pres = get_channel_pressure(voice->channel);
-	// If channel pressure different from current voice pressure update to match
-	if(pres!=voice->pressure) {
-		voice->pressure = pres;
-	}
-
 	//Tick ADSRs:
 	ADSR_tick(voice->adsr);
 
@@ -79,33 +75,82 @@ void tick_voice(Voice * voice) {
 }
 
 float get_voice_ADSR_val(Voice * voice) {
+	if(voice->adsr==NULL)
+		return 1.0;
 	return(voice->adsr->cur_val);
 }
 
-float detune_scale = 7.0f;
+
+int get_voice_channel(Voice * voice) {
+	return(voice->channel);
+}
+
+void set_voice_channel(Voice * voice, int newChannel) {
+	voice->channel = newChannel;
+}
+
+void add_voice_ADSR(Voice * voice, float attack_factor, float attack_level, float decay_factor, float sustain_level, float release_factor) {
+	// Create adsr for this voice:
+	voice->adsr = create_ADSR(attack_factor,attack_level,decay_factor,sustain_level,release_factor);
+
+	// Go to attack phase of adsr
+	ADSR_next(voice->adsr);
+}
+
+void add_voice_filter(Voice * voice, FilterType type, float cutoff, float resonance) {
+
+	// New filter
+	Filter * newFilter = create_filter(cutoff, resonance, type);
+
+	// Find linked list end:
+
+	Filter * f = voice->filters;
+	if(f==NULL) {
+		// Root node is null, create new root
+		voice->filters = newFilter;
+		return;
+	}
+	else {
+		while(f->next!=NULL) {
+			f = f->next;
+		}
+	}
+
+	// Append filter to end of linked list:
+	f->next = newFilter;
+}
+
+Filter * get_voice_filters(Voice * v) {
+	return v->filters;
+}
+
+int get_num_filters(Voice * v) {
+	Filter * f =v->filters;
+
+	int idx = 0;
+
+	while(f!=NULL) {
+		idx++;
+		f = f->next;
+	}
+
+	return idx;
+}
+
 void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune) {
 	v->enabled = 1;
-	v->pressure = 0.0f;	// by default pressure should be 0 until update is received
 	v->channel = 0;
+
+	v->base_freq = frequency;
 
 
 	for(int i =0; i<VOICE_NUM_OSC; i++) {
-		// Create multiple oscillators detuned by detune amt
-
-		// Alternate whether detune adds or subtracts to frequency based on if i is odd or even (creates even spread):
-		// detune/VOICE_NUM_OSC so that there is the same amount of detune regardless of the amount of oscillators.
-		float freq = i%2==0 ? (frequency + (float)i * (detune*detune_scale)/VOICE_NUM_OSC) : (frequency - (float)i * (detune*detune_scale)/VOICE_NUM_OSC);
-
-		v->osc[i] = get_oscillator(enable_oscillator(type, freq));
+		v->osc[i] = get_oscillator(enable_oscillator(type, frequency));
 		v->num_osc++;
 	}
 
-	// Create adsr for this voice:
-	v->adsr = create_ADSR(0.0f, 1.0f, 0.0f, 1.0f, 0.1f);
-
-	// Go to attack phase of adsr
-	ADSR_next(v->adsr);
-
+	// Set detune:
+	set_voice_detune(v, detune);
 }
 
 int enable_voice(oscillatorTypes type, int note, float detune) {
@@ -151,26 +196,46 @@ void disable_voice(Voice * voice) {
 
 	voice->num_osc = 0;
 
+	// Delete ADSR
 	delete_ADSR(voice->adsr);
+	// Delete filters:
+	Filter * f = voice->filters;
+	while(f!=NULL) {
+		Filter * fprev = f;
+		f = f->next;
+		delete_filter(fprev);
+	}
 
 	voice->adsr = NULL;
 	voice->enabled = 0;
 	voice->NOTE = -1;
-	voice->pressure = 0.0f;
 	voice->channel = -1;
+	voice->base_freq = 0;
+	voice->detune = 0.0f;
+	voice->filters = NULL;
 
 	num_voices_enabled--;
 
 }
 
-/*
-void update_voice_pressure(Voice * v, float newVal) {
-	v->pressure = newVal;
-}*/
-
-float get_voice_pressure(Voice * v) {
-	return v->pressure;
+float get_voice_detune(Voice * voice) {
+	return(voice->detune);
 }
+
+float detune_scale = 7.0f;
+void set_voice_detune(Voice * voice, float detune) {
+	voice->detune = detune;
+	float frequency = voice->base_freq;
+	// Update oscillator frequencies accordingly:
+	for(int i =0; i<VOICE_NUM_OSC; i++) {
+		// Alternate whether detune adds or subtracts to frequency based on if i is odd or even (creates even spread):
+		// detune/VOICE_NUM_OSC so that there is the same amount of detune regardless of the amount of oscillators.
+		voice->osc[i]->frequency = i%2==0 ? (frequency + (float)i * (detune*detune_scale)/VOICE_NUM_OSC) : (frequency - (float)i * (detune*detune_scale)/VOICE_NUM_OSC);
+
+	}
+}
+
+
 
 Voice * get_voice_from_idx(int voice_idx) {
 	if(voice_idx==-1)

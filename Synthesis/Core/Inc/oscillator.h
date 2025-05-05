@@ -8,7 +8,7 @@
 #ifndef SRC_OSCILLATOR_H_
 #define SRC_OSCILLATOR_H_
 
-#define NUM_OSCILLATORS 12
+#define NUM_OSCILLATORS 36
 
 typedef enum {
 	SIN,
@@ -53,5 +53,15 @@ int enable_oscillator(oscillatorTypes oscillator, float frequency);
  * Disable an oscillator
  */
 void disable_oscillator(Oscillator * oscillator);
+
+/**
+ * Set osc freq
+ */
+void set_osc_freq(Oscillator * oscillator, float freq);
+
+/**
+ * Get osc freq
+ */
+float get_osc_freq(Oscillator * oscillator);
 
 #endif /* SRC_OSCILLATOR_H_ */

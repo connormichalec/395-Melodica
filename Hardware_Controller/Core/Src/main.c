@@ -130,6 +130,8 @@ int main(void)
   HAL_TIM_Base_Start(&htim21);
   MIDI_Init();
 
+  note_debouncer_init();
+
   uint8_t notes[48];
   uint8_t pressure = 0;
 

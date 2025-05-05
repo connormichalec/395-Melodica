@@ -59,6 +59,14 @@ int getFirstDisabledOscIdx() {
 	return -1;
 }
 
+float get_osc_freq(Oscillator * osc) {
+	return(osc->frequency);
+}
+
+void set_osc_freq(Oscillator * osc, float freq) {
+	osc->frequency = freq;
+}
+
 int enable_oscillator(oscillatorTypes oscillator, float frequency) {
 	int idx = getFirstDisabledOscIdx();
 	// No oscillators avail

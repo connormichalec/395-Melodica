@@ -23,7 +23,7 @@ void audio_signal_loop_tick();
 /**
  * Callback to be triggerd by midi.c when key press occurs, this will eventually assign an oscillator to that key.
  */
-void note_callbk(uint8_t note, uint8_t event);
+void note_callbk(uint8_t note, uint8_t event, uint8_t channel);
 
 
 #endif /* INC_AUDIO_H_ */
