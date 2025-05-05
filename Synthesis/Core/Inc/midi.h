@@ -73,7 +73,7 @@ typedef enum {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 
 // Needs to be called in main function; Initializes UART setup so MIDI rx can work
-void MIDI_Init(void (*callbackFunc)(uint8_t, uint8_t));   //modified by con
+void MIDI_Init(void (*callbackFunc)(uint8_t, uint8_t, uint8_t));   //modified by con
 
 // Performs appropriate logic when a MIDI byte is received
 void MIDI_ProcessByte(uint8_t byte);

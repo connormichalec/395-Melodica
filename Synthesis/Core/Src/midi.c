@@ -42,6 +42,7 @@ void record_note_off_all() {
 	//		- For any counter that isn't 0, append a note off
 
 	uint8_t notes[128];
+	for (int i = 0; i < 128; i++) notes[i] = 0;
 
 	uint16_t idx = looper.start_on_indices[looper.active_channel];
 	uint32_t timestamp = extract_timestamp(looper.ons[idx]);
@@ -108,7 +109,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 void (*event_callback)(uint8_t, uint8_t, uint8_t);
 
 
-void MIDI_Init(void (*callbackFunc)(uint8_t, uint8_t)) {
+void MIDI_Init(void (*callbackFunc)(uint8_t, uint8_t, uint8_t)) {
     HAL_UART_Receive_IT(&huart1, &midi_buffer, 1); // Start receiving
 
     event_callback = callbackFunc;
@@ -125,7 +126,7 @@ char midi_string[50];
 void MIDI_ProcessByte(uint8_t byte) {
 	if (byte & 0x80) {		// Status byte received
 		midiStatus = byte;
-		midiState = (midiStatus == 0xC0 || midiStatus == 0xD0)
+		midiState = ((midiStatus & 0xF0) == 0xC0 || (midiStatus  & 0xF0) == 0xD0 || (midiStatus & 0xF0) == 0xF0)
 				  ? MIDI_WAITING_FOR_DATA1  // Program Change/Channel Pressure (1 data byte)
 				  : MIDI_WAITING_FOR_DATA2; // Most messages need 2 data bytes
 	} else {	// Data byte
@@ -133,7 +134,7 @@ void MIDI_ProcessByte(uint8_t byte) {
 			case MIDI_WAITING_FOR_DATA1:
 				midiData1 = byte;
 
-				if (midiStatus == 0xC0 || midiStatus == 0xD0) {
+				if ((midiStatus & 0xF0) == 0xC0 || (midiStatus  & 0xF0) == 0xD0 || (midiStatus & 0xF0) == 0xF0) {
 					// Program Change or Channel Pressure (only 1 data byte)
 					HandleMIDIMessage(midiStatus, midiData1, 0);
 					midiState = MIDI_WAITING_FOR_STATUS;
@@ -165,23 +166,30 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
+			if (channel != 0) break;
 			event_callback(midiData2, 0, midiStatus & 0x0f);
-		    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+		    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT)) {
 				looper.offs[looper.write_off_idx] = timestamped_byte(midiData2, looper.tick);
 				looper.write_off_idx += 1;
 		    }
 			break;
 
 		case 0x90: // Note On
+			if (channel != 0) break;
 			event_callback(midiData2, 1, midiStatus & 0x0f);
-			if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT) && channel == 0) {
+			if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT)) {
 				looper.ons[looper.write_on_idx] = timestamped_byte(midiData2, looper.tick);
 				looper.write_on_idx += 1;
 			}
 			break;
 
 		case 0xD0: // Channel Pressure
+			if (channel != 0) break;
 			event_callback(midiData1, 2, midiStatus & 0x0f);
+			if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT)) {
+				looper.channel_pressures[looper.write_pressure_idx] = timestamped_byte(midiData1, looper.tick);
+				looper.write_pressure_idx += 1;
+		    }
 			break;
 
 		case 0xF0:	// Looper button press

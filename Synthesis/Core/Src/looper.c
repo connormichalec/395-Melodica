@@ -139,8 +139,8 @@ void looper_tick() {
 			uint32_t next_on_timestamp = extract_timestamp(looper.ons[*read_idx]);
 			while (next_on_timestamp == looper.tick) {
 				uint32_t note = extract_byte(looper.ons[*read_idx]);
-				keyboard_update(note, 1);
-				//note_on(chan + 1, note, 60);
+				keyboard_update(note, 1, chan + 1);
+				note_on(chan + 1, note, 60);
 
 				*read_idx += 1;
 				next_on_timestamp = extract_timestamp(looper.ons[*read_idx]);
@@ -151,8 +151,8 @@ void looper_tick() {
 			uint32_t next_off_timestamp = extract_timestamp(looper.offs[*read_idx]);
 			while (next_off_timestamp == looper.tick) {
 				uint32_t note = extract_byte(looper.offs[*read_idx]);
-				keyboard_update(note, 0);
-				//note_off(chan + 1, note, 0);
+				keyboard_update(note, 0, chan + 1);
+				note_off(chan + 1, note, 0);
 
 				*read_idx += 1;
 				next_off_timestamp = extract_timestamp(looper.offs[*read_idx]);
@@ -164,7 +164,7 @@ void looper_tick() {
 			while (next_pressure_timestamp == looper.tick) {
 				uint8_t pressure = extract_byte(looper.channel_pressures[*read_idx]);
 				channel_pressure(chan + 1, pressure);
-				keyboard_update(pressure, 2);
+				keyboard_update(pressure, 2, chan + 1);
 
 				*read_idx += 1;
 				next_pressure_timestamp = extract_timestamp(looper.channel_pressures[*read_idx]);

@@ -122,11 +122,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  audio_signal_loop_tick();
+	  looper_tick();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  audio_signal_loop_tick();
-	  looper_tick();
   }
   /* USER CODE END 3 */
 }

@@ -147,9 +147,12 @@ uint8_t midiData1 = 0;
 char midi_string[50];
 
 void MIDI_ProcessByte(uint8_t byte) {
-	if (byte & 0x80) {		// Status byte received
+	// Just immediately pass on the byte
+	MIDI_SendByte(byte);
+
+/*	if (byte & 0x80) {		// Status byte received
 		midiStatus = byte;
-		midiState = (midiStatus == 0xC0 || midiStatus == 0xD0)
+		midiState = ((midiStatus & 0xF0) == 0xC0 || (midiStatus  & 0xF0) == 0xD0 || (midiStatus & 0xF0) == 0xF0)
 				  ? MIDI_WAITING_FOR_DATA1  // Program Change/Channel Pressure (1 data byte)
 				  : MIDI_WAITING_FOR_DATA2; // Most messages need 2 data bytes
 	} else {	// Data byte
@@ -157,7 +160,7 @@ void MIDI_ProcessByte(uint8_t byte) {
 			case MIDI_WAITING_FOR_DATA1:
 				midiData1 = byte;
 
-				if (midiStatus == 0xC0 || midiStatus == 0xD0) {
+				if ((midiStatus & 0xF0) == 0xC0 || (midiStatus  & 0xF0) == 0xD0 || (midiStatus & 0xF0) == 0xF0) {
 					// Program Change or Channel Pressure (only 1 data byte)
 					HandleMIDIMessage(midiStatus, midiData1, 0);
 					midiState = MIDI_WAITING_FOR_STATUS;
@@ -176,7 +179,7 @@ void MIDI_ProcessByte(uint8_t byte) {
 				midiState = MIDI_WAITING_FOR_STATUS; // Reset on unexpected data
 				break;
 		}
-	}
+	}*/
 }
 
 float ToFrequency(uint8_t note) {
@@ -187,17 +190,17 @@ float ToFrequency(uint8_t note) {
 void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2) {
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
-			note_off(midiStatus & 0x0F, midiData1, midiData2);
+			note_off(midiStatus & 0x0F, midiData1, 0);
 
 			break;
 
 		case 0x90: // Note On
-			note_on(midiStatus & 0x0F, midiData1, midiData2);
+			note_on(midiStatus & 0x0F, midiData1, 60);
 
 			break;
 
 		case 0xD0: // Channel Pressure
-			channel_pressure(midiStatus & 0x0F, midiData1);
+			channel_pressure(midiStatus & 0x0F, midiData2);
 			break;
 
 		default:
@@ -205,3 +208,4 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 			break;
 	}
 }
+

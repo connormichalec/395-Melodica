@@ -85,10 +85,10 @@ void button_tick() {
 		looper_button.hold_tick++;
 		if (looper_button.hold_tick >= 512) {
 			looper_button.debounce_tick = 20;
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
 			note_off_all();
 			MIDI_SendByte(0xF9);
 			MIDI_SendByte(0);
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
 		}
 	} else {
 		looper_button.hold_tick = 0;
