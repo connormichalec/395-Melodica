@@ -15,7 +15,7 @@
 int sample_rate;				// Sample rate of DAC
 
 
-#define NUM_CHANNELS 1
+#define NUM_CHANNELS 8
 
 float channel_pressures[NUM_CHANNELS];
 

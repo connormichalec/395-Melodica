@@ -167,7 +167,7 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
 			if (channel != 0) break;
-			event_callback(midiData2, 0, midiStatus & 0x0f);
+			event_callback(midiData2, 0, channel);
 		    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT)) {
 				looper.offs[looper.write_off_idx] = timestamped_byte(midiData2, looper.tick);
 				looper.write_off_idx += 1;
@@ -176,7 +176,7 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 
 		case 0x90: // Note On
 			if (channel != 0) break;
-			event_callback(midiData2, 1, midiStatus & 0x0f);
+			event_callback(midiData2, 1, channel);
 			if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT)) {
 				looper.ons[looper.write_on_idx] = timestamped_byte(midiData2, looper.tick);
 				looper.write_on_idx += 1;
@@ -185,7 +185,7 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 
 		case 0xD0: // Channel Pressure
 			if (channel != 0) break;
-			event_callback(midiData1, 2, midiStatus & 0x0f);
+			event_callback(midiData1, 2, channel);
 			if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT)) {
 				looper.channel_pressures[looper.write_pressure_idx] = timestamped_byte(midiData1, looper.tick);
 				looper.write_pressure_idx += 1;
