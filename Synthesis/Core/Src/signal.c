@@ -91,7 +91,7 @@ void keyboard_update(uint8_t val, uint8_t state, uint8_t channel) {
 float signal_next_sample() {
 
 	// Otherwise all oscillators will max out volume automatically and so adding them would not work.
-	float voice_scaling_fctr = 0.07f;			// how much to scale each voice by - TODO: replace this with a more professional solution.
+	float voice_scaling_fctr = 0.05f;			// how much to scale each voice by - TODO: replace this with a more professional solution.
 
 	float val = 0.0f;
 

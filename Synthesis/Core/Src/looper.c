@@ -129,6 +129,34 @@ void looper_tick() {
 			}
 		}
 
+		if (looper.tick == looper.playback_start_ticks[looper.active_channel]) {
+			if (looper.state == LOOPER_RECORDING_INIT) {
+				looper.length = looper.recording_length;
+				looper.tick = looper.recording_length;
+				looper.state = LOOPER_RECORDING_REPEAT;
+
+				record_note_off_all();
+				looper.write_on_idx++;		// Writes a breakpoint into the array
+				looper.write_off_idx++;
+				looper.write_pressure_idx++;
+				looper.active_channel++;
+				looper.start_on_indices[looper.active_channel] = looper.write_on_idx;
+				looper.start_off_indices[looper.active_channel] = looper.write_off_idx;
+				looper.start_pressure_indices[looper.active_channel] = looper.write_pressure_idx;
+			}
+
+			if (looper.state == LOOPER_RECORDING_REPEAT) {
+				record_note_off_all();
+				looper.write_on_idx++;		// Writes a breakpoint into the array
+				looper.write_off_idx++;
+				looper.write_pressure_idx++;
+				looper.active_channel++;
+				looper.start_on_indices[looper.active_channel] = looper.write_on_idx;
+				looper.start_off_indices[looper.active_channel] = looper.write_off_idx;
+				looper.start_pressure_indices[looper.active_channel] = looper.write_pressure_idx;
+			}
+		}
+
 		/// PLAYBACK ///
 
 		// Loop through all active channels
