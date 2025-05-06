@@ -13,7 +13,7 @@
 #include "midi.h"
 
 #define SAMPLE_RATE 42000
-#define BUFFER_SIZE 2048
+#define BUFFER_SIZE 512
 
 //USEFUL:
 //https://trebledj.me/posts/digital-audio-synthesis-for-dummies-part-3/
