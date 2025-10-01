@@ -1,0 +1,70 @@
+(Japanese_coding: sjis)
+(function "ECS_4629466"
+    (uver 1)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (ctime 2021-09-30-12:57:16)
+    (utime 2024-01-19-12:44:23)
+    (interface
+        (port "1" (symbPinId 1) (portType INOUT))
+        (port "2" (symbPinId 2) (portType INOUT))
+        (port "3" (symbPinId 3) (portType INOUT))
+    )
+    (property "symbolName" "858-22-003-10-001101")
+)
+
+
+(pinAssign "ECS_4629466"
+    (uver 1)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (ctime 2021-09-30-12:57:16)
+    (utime 2024-01-19-12:44:23)
+    (interface
+        (port "1" (symbPinId 1) (portName "1") (portType INOUT))
+        (port "2" (symbPinId 2) (portName "2") (portType INOUT))
+        (port "3" (symbPinId 3) (portName "3") (portType INOUT))
+    )
+    (internal
+        (funcInst (functionRef "ECS_4629466")
+                (port "1" (match "1"))
+                (port "2" (match "2"))
+                (port "3" (match "3"))
+        )
+    )
+    (property "usePowerBox" "No")
+    (property "symbolName" "858-22-003-10-001101")
+)
+
+
+(part "858-22-003-10-001101"
+    (uver 1)
+    (cuser "SamacSys")
+    (uuser "SamacSys")
+    (ctime 2021-09-30-12:57:16)
+    (utime 2024-01-19-12:44:23)
+    (packageRef "858-22-003-10-001101")
+    (pinAssignRef "ECS_4629466")
+    (interface
+        (port "1" (symbPinId 1) (portName "1") (portType INOUT))
+        (port "2" (symbPinId 2) (portName "2") (portType INOUT))
+        (port "3" (symbPinId 3) (portName "3") (portType INOUT))
+    )
+    (partClass UNDEF)
+    (useInSchema Y)
+    (useInLayout Y)
+    (inPartsList Y)
+    (partType NORMAL)
+    (placeRestriction FREE)
+    (property "enetNonSeries" "YES")
+    (property "refDesPrefix" "J")
+    (property "description" "Headers & Wire Housings STD SPRING-LOADED CONNECTOR")
+    (property "Mouser_Part_Number" "575-8582200310001101")
+    (property "Mouser_Price/Stock" "https://www.mouser.co.uk/ProductDetail/Mill-Max/858-22-003-10-001101?qs=BZBei1rCqCCbdg%2F0MUubZQ%3D%3D")
+    (property "Manufacturer_Name" "Mill-Max")
+    (property "Manufacturer_Part_Number" "858-22-003-10-001101")
+    (property "Datasheet_Link" "https://datasheet.datasheetarchive.com/originals/distributors/DKDS-31/604628.pdf")
+    (property "compAreaTopHeight" 9.6012)
+)
+
+

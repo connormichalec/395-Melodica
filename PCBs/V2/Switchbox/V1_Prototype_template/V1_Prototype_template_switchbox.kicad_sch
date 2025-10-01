@@ -5,6 +5,176 @@
 	(uuid "fa4be861-32fe-46a0-bf45-cacc0f983074")
 	(paper "A4")
 	(lib_symbols
+		(symbol "5360:5360"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "J"
+				(at 16.51 7.62 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+				)
+			)
+			(property "Value" "5360"
+				(at 16.51 5.08 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+				)
+			)
+			(property "Footprint" "5360"
+				(at 16.51 -94.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://cdn-shop.adafruit.com/product-files/5360/5360_C17002_______-1.pdf"
+				(at 16.51 -194.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Description" "Adafruit Accessories DIY Magnetic Connector - Right Angle Three Contact Pins"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Height" "4.1"
+				(at 16.51 -394.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Mouser Part Number" "485-5360"
+				(at 16.51 -494.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/Adafruit/5360?qs=MyNHzdoqoQJC81080TpnoQ%3D%3D"
+				(at 16.51 -594.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Manufacturer_Name" "Adafruit"
+				(at 16.51 -694.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Manufacturer_Part_Number" "5360"
+				(at 16.51 -794.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(symbol "5360_1_1"
+				(rectangle
+					(start 5.08 2.54)
+					(end 15.24 -7.62)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(pin passive line
+					(at 0 0 0)
+					(length 5.08)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 0)
+					(length 5.08)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -5.08 0)
+					(length 5.08)
+					(name "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Connector:Conn_01x02_Pin"
 			(pin_names
 				(offset 1.016)
@@ -2099,6 +2269,56 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "Through hole ferruels or solder cups"
+		(exclude_from_sim no)
+		(at 172.466 27.686 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "43cf6709-8493-43c2-bca2-b8a9bd2afc1d")
+	)
+	(text "IN"
+		(exclude_from_sim no)
+		(at 54.864 100.33 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "83d45b3d-8590-4841-83e3-f85c403ea0a4")
+	)
+	(text "OUT"
+		(exclude_from_sim no)
+		(at 54.864 91.186 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "b5fbefcd-09cf-4ef3-9ecf-2979c0b0cae2")
+	)
+	(text_box "Relay signal down the chain on single uart"
+		(exclude_from_sim no)
+		(at 35.56 93.98 0)
+		(size 17.78 7.62)
+		(margins 0.9525 0.9525 0.9525 0.9525)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(type none)
+		)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left top)
+		)
+		(uuid "72fe28d5-0a2c-4b68-8d21-9bd555d7af7d")
+	)
 	(text_box "Some of these could optionally be rewired to parts on the PCB rather than connected to the external switch connector. Ie. for potential onboard components like accelerometers"
 		(exclude_from_sim no)
 		(at 175.26 69.85 0)
@@ -2247,6 +2467,16 @@
 		)
 		(uuid "f9391019-ba3f-4283-9295-10561af6db24")
 	)
+	(label "VCC"
+		(at 193.04 40.64 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "06b90ef6-7804-4369-a900-75a52319ed99")
+	)
 	(label "PA15"
 		(at 125.73 85.09 0)
 		(effects
@@ -2297,6 +2527,16 @@
 		)
 		(uuid "0d05676e-0a14-47c9-ae9d-a491e90cb12e")
 	)
+	(label "GND"
+		(at 72.39 104.14 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "16b5be09-5616-4df3-a2a7-38397639f3fa")
+	)
 	(label "PA7"
 		(at 125.73 64.77 0)
 		(effects
@@ -2307,15 +2547,25 @@
 		)
 		(uuid "1a93ee22-5bca-418d-a9e9-e82850a01132")
 	)
-	(label "GND"
-		(at 193.04 55.88 0)
+	(label "UART_RX(PA10)"
+		(at 72.39 88.9 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "1c0637f5-e430-4f1b-b393-9fbb11d2123c")
+	)
+	(label "VCC"
+		(at 193.04 60.96 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "22217e79-0542-4fbb-b42d-2f5c33d8b051")
+		(uuid "1f8156dd-b628-466c-824f-4944072c1165")
 	)
 	(label "PA3"
 		(at 154.94 45.72 180)
@@ -2336,16 +2586,6 @@
 			(justify left bottom)
 		)
 		(uuid "281c9d9e-a2c7-4954-8e7b-ab7fdbb1f9b2")
-	)
-	(label "GND"
-		(at 193.04 60.96 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "28309dc1-6c65-4e9b-9144-89bfc724278a")
 	)
 	(label "GND"
 		(at 180.34 53.34 180)
@@ -2377,15 +2617,15 @@
 		)
 		(uuid "2c531743-2633-4bd5-b103-778cbeea1605")
 	)
-	(label "GND"
-		(at 193.04 50.8 0)
+	(label "VCC"
+		(at 193.04 53.34 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "3106e4eb-e596-4ef4-b77d-a12501884e44")
+		(uuid "2cb29b01-016a-4629-9991-7476ca34f4ec")
 	)
 	(label "GND"
 		(at 180.34 55.88 180)
@@ -2418,14 +2658,14 @@
 		(uuid "366e2bcb-b61e-486d-a9a2-4c7fce063c43")
 	)
 	(label "GND"
-		(at 193.04 38.1 0)
+		(at 72.39 91.44 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
-		(uuid "3a8be8c6-07a0-4e0e-a2d1-05035e765e31")
+		(uuid "3cd102a0-c571-4bcc-905f-7ba32452ccbf")
 	)
 	(label "GND"
 		(at 180.34 50.8 180)
@@ -2436,16 +2676,6 @@
 			(justify right bottom)
 		)
 		(uuid "3e979b2e-a0c0-4179-b4b5-2fe396c03432")
-	)
-	(label "GND"
-		(at 193.04 43.18 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "43237858-42dd-4d1f-8668-3182a4e63346")
 	)
 	(label "PB3"
 		(at 167.64 48.26 0)
@@ -2466,16 +2696,6 @@
 			(justify right bottom)
 		)
 		(uuid "47801312-964a-446e-b696-d4c128a9dec9")
-	)
-	(label "GND"
-		(at 193.04 48.26 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "4d5d4bdc-b0e7-4b37-bf21-96fc5f86f80d")
 	)
 	(label "PA5"
 		(at 154.94 50.8 180)
@@ -2518,7 +2738,7 @@
 		(uuid "544b85eb-fe90-4f11-90cd-16e27187e2d5")
 	)
 	(label "VCC"
-		(at 62.23 83.82 180)
+		(at 57.15 69.85 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2577,6 +2797,26 @@
 		)
 		(uuid "6290e65d-963f-409c-a49d-65321eab0354")
 	)
+	(label "VCC"
+		(at 193.04 38.1 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "6a27f300-57d0-4ec8-a9d9-2604b5875cd0")
+	)
+	(label "VCC"
+		(at 193.04 43.18 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "76143ce0-8bc7-4bf5-9dce-9d938f8c2350")
+	)
 	(label "GND"
 		(at 82.55 63.5 270)
 		(effects
@@ -2598,6 +2838,16 @@
 		(uuid "7c37bb08-1ddb-4097-8520-3aa519983e4e")
 	)
 	(label "VCC"
+		(at 193.04 55.88 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7ebd1a7c-9c12-44fb-b8b4-5dc27273113e")
+	)
+	(label "VCC"
 		(at 82.55 33.02 0)
 		(effects
 			(font
@@ -2606,16 +2856,6 @@
 			(justify left bottom)
 		)
 		(uuid "7edf6086-bd3c-475b-b443-e39a30fff99c")
-	)
-	(label "GND"
-		(at 193.04 53.34 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "80e0b3eb-c223-4601-9254-49dbd26d2e85")
 	)
 	(label "PA11"
 		(at 125.73 74.93 0)
@@ -2628,7 +2868,7 @@
 		(uuid "8259df7c-d3d7-4d6c-9aee-3ae0988205cc")
 	)
 	(label "SWCLK"
-		(at 62.23 78.74 180)
+		(at 57.15 64.77 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2648,6 +2888,16 @@
 		(uuid "846dd586-bbd8-40ab-96c1-32f984fdcf78")
 	)
 	(label "UART_TX(PA9)"
+		(at 72.39 101.6 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "86f5f723-a4da-461d-8127-fcb52bc5cc66")
+	)
+	(label "UART_TX(PA9)"
 		(at 128.27 69.85 0)
 		(effects
 			(font
@@ -2656,6 +2906,16 @@
 			(justify left bottom)
 		)
 		(uuid "88511176-29fa-4b17-b076-3bf89a5b07b2")
+	)
+	(label "VCC"
+		(at 193.04 48.26 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "891c032b-9400-4b1e-9585-1a2497281d4c")
 	)
 	(label "VCC"
 		(at 113.03 39.37 90)
@@ -2738,7 +2998,7 @@
 		(uuid "9b7bb6a8-4954-4657-aa11-1b34a5aa540c")
 	)
 	(label "GND"
-		(at 62.23 86.36 180)
+		(at 57.15 72.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2746,6 +3006,16 @@
 			(justify right bottom)
 		)
 		(uuid "9c899362-5266-4fe6-affb-60d3f69c8a22")
+	)
+	(label "UART_RX(PA10)"
+		(at 72.39 99.06 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a07070c7-f11e-4610-9c19-bee7eff5a983")
 	)
 	(label "UART_RX(PA10)"
 		(at 128.27 72.39 0)
@@ -2756,6 +3026,16 @@
 			(justify left bottom)
 		)
 		(uuid "a4a889f2-fe3f-470c-ba96-0bb9a812e693")
+	)
+	(label "VCC"
+		(at 193.04 50.8 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "add14fdb-dc84-457a-a1a5-347ad1deffa0")
 	)
 	(label "PA7"
 		(at 154.94 55.88 180)
@@ -2817,6 +3097,16 @@
 		)
 		(uuid "bcadc5fc-cf06-4b46-88b2-3a2a4008ecbd")
 	)
+	(label "UART_TX(PA9)"
+		(at 72.39 86.36 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "c1a2485e-0600-4730-a2e0-bfe9f9fbae55")
+	)
 	(label "PB3"
 		(at 95.25 69.85 180)
 		(effects
@@ -2826,16 +3116,6 @@
 			(justify right bottom)
 		)
 		(uuid "c5ea2322-bd8d-40e7-a791-8e1eac71c707")
-	)
-	(label "GND"
-		(at 193.04 58.42 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "c63c72fc-20f7-40b9-b6ce-217ae7717baa")
 	)
 	(label "PA1"
 		(at 154.94 40.64 180)
@@ -2867,15 +3147,15 @@
 		)
 		(uuid "cda63374-8bcc-4f66-a86d-d167db3d152c")
 	)
-	(label "GND"
-		(at 193.04 40.64 0)
+	(label "VCC"
+		(at 193.04 45.72 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left bottom)
 		)
-		(uuid "d0c8e167-0a40-4043-8398-38a473753d18")
+		(uuid "ce1afd49-eb1e-4682-ab25-f59de59cc80e")
 	)
 	(label "GND"
 		(at 68.58 46.99 180)
@@ -2917,6 +3197,16 @@
 		)
 		(uuid "e5891279-8f72-42c9-b617-58467a1b693e")
 	)
+	(label "VCC"
+		(at 193.04 58.42 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e83aa9c2-c9b3-4518-b48d-e7759d2bfdce")
+	)
 	(label "PB4"
 		(at 167.64 50.8 0)
 		(effects
@@ -2948,7 +3238,7 @@
 		(uuid "f0272d41-6546-496d-bf53-9e76bcd06a18")
 	)
 	(label "SWDIO"
-		(at 62.23 81.28 180)
+		(at 57.15 67.31 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2966,16 +3256,6 @@
 			(justify right bottom)
 		)
 		(uuid "f8923883-dc5c-4c7b-9f6f-a71f5f6f215d")
-	)
-	(label "GND"
-		(at 193.04 45.72 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "f90aea5f-b092-40f1-a0a8-e1dd05548e38")
 	)
 	(label "PB6"
 		(at 167.64 55.88 0)
@@ -3199,17 +3479,141 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x04")
-		(at 67.31 81.28 0)
+		(lib_id "5360:5360")
+		(at 72.39 86.36 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
+		(uuid "3b972cdd-2400-46da-b62f-f7e1abbd934c")
+		(property "Reference" "J5(OUT)1"
+			(at 88.9 87.6299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "5360"
+			(at 88.9 90.1699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "FootprintLibrary:5360"
+			(at 88.9 181.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://cdn-shop.adafruit.com/product-files/5360/5360_C17002_______-1.pdf"
+			(at 88.9 281.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Description" "Adafruit Accessories DIY Magnetic Connector - Right Angle Three Contact Pins"
+			(at 72.39 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Height" "4.1"
+			(at 88.9 481.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Part Number" "485-5360"
+			(at 88.9 581.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/Adafruit/5360?qs=MyNHzdoqoQJC81080TpnoQ%3D%3D"
+			(at 88.9 681.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Name" "Adafruit"
+			(at 88.9 781.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Part_Number" "5360"
+			(at 88.9 881.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "03ed2dab-f63b-47c1-b4ec-c4dca2465a7f")
+		)
+		(pin "3"
+			(uuid "ae06c13a-0112-4392-b640-d4c70af66189")
+		)
+		(pin "2"
+			(uuid "8f1d99cf-ea85-41ba-950f-2198d37bfc60")
+		)
+		(instances
+			(project ""
+				(path "/fa4be861-32fe-46a0-bf45-cacc0f983074"
+					(reference "J5(OUT)1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x04")
+		(at 62.23 67.31 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(uuid "4fd1277d-2583-4e78-bf41-b6c6bc963f6a")
 		(property "Reference" "Programmer1"
-			(at 69.85 81.2799 0)
+			(at 64.77 67.3099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3218,7 +3622,7 @@
 			)
 		)
 		(property "Value" "Conn_01x04"
-			(at 69.85 83.8199 0)
+			(at 64.77 69.8499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3227,7 +3631,7 @@
 			)
 		)
 		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical"
-			(at 67.31 81.28 0)
+			(at 62.23 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3236,7 +3640,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 67.31 81.28 0)
+			(at 62.23 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3245,7 +3649,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 67.31 81.28 0)
+			(at 62.23 67.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3477,6 +3881,131 @@
 			(project "V1_Prototype_template_switchbox"
 				(path "/fa4be861-32fe-46a0-bf45-cacc0f983074"
 					(reference "1k2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "5360:5360")
+		(at 72.39 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "813f0875-8d2a-4baf-a0f7-c95532564859")
+		(property "Reference" "J3(IN)1"
+			(at 88.9 100.3299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "5360"
+			(at 88.9 102.8699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "FootprintLibrary:5360"
+			(at 88.9 193.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://cdn-shop.adafruit.com/product-files/5360/5360_C17002_______-1.pdf"
+			(at 88.9 293.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Description" "Adafruit Accessories DIY Magnetic Connector - Right Angle Three Contact Pins"
+			(at 72.39 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Height" "4.1"
+			(at 88.9 493.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Part Number" "485-5360"
+			(at 88.9 593.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/Adafruit/5360?qs=MyNHzdoqoQJC81080TpnoQ%3D%3D"
+			(at 88.9 693.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Name" "Adafruit"
+			(at 88.9 793.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Part_Number" "5360"
+			(at 88.9 893.98 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "371bf59d-4375-4780-94e8-48e1af8fd0de")
+		)
+		(pin "3"
+			(uuid "98e28b68-cffb-4402-bd96-2f562e4ea39a")
+		)
+		(pin "2"
+			(uuid "3b291663-3f85-47b8-b4ee-ac57f676c896")
+		)
+		(instances
+			(project "V1_Prototype_template_switchbox"
+				(path "/fa4be861-32fe-46a0-bf45-cacc0f983074"
+					(reference "J3(IN)1")
 					(unit 1)
 				)
 			)
