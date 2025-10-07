@@ -713,7 +713,7 @@
 			)
 		)
 		(property "Value" "01x04 magnetic connector"
-			(at 0 0.9 90)
+			(at -0.5 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "1fe69c67-1022-4679-9b9b-f9c231642575")
@@ -999,7 +999,7 @@
 	(footprint "FootprintLibrary:5358_4pin_connector_customfootprint"
 		(layer "F.Cu")
 		(uuid "4f74cc14-0540-4aeb-8236-8c2471c933b0")
-		(at 76 76.75 -90)
+		(at 76 76 -90)
 		(property "Reference" "J3(IN)1"
 			(at 0 -1 270)
 			(unlocked yes)
@@ -1014,7 +1014,7 @@
 			)
 		)
 		(property "Value" "01x04 magnetic connector"
-			(at 0 0.9 270)
+			(at 0 -0.5 270)
 			(unlocked yes)
 			(layer "F.Fab")
 			(uuid "5aaa95ae-9f52-476e-8976-314356395207")
