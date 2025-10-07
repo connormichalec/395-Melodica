@@ -2418,6 +2418,16 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "Note, in some of these schematics sclck and sdio mislabeled, this is correct here\n"
+		(exclude_from_sim no)
+		(at 180.34 80.264 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "234d1f8d-87c4-45a9-9988-5b04ad1ecfe6")
+	)
 	(text "This connector is layed out like a 3x20 servo header. Through hole ferruels or solder cups OR standard servo headers"
 		(exclude_from_sim no)
 		(at 232.918 23.114 0)
@@ -2447,6 +2457,16 @@
 			)
 		)
 		(uuid "b5fbefcd-09cf-4ef3-9ecf-2979c0b0cae2")
+	)
+	(text "Correct order swdio swclk to match misnaming in some other projects\n"
+		(exclude_from_sim no)
+		(at 49.276 60.452 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "ef3145f8-bd14-4763-bf4d-0921c11e9f65")
 	)
 	(text_box "Relay signal down the chain on single uart"
 		(exclude_from_sim no)
@@ -2774,6 +2794,16 @@
 		)
 		(uuid "3d342ce2-6c23-4504-b6d4-e838dbc269e7")
 	)
+	(label "SWDIO(PA13)"
+		(at 57.15 64.77 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "3ec3c791-e28a-49b0-aded-0d3a1eca2d20")
+	)
 	(label "PB3"
 		(at 165.1 58.42 180)
 		(effects
@@ -2954,7 +2984,7 @@
 		)
 		(uuid "619dfd4e-b397-460a-928d-3fa69ffde30c")
 	)
-	(label "SWCLK(PA13)"
+	(label "SWDIO(PA13)"
 		(at 125.73 80.01 0)
 		(effects
 			(font
@@ -3054,7 +3084,7 @@
 		)
 		(uuid "7bfaafb1-5d00-4e69-8edd-d6c27cecae19")
 	)
-	(label "SWDIO(PA14)"
+	(label "SWCLK(PA14)"
 		(at 125.73 82.55 0)
 		(effects
 			(font
@@ -3103,16 +3133,6 @@
 			(justify right bottom)
 		)
 		(uuid "827d3a56-04d2-40b9-932c-7fc816b3499a")
-	)
-	(label "SWCLK"
-		(at 57.15 64.77 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "83cd6e2f-4d8f-4b58-ae0a-17d2c6006084")
 	)
 	(label "PC14"
 		(at 95.25 57.15 180)
@@ -3524,6 +3544,16 @@
 		)
 		(uuid "e5891279-8f72-42c9-b617-58467a1b693e")
 	)
+	(label "SWCLK(PA14)"
+		(at 57.15 67.31 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ea7e489a-89bc-4d7f-9660-3718c27c57c5")
+	)
 	(label "PA5"
 		(at 125.73 59.69 0)
 		(effects
@@ -3553,16 +3583,6 @@
 			(justify left bottom)
 		)
 		(uuid "f0272d41-6546-496d-bf53-9e76bcd06a18")
-	)
-	(label "SWDIO"
-		(at 57.15 67.31 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "f042775e-269f-46ae-9204-73cafd146a1c")
 	)
 	(label "VCC"
 		(at 165.1 63.5 180)
