@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART '858_22_003_10_001101'
+CLASS = IO
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Mill-Max", "858-22-003-10-001101" (!) = "", "8582200310001101", "Other", "575-8582200310001101", "https://www.mouser.co.uk/ProductDetail/Mill-Max/858-22-003-10-001101?qs=BZBei1rCqCCbdg%2F0MUubZQ%3D%3D", "Headers & Wire Housings STD SPRING-LOADED CONNECTOR", "https://datasheet.datasheetarchive.com/originals/distributors/DKDS-31/604628.pdf", "9.6012 mm"
+END_PART
+
+END.

@@ -1,0 +1,9 @@
+Manufacturer=Mill-Max
+PartNumber=858-22-003-10-001101
+PartCategory=Connector
+PackageCategory=Other
+PinCount=3
+Version=1.3
+Released=2021-09-30 12:57:16
+Downloaded=2025-10-02 00:22:28
+3D=Y
