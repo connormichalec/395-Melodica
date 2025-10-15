@@ -4382,6 +4382,16 @@
 		)
 		(uuid "67f59c4c-7268-4c74-9709-f1d62c4d0a84")
 	)
+	(text "connect to audio jack in some manner?\n"
+		(exclude_from_sim no)
+		(at 283.718 79.502 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "8d131400-e840-48d5-ab24-ae731b9b3e6b")
+	)
 	(text "TODO: Switch to all SMD, some are tht for convinience\n"
 		(exclude_from_sim no)
 		(at 214.63 22.86 0)
@@ -4471,10 +4481,10 @@
 		(uuid "3a07ae15-4229-4395-89f8-29aeb02bea72")
 	)
 	(junction
-		(at 201.93 73.66)
+		(at 201.93 68.58)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "72f1dd7b-480d-411b-92a7-0c3287562d48")
+		(uuid "600d9ad8-4294-43eb-9d3e-6f97b7e17c51")
 	)
 	(junction
 		(at 228.6 95.25)
@@ -4483,22 +4493,22 @@
 		(uuid "77b4abaf-330d-45e2-aee8-118b94c4dc96")
 	)
 	(junction
+		(at 260.35 73.66)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "87212a84-53ee-42de-8e60-cc13dc483ea6")
+	)
+	(junction
 		(at 205.74 68.58)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "993f8ff7-2a77-4e0b-ba2a-58504f8c7128")
 	)
 	(junction
-		(at 201.93 68.58)
+		(at 257.81 69.85)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "9a5e756e-99fd-47d2-abae-93416e38be98")
-	)
-	(junction
-		(at 237.49 68.58)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "b0fd1904-515b-4ab9-8408-d32dd1b7da96")
+		(uuid "cba9c311-9cd9-4ffe-b8b2-a942e9b7eb58")
 	)
 	(junction
 		(at 228.6 100.33)
@@ -4517,12 +4527,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "e1f88d48-0e93-4687-9f9c-58c37e4e3d7b")
-	)
-	(junction
-		(at 240.03 73.66)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ec5bca24-80b5-4fa4-bf09-2a3d96468ec0")
 	)
 	(junction
 		(at 69.85 168.91)
@@ -4860,6 +4864,16 @@
 	)
 	(wire
 		(pts
+			(xy 260.35 46.99) (xy 260.35 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "277970c1-d812-462d-a5a5-69a663b60608")
+	)
+	(wire
+		(pts
 			(xy 107.95 31.75) (xy 107.95 36.83)
 		)
 		(stroke
@@ -4940,6 +4954,16 @@
 	)
 	(wire
 		(pts
+			(xy 257.81 40.64) (xy 257.81 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "39f2a2d0-eb85-442c-8211-7685ff50fb85")
+	)
+	(wire
+		(pts
 			(xy 227.33 73.66) (xy 231.14 73.66)
 		)
 		(stroke
@@ -4990,7 +5014,7 @@
 	)
 	(wire
 		(pts
-			(xy 255.27 69.85) (xy 261.62 69.85)
+			(xy 255.27 69.85) (xy 257.81 69.85)
 		)
 		(stroke
 			(width 0)
@@ -5010,16 +5034,6 @@
 	)
 	(wire
 		(pts
-			(xy 240.03 73.66) (xy 247.65 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "52f4aed6-a4c4-4f4f-a466-645879b6175d")
-	)
-	(wire
-		(pts
 			(xy 257.81 92.71) (xy 264.16 92.71)
 		)
 		(stroke
@@ -5027,6 +5041,16 @@
 			(type default)
 		)
 		(uuid "59e852e3-c069-4983-b6d7-171c2cb12983")
+	)
+	(wire
+		(pts
+			(xy 260.35 73.66) (xy 261.62 73.66)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5c7f22d2-2353-4f0d-8fff-32a69f0e4359")
 	)
 	(wire
 		(pts
@@ -5047,6 +5071,16 @@
 			(type default)
 		)
 		(uuid "5f516bd3-fdac-4ea2-bbd5-efd8af8e36ef")
+	)
+	(wire
+		(pts
+			(xy 201.93 43.18) (xy 201.93 68.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6569c4fd-e84c-4519-bdd1-368389098b9b")
 	)
 	(wire
 		(pts
@@ -5080,13 +5114,13 @@
 	)
 	(wire
 		(pts
-			(xy 201.93 43.18) (xy 201.93 68.58)
+			(xy 257.81 69.85) (xy 261.62 69.85)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "69dc65cc-012e-440b-a7fc-c150627b5798")
+		(uuid "6b79f898-da4e-44a9-9bb4-67c3feeaf966")
 	)
 	(wire
 		(pts
@@ -5110,7 +5144,7 @@
 	)
 	(wire
 		(pts
-			(xy 255.27 73.66) (xy 261.62 73.66)
+			(xy 255.27 73.66) (xy 260.35 73.66)
 		)
 		(stroke
 			(width 0)
@@ -5210,16 +5244,6 @@
 	)
 	(wire
 		(pts
-			(xy 237.49 35.56) (xy 237.49 68.58)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9ef8c179-bb1b-4338-97a7-3d5b7e563416")
-	)
-	(wire
-		(pts
 			(xy 227.33 78.74) (xy 228.6 78.74)
 		)
 		(stroke
@@ -5227,16 +5251,6 @@
 			(type default)
 		)
 		(uuid "9fcd33f1-e7c6-48d9-8587-738be63d0f15")
-	)
-	(wire
-		(pts
-			(xy 237.49 68.58) (xy 241.3 68.58)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a037387f-6bc1-4043-8e50-f9f119cbf092")
 	)
 	(wire
 		(pts
@@ -5280,23 +5294,13 @@
 	)
 	(wire
 		(pts
-			(xy 231.14 73.66) (xy 240.03 73.66)
+			(xy 231.14 73.66) (xy 247.65 73.66)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "ac3a7180-8c03-4f80-b2a5-ef4567dc80cd")
-	)
-	(wire
-		(pts
-			(xy 201.93 68.58) (xy 201.93 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ad7dc423-a663-43f3-95b3-5740876424b7")
 	)
 	(wire
 		(pts
@@ -5317,6 +5321,16 @@
 			(type default)
 		)
 		(uuid "b3533277-b6c1-4b78-8f4b-4208fb819ae1")
+	)
+	(wire
+		(pts
+			(xy 201.93 68.58) (xy 201.93 100.33)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b3caeec1-f522-491d-8f13-84ccc2734aab")
 	)
 	(wire
 		(pts
@@ -5360,26 +5374,6 @@
 	)
 	(wire
 		(pts
-			(xy 201.93 73.66) (xy 201.93 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c7b1daed-62ef-4448-ae59-126c42158a5a")
-	)
-	(wire
-		(pts
-			(xy 240.03 41.91) (xy 240.03 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ca4e3728-41b6-42c1-b7f8-59bb1516c419")
-	)
-	(wire
-		(pts
 			(xy 217.17 52.07) (xy 217.17 50.8)
 		)
 		(stroke
@@ -5410,7 +5404,7 @@
 	)
 	(wire
 		(pts
-			(xy 229.87 68.58) (xy 237.49 68.58)
+			(xy 229.87 68.58) (xy 241.3 68.58)
 		)
 		(stroke
 			(width 0)
@@ -7594,7 +7588,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x01")
-		(at 240.03 36.83 90)
+		(at 260.35 41.91 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7602,7 +7596,7 @@
 		(dnp no)
 		(uuid "6bfd955d-f3a3-428f-b51e-d6c7cba92aeb")
 		(property "Reference" "Debug4"
-			(at 246.38 36.83 0)
+			(at 266.7 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7610,7 +7604,7 @@
 			)
 		)
 		(property "Value" "Conn_01x01"
-			(at 243.84 36.83 0)
+			(at 264.16 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7618,7 +7612,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Pad_1.5x1.5mm"
-			(at 240.03 36.83 0)
+			(at 260.35 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7627,7 +7621,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 240.03 36.83 0)
+			(at 260.35 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7636,7 +7630,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 240.03 36.83 0)
+			(at 260.35 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7792,7 +7786,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 198.12 73.66 90)
+		(at 198.12 68.58 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7800,7 +7794,7 @@
 		(dnp no)
 		(uuid "6f99e356-3f2e-4565-932a-d41a000fbd50")
 		(property "Reference" "Cinput1"
-			(at 193.294 77.47 90)
+			(at 193.294 72.39 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7808,7 +7802,7 @@
 			)
 		)
 		(property "Value" "0.47uf"
-			(at 194.564 75.946 90)
+			(at 194.564 70.866 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7816,7 +7810,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
-			(at 201.93 72.6948 0)
+			(at 201.93 67.6148 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7825,7 +7819,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 198.12 73.66 0)
+			(at 198.12 68.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7834,7 +7828,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 198.12 73.66 0)
+			(at 198.12 68.58 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7849,7 +7843,7 @@
 			(uuid "27a3e296-b977-44d0-9a45-da69b7587c20")
 		)
 		(instances
-			(project ""
+			(project "Syntheis_and_aeffects_module"
 				(path "/edf9ac54-8c23-46ef-867e-bfab8959c07a"
 					(reference "Cinput1")
 					(unit 1)
@@ -8277,7 +8271,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 198.12 68.58 90)
+		(at 198.12 73.66 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -8285,7 +8279,7 @@
 		(dnp no)
 		(uuid "9e695dbc-f678-4171-b2cb-797bb680c87c")
 		(property "Reference" "Cinput2"
-			(at 194.31 64.008 90)
+			(at 194.31 69.088 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8293,7 +8287,7 @@
 			)
 		)
 		(property "Value" "0.47uf"
-			(at 194.564 66.04 90)
+			(at 194.564 71.12 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8301,7 +8295,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric_Pad1.08x0.95mm_HandSolder"
-			(at 201.93 67.6148 0)
+			(at 201.93 72.6948 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8310,7 +8304,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 198.12 68.58 0)
+			(at 198.12 73.66 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8319,7 +8313,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 198.12 68.58 0)
+			(at 198.12 73.66 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9054,7 +9048,7 @@
 	)
 	(symbol
 		(lib_id "Connector_Generic:Conn_01x01")
-		(at 237.49 30.48 90)
+		(at 257.81 35.56 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -9062,7 +9056,7 @@
 		(dnp no)
 		(uuid "f18a1be6-6488-416f-87d6-4279f0bcdf36")
 		(property "Reference" "Debug3"
-			(at 243.84 30.48 0)
+			(at 264.16 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9070,7 +9064,7 @@
 			)
 		)
 		(property "Value" "Conn_01x01"
-			(at 241.3 30.48 0)
+			(at 261.62 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9078,7 +9072,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Pad_1.5x1.5mm"
-			(at 237.49 30.48 0)
+			(at 257.81 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9087,7 +9081,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 237.49 30.48 0)
+			(at 257.81 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9096,7 +9090,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 237.49 30.48 0)
+			(at 257.81 35.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
