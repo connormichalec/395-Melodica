@@ -2934,7 +2934,7 @@
 		)
 		(uuid "56ba06df-a233-4985-bbb5-7dae2a041193")
 	)
-	(label "UART_TX(PA9)"
+	(label "USART_TX(PA9)"
 		(at 72.39 104.14 180)
 		(effects
 			(font
@@ -2954,7 +2954,7 @@
 		)
 		(uuid "5cefdfbb-249e-44cc-ad8b-2aa6d779476c")
 	)
-	(label "UART_RX(PA10)"
+	(label "USART_RX(PA10)"
 		(at 82.55 91.44 0)
 		(effects
 			(font
@@ -3174,7 +3174,7 @@
 		)
 		(uuid "86033b79-3d40-40e9-b781-814e0b181335")
 	)
-	(label "UART_TX(PA9)"
+	(label "USART_TX(PA9)"
 		(at 125.73 69.85 0)
 		(effects
 			(font
@@ -3324,7 +3324,7 @@
 		)
 		(uuid "9d80ed73-7024-46be-9195-73f9db08421f")
 	)
-	(label "UART_RX(PA10)"
+	(label "USART_RX(PA10)"
 		(at 72.39 106.68 180)
 		(effects
 			(font
@@ -3334,7 +3334,7 @@
 		)
 		(uuid "9df3a9b5-3217-432b-aafa-c724fb2b22dc")
 	)
-	(label "UART_RX(PA10)"
+	(label "USART_RX(PA10)"
 		(at 125.73 72.39 0)
 		(effects
 			(font
@@ -3624,7 +3624,7 @@
 		)
 		(uuid "fe2560ae-70bf-49dd-ade9-6ebe54e284ab")
 	)
-	(label "UART_TX(PA9)"
+	(label "USART_TX(PA9)"
 		(at 82.55 93.98 0)
 		(effects
 			(font
