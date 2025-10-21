@@ -4077,179 +4077,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "power:GNDPWR"
-			(power)
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "#PWR"
-				(at 0 -5.08 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Value" "GNDPWR"
-				(at 0 -3.302 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 -1.27 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 -1.27 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Power symbol creates a global label with name \"GNDPWR\" , global ground"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "global ground"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "GNDPWR_0_1"
-				(polyline
-					(pts
-						(xy -1.016 -1.27) (xy -1.27 -2.032) (xy -1.27 -2.032)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -0.508 -1.27) (xy -0.762 -2.032) (xy -0.762 -2.032)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -1.27) (xy 0 0)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0 -1.27) (xy -0.254 -2.032) (xy -0.254 -2.032)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.508 -1.27) (xy 0.254 -2.032) (xy 0.254 -2.032)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.016 -1.27) (xy -1.016 -1.27) (xy -1.016 -1.27)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.016 -1.27) (xy 0.762 -2.032) (xy 0.762 -2.032) (xy 0.762 -2.032)
-					)
-					(stroke
-						(width 0.2032)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "GNDPWR_1_1"
-				(pin power_in line
-					(at 0 0 270)
-					(length 0)
-					(name "~"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "power:PWR_FLAG"
 			(power)
 			(pin_numbers
@@ -4553,10 +4380,6 @@
 		(uuid "2bc786d5-0728-4979-9197-ebb7c1ff0a65")
 	)
 	(no_connect
-		(at 125.73 118.11)
-		(uuid "2fb414ae-9fa0-45e0-bf26-a6016728de67")
-	)
-	(no_connect
 		(at 80.01 130.81)
 		(uuid "306380af-b26c-4987-8205-49ffe9d90136")
 	)
@@ -4567,6 +4390,10 @@
 	(no_connect
 		(at 80.01 80.01)
 		(uuid "3133feba-27fc-4d13-8d1f-f13127fdc525")
+	)
+	(no_connect
+		(at 125.73 113.03)
+		(uuid "347c2d98-a09a-4fe4-8301-9e73a0fff532")
 	)
 	(no_connect
 		(at 125.73 100.33)
@@ -4587,6 +4414,10 @@
 	(no_connect
 		(at 80.01 102.87)
 		(uuid "5b25ba51-8a0f-48c0-aa44-69bdbb53975f")
+	)
+	(no_connect
+		(at 125.73 158.75)
+		(uuid "5c77bec9-b7f8-44ac-9ca1-8c625ece59b9")
 	)
 	(no_connect
 		(at 80.01 69.85)
@@ -4619,6 +4450,10 @@
 	(no_connect
 		(at 80.01 151.13)
 		(uuid "7e78e3e1-5676-4877-af60-44d7f4ef7cac")
+	)
+	(no_connect
+		(at 125.73 161.29)
+		(uuid "8133ed73-ab74-45b5-b47d-7e28db2d8a9c")
 	)
 	(no_connect
 		(at 125.73 120.65)
@@ -5388,26 +5223,6 @@
 		)
 		(uuid "0b364885-cbe3-4e2b-8e88-299797081c3f")
 	)
-	(label "USART1_COMM_INPUT_RX"
-		(at 125.73 115.57 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "12407b25-39b4-4ea1-a3e0-24892f176ef6")
-	)
-	(label "USART1_COMM_INPUT_TX"
-		(at 125.73 113.03 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "13be07d5-6493-45ae-8645-a5368c424894")
-	)
 	(label "VCC"
 		(at 207.01 142.24 180)
 		(effects
@@ -5568,7 +5383,7 @@
 		)
 		(uuid "49ba5339-0281-46ad-95a5-fdc916a6774a")
 	)
-	(label "USART1_COMM_INPUT_RX"
+	(label "USART3_COMM_INPUT_RX"
 		(at 207.01 147.32 180)
 		(effects
 			(font
@@ -5798,16 +5613,6 @@
 		)
 		(uuid "aad7b2fb-fead-494d-a224-7f1e0a400825")
 	)
-	(label "USART3_MIDI_RX"
-		(at 125.73 161.29 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "b2f8bc5c-39c6-4ef3-bc2f-36b67e427be8")
-	)
 	(label "DAC_OUT1"
 		(at 125.73 57.15 0)
 		(effects
@@ -5878,6 +5683,16 @@
 		)
 		(uuid "d0fdc41d-7a9d-44ef-b75a-cf58a7cdf862")
 	)
+	(label "USART3_COMM_INPUT_RX"
+		(at 125.73 118.11 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d779d1aa-b0cb-437c-9fbe-4038e8a8b9b3")
+	)
 	(label "AudioJack_T"
 		(at 262.89 69.85 0)
 		(effects
@@ -5897,6 +5712,16 @@
 			(justify left bottom)
 		)
 		(uuid "dafefed3-de92-4116-818e-0bb3cd30ada9")
+	)
+	(label "USART3_COMM_INPUT_TX"
+		(at 125.73 115.57 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "dd1a3acb-9550-4157-bbfd-ef4937b72820")
 	)
 	(label "VCC"
 		(at 97.79 36.83 90)
@@ -5958,7 +5783,7 @@
 		)
 		(uuid "eafd198c-23fe-4fe2-89e6-403e357cf939")
 	)
-	(label "USART1_COMM_INPUT_TX"
+	(label "USART3_COMM_INPUT_TX"
 		(at 207.01 144.78 180)
 		(effects
 			(font
@@ -5997,16 +5822,6 @@
 			(justify right bottom)
 		)
 		(uuid "f4de1ff2-bcd0-4a67-b455-98d74766b8e5")
-	)
-	(label "USART3_MIDI_TX"
-		(at 125.73 158.75 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "f4f868f4-d352-4155-9c57-ccc6d226b962")
 	)
 	(label "GND"
 		(at 95.25 24.13 90)
@@ -7286,73 +7101,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GNDPWR")
-		(at 140.97 44.45 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "62008620-e018-4e6d-a713-1a37b70c819e")
-		(property "Reference" "#PWR01"
-			(at 146.05 44.45 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GNDPWR"
-			(at 144.78 44.5769 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" ""
-			(at 142.24 44.45 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 142.24 44.45 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GNDPWR\" , global ground"
-			(at 140.97 44.45 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "4f4b534f-a0f0-48ab-8e76-6fb0271ad7f6")
-		)
-		(instances
-			(project ""
-				(path "/edf9ac54-8c23-46ef-867e-bfab8959c07a"
-					(reference "#PWR01")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C")
 		(at 228.6 100.33 0)
 		(unit 1)
@@ -7898,6 +7646,73 @@
 			(project "Syntheis_and_aeffects_module"
 				(path "/edf9ac54-8c23-46ef-867e-bfab8959c07a"
 					(reference "C7(VCAP)2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 140.97 44.45 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "97f48658-7d0f-4eea-86c5-009d919dc43b")
+		(property "Reference" "#FLG02"
+			(at 142.875 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 144.78 44.4499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 140.97 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 140.97 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 140.97 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6d3b241e-07b3-4f77-bd39-011760dd88df")
+		)
+		(instances
+			(project "Syntheis_and_aeffects_module"
+				(path "/edf9ac54-8c23-46ef-867e-bfab8959c07a"
+					(reference "#FLG02")
 					(unit 1)
 				)
 			)

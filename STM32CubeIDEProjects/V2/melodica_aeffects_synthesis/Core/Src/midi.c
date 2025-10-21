@@ -1,11 +1,9 @@
 #include "midi.h"
 #include <math.h>
-#include "looper.h"
 #include "signal.h"
 
 extern UART_HandleTypeDef hlpuart1;
 extern UART_HandleTypeDef huart1;
-extern Looper looper;
 
 uint8_t note_counters[128];
 
@@ -30,68 +28,6 @@ void MIDI_SendByte(uint8_t byte) {
     HAL_UART_Transmit(&huart1, &byte, 1, HAL_MAX_DELAY);
 }
 
-void record_note_off_all() {
-	// For the currently recording channel, find all not-disabled notes and disable them
-
-	// ALGORITHM
-	//	- Start at starting index of current active channel
-	//	- Loop until max timestamp is found
-	//	- How to keep track of if a note has been turned off?
-	//		- Have a byte for each note. Use counters for enabled notes
-	//		- Note on adds to the counter, note off removes
-	//		- For any counter that isn't 0, append a note off
-
-	uint8_t notes[128];
-	for (int i = 0; i < 128; i++) notes[i] = 0;
-
-	uint16_t idx = looper.start_on_indices[looper.active_channel];
-	uint32_t timestamp = extract_timestamp(looper.ons[idx]);
-	while (timestamp != MAX_TIMESTAMP) {
-		uint8_t note = extract_byte(looper.ons[idx]);
-		notes[note]++;
-
-		idx++;
-		timestamp = extract_timestamp(looper.ons[idx]);
-	}
-
-	idx = looper.start_off_indices[looper.active_channel];
-	timestamp = extract_timestamp(looper.offs[idx]);
-	while (timestamp != MAX_TIMESTAMP) {
-		uint8_t note = extract_byte(looper.offs[idx]);
-		notes[note]--;
-
-		idx++;
-		timestamp = extract_timestamp(looper.offs[idx]);
-	}
-
-	for (int i = 0; i < 128; i++) {
-		if (notes[i] != 0) {
-			looper.offs[looper.write_off_idx] = timestamped_byte(i, looper.tick - 1);
-			looper.write_off_idx++;
-		}
-	}
-}
-
-NoteListener new_note(uint8_t key, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin) {
-	NoteListener output;
-	output.key = key;
-	output.GPIOx = GPIOx;
-	output.GPIO_Pin = GPIO_Pin;
-	output.state = 0;
-	return output;
-}
-
-void listen(NoteListener * note) {
-	if (!(note->state) && HAL_GPIO_ReadPin(note->GPIOx, note->GPIO_Pin)) {
-	  note_on(0, note->key, 60);
-	  note->state = 1;
-	}
-
-	if (note->state && !HAL_GPIO_ReadPin(note->GPIOx, note->GPIO_Pin)) {
-	  note_off(0, note->key, 0);
-	  note->state = 0;
-	}
-}
 
 /////// RX STUFF
 uint8_t midi_buffer;	// Buffer for incoming midi data
@@ -168,36 +104,20 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 		case 0x80: // Note Off
 			if (channel != 0) break;
 			event_callback(midiData2, 0, channel);
-		    if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT)) {
-				looper.offs[looper.write_off_idx] = timestamped_byte(midiData2, looper.tick);
-				looper.write_off_idx += 1;
-		    }
+
 			break;
 
 		case 0x90: // Note On
 			if (channel != 0) break;
 			event_callback(midiData2, 1, channel);
-			if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT)) {
-				looper.ons[looper.write_on_idx] = timestamped_byte(midiData2, looper.tick);
-				looper.write_on_idx += 1;
-			}
 			break;
 
 		case 0xD0: // Channel Pressure
 			if (channel != 0) break;
 			event_callback(midiData1, 2, channel);
-			if ((looper.state == LOOPER_RECORDING_INIT || looper.state == LOOPER_RECORDING_REPEAT)) {
-				looper.channel_pressures[looper.write_pressure_idx] = timestamped_byte(midiData1, looper.tick);
-				looper.write_pressure_idx += 1;
-		    }
 			break;
 
 		case 0xF0:	// Looper button press
-			if (channel == 8) {
-				looper_press_button();
-			} else {
-				LOOPER_INIT();
-			}
 			break;
 
 		default:
