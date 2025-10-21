@@ -17,7 +17,7 @@
  */
 
 extern UART_HandleTypeDef huart4;
-extern UART_HandleTypeDef hlpuart1;
+extern UART_HandleTypeDef huart2;
 
 TransposeState transpose_state;
 StopsState stops_state;
@@ -42,34 +42,36 @@ uint8_t note_counters[128];
 
 uint8_t switchbox_byte;
 
-ModuleStream *in_stream;		// Pointer to first modifier
+ModuleStream *streams[16];		// Stores the order of the streams
 ModuleStream out_stream;
 ModuleStream transpose_stream;
+void noTick(uint32_t timestamp) {};
 void Module_Init() {
 	for (uint8_t i = 0; i <= 127; i++) note_counters[i] = 0;
 	msg_idx = 0;
 	last_rx_timestamp = 0;
 
-	HAL_UART_Receive_IT(&hlpuart1, &switchbox_byte, 1);
+	HAL_UART_Receive_IT(&huart2, &switchbox_byte, 1);
 
 	// Initializing module states
 	pressure_toggle_state.pressure_enabled = 1;
 
 	// Setting up module streams
 
-	in_stream = &out_stream;
+	streams[0] = &out_stream;
+	for (uint8_t i = 1; i < 16; i++) streams[i] = NULL;
 
 	out_stream.data_idx = 0;
-	out_stream.output = NULL;
 	out_stream.update_noteon = &out_stream_update_noteon;
 	out_stream.update_noteoff = &out_stream_update_noteoff;
 	out_stream.update_channelpressure = &out_stream_update_channelpressure;
+	out_stream.update_tick = &noTick;
 
 	transpose_stream.data_idx = 0;
-	transpose_stream.output = NULL;
 	transpose_stream.update_noteon = &transpose_update_noteon;
 	transpose_stream.update_noteoff = &transpose_update_noteoff;
 	transpose_stream.update_channelpressure = &transpose_update_channelpressure;
+	transpose_stream.update_tick = noTick;
 
 }
 
@@ -97,20 +99,29 @@ void Module_ProcessByte() {
 	msg_buf[msg_idx] = byte;
 	msg_idx++;
 
-	// Wait until enough bytes have been read (device ID + redundancy + length + data)
-	if (msg_idx >= 3 + msg_buf[2]) {
-		if (msg_buf[0] == msg_buf[1]) {	// Redundancy check
-			switch (msg_buf[0]) {
-				case 0x00:	// Transpose IO
-					handle_transpose_msg(msg_buf + 3, msg_buf[2]);
-					break;
-				case 0x01:  // Stops IO
-					handle_stops_msg(msg_buf + 3, msg_buf[2]);
-					break;
-				case 0x02: 	// Looper IO
-					handle_looper_msg(msg_buf + 3, msg_buf[2]);
 
+	uint8_t length = msg_buf[3];
+	// Check if this is a connectivity message
+	if (msg_buf[0] == 0) {
+		if (msg_idx >= 4) {
+			if (msg_buf[0] == msg_buf[1]) {	// Redundancy check
+				handle_connectivity_msg(msg_buf[2], msg_buf[3]);
 			}
+		}
+	}
+
+	// Wait until enough bytes have been read (device ID + redundancy + length + data)
+	if (msg_idx >= 3 + length) {
+		switch (msg_buf[0]) {
+			case 0x00:	// Transpose IO
+				handle_transpose_msg(msg_buf + 3, msg_buf[2]);
+				break;
+			case 0x01:  // Stops IO
+				handle_stops_msg(msg_buf + 3, msg_buf[2]);
+				break;
+			case 0x02: 	// Looper IO
+				handle_looper_msg(msg_buf + 3, msg_buf[2]);
+
 		}
 
 		// Reset reader
@@ -118,7 +129,7 @@ void Module_ProcessByte() {
 	}
 
 	// Re-enable interrupt
-	HAL_UART_Receive_IT(&hlpuart1, &switchbox_byte, 1);
+	HAL_UART_Receive_IT(&huart2, &switchbox_byte, 1);
 }
 
 void append_byte(ModuleStream* module, uint8_t byte) {
@@ -127,11 +138,11 @@ void append_byte(ModuleStream* module, uint8_t byte) {
 }
 
 // Simulates in software passing the data between different modules
-// Starts at in_stream and follows the chain to out_stream
 void MIDI_RunModules() {
-	ModuleStream *current_stream = in_stream;
 
-	while (current_stream != NULL) {
+	for (uint8_t i = 0; i < 16; i++) {				// Looping through the module streams array
+		ModuleStream* current_stream = streams[i];
+
 		// Loop through all data in the buffer
 		uint8_t idx = 0;
 		while (idx < current_stream->data_idx) {
@@ -145,7 +156,7 @@ void MIDI_RunModules() {
 					channel = midiStatus & 0x0F;
 					key = current_stream->data[idx + 1];
 					velocity = current_stream->data[idx + 2];
-					current_stream->update_noteoff(current_stream->output, channel, key, velocity);
+					current_stream->update_noteoff(streams[i + 1], channel, key, velocity);
 					idx += 3;
 					break;
 
@@ -153,14 +164,14 @@ void MIDI_RunModules() {
 					channel = midiStatus & 0x0F;
 					key = current_stream->data[idx + 1];
 					velocity = current_stream->data[idx + 2];
-					current_stream->update_noteon(current_stream->output, channel, key, velocity);
+					current_stream->update_noteon(streams[i + 1], channel, key, velocity);
 					idx += 3;
 					break;
 
 				case 0xD0: // Channel Pressure
 					channel = midiStatus & 0x0F;
 					pressure = current_stream->data[idx + 1];
-					current_stream->update_channelpressure(current_stream->output, channel, pressure);
+					current_stream->update_channelpressure(streams[i + 1], channel, pressure);
 					idx += 2;
 					break;
 
@@ -172,7 +183,8 @@ void MIDI_RunModules() {
 
 		}
 
-		current_stream = current_stream->output;	// Move to next stream
+		// If out stream is found, stop
+		if (current_stream == &out_stream) break;
 	}
 }
 
@@ -206,7 +218,7 @@ void transpose_update_noteoff(ModuleStream* target, uint8_t channel, uint8_t key
 	append_byte(target, velocity);						// Velocity
 }
 
-void transpose_update_channelpresure(ModuleStream* target, uint8_t channel, uint8_t pressure) {
+void transpose_update_channelpressure(ModuleStream* target, uint8_t channel, uint8_t pressure) {
 	append_byte(target, 0xD0 | channel);
 	append_byte(target, pressure);
 }
@@ -236,6 +248,23 @@ void pressure_toggle_update_channelpressure(ModuleStream* target, uint8_t channe
 
 }
 
+void handle_connectivity_msg(uint8_t device_id, uint8_t idx) {
+	// TODO: Implement this
+	// What's the plan here?
+	//	Need some kind of way to map device id to stream objects
+	//	Set the appropriate index in the stream array to the corresponding stream object
+
+	switch (device_id) {
+		case MODULE_TRANSPOSE_ID:
+			streams[idx] = &transpose_stream;
+			break;
+
+		case MODULE_STOPS_ID:
+			//streams[idx] = &stops_stream;
+	}
+}
+
+//TODO: Shift all currently played notes
 void handle_transpose_msg(uint8_t* data, uint8_t len) {
 	uint8_t button = data[1];
 

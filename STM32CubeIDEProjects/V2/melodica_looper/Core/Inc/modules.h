@@ -12,6 +12,13 @@
 
 extern UART_HandleTypeDef hlpuart1;
 
+// Module ID definitions
+#define MODULE_CONNECTIVITY_MSG 0
+#define MODULE_TRANSPOSE_ID 1
+#define MODULE_STOPS_ID 1
+#define MODULE_LOOPER_ID 1
+#define MODULE_ARP_ID 1
+
 // Configurable parameters
 #define MODULE_UART hlpuart1
 
@@ -30,13 +37,13 @@ typedef struct ModuleStream ModuleStream;
 struct ModuleStream {
 	uint8_t data[512];
 	uint16_t data_idx;
-	ModuleStream *output;
 	void (*update_noteoff)(ModuleStream*, uint8_t, uint8_t, uint8_t);	// Channel, key, velocity
 	void (*update_noteon)(ModuleStream*, uint8_t, uint8_t, uint8_t);	// Channel, key, velocity
 	void (*update_channelpressure)(ModuleStream*, uint8_t, uint8_t);	// Channel, pressure
+	void (*update_tick)(uint32_t);	// Timestamp
 };
 
-extern ModuleStream* in_stream;
+extern ModuleStream* streams[16];
 extern ModuleStream out_stream;
 extern ModuleStream transpose_stream;
 
@@ -63,11 +70,13 @@ typedef struct PressureToggleState{
 
 extern PressureToggleState pressure_toggle_state;
 
+void Module_Init();
 void send_msg(uint8_t device, uint8_t *data, uint8_t len);
 
 void Module_ProcessByte();
 void append_byte(ModuleStream* module, uint8_t byte);
 
+void handle_connectivity_msg(uint8_t device_id, uint8_t idx);
 void handle_looper_msg(uint8_t* data, uint8_t len);
 void handle_transpose_msg(uint8_t* data, uint8_t len);
 void handle_stops_msg(uint8_t* data, uint8_t len);

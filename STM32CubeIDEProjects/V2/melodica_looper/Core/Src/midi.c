@@ -59,7 +59,7 @@ MIDI_State midiState = MIDI_WAITING_FOR_STATUS;
 uint8_t midiStatus = 0;
 uint8_t midiData1 = 0;
 void MIDI_ProcessByte() {
-	append_byte(in_stream, midi_buffer);
+	append_byte(streams[0], midi_buffer);
 
 	/*uint8_t byte = midi_buffer;
 	if (byte & 0x80) {		// Status byte received
