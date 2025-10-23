@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "audio.h"
 #include "midi.h"
+#include "controlstate.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -124,6 +125,7 @@ int main(void)
 
 
   audio_signal_init(&htim8, &hdac1);
+  initialize_controlstate();
   /* USER CODE END 2 */
 
   /* Infinite loop */

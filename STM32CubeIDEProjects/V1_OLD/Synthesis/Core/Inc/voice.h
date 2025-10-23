@@ -12,12 +12,12 @@
 #include "oscillator.h"
 #include "filter.h"
 
-#define VOICE_NUM_OSC 3
-#define NUM_VOICES 12
+#define VOICE_NUM_OSC_MAX 3
+#define NUM_VOICES_MAX 12
 
 // TODO: Implement function pointres in struct for more streamlined interfacing (liek a class)
 typedef struct {
-	Oscillator * osc[VOICE_NUM_OSC];
+	Oscillator * osc[VOICE_NUM_OSC_MAX];
 	int num_osc;
 	ADSR * adsr;
 	int enabled;

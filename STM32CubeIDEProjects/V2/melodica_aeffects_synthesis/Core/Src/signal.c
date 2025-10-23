@@ -7,6 +7,7 @@
 
 #include "signal.h"
 #include "oscillator.h"
+#include "controlstate.h"
 #include "midi.h"
 #include <math.h>
 #include "filter.h"
@@ -68,10 +69,13 @@ void initialize_signal(int sample_rate_) {
 
 void keyboard_update(uint8_t val, uint8_t state, uint8_t channel) {
 	if(state == 1) {
+
+		Synthesis_profile* profile = get_controlstate_active_profile();
+
 		// Key turned on, assign a voice to that key.
-		int i = enable_voice(SAW, val, 0.2f);  							// apply a slight detune to voice
-		add_voice_filter(get_voice_from_idx(i),LOWPASS, 0.0f, 0.0f);	// Add a lowpass filter by default
-		add_voice_ADSR(get_voice_from_idx(i), 0.0f, 1.0f, 0.0f, 1.0f, 0.03f);					// Add adsr with small release
+		int i = enable_voice(profile->oscillatorType, val, profile->detune);
+		add_voice_filter(get_voice_from_idx(i),profile->filter1_type, profile->filter1_cutoff, profile->filter1_resonance);
+		add_voice_ADSR(get_voice_from_idx(i), profile->adsr_attack_factor, profile->adsr_attack_level, profile->adsr_decay_factor, profile->adsr_sustain_level, profile->adsr_release_factor);
 		set_voice_channel(get_voice_from_idx(i), channel);
 	}
 	else if (state == 0) {
@@ -122,7 +126,7 @@ float signal_next_sample() {
 			float voice_val = 0.0f;
 
 			// Get all oscillators of that voice:
-			for(int i = 0; i<v->num_osc; i++) {
+			for(int i = 0; i<v->voice_num_oscillators; i++) {
 
 				Oscillator* o = v->osc[i];
 

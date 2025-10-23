@@ -13,11 +13,11 @@
 #include "signal.h"
 
 // Number of voices
-Voice voices[NUM_VOICES];
+Voice voices[NUM_VOICES_MAX];
 int num_voices_enabled;
 
 int get_num_voices() {
-	return NUM_VOICES;
+	return NUM_VOICES_MAX;
 }
 
 int num_enabled_voices() {
@@ -25,7 +25,7 @@ int num_enabled_voices() {
 }
 
 int getFirstDisabledVoiceIdx() {
-	for(int x = 0; x<NUM_VOICES; x++) {
+	for(int x = 0; x<NUM_VOICES_MAX; x++) {
 		if(voices[x].enabled==0) {
 			return x;
 		}
@@ -37,8 +37,8 @@ void init_voices() {
 	init_oscillators();
 	init_adsrs();
 
-	for(int i = 0; i<NUM_VOICES; i++) {
-		for(int x = 0; x<VOICE_NUM_OSC; x++) {
+	for(int i = 0; i<NUM_VOICES_MAX; i++) {
+		for(int x = 0; x<VOICE_NUM_OSC_MAX; x++) {
 			voices[i].osc[x] = NULL;
 		}
 		voices[i].enabled = 0;
@@ -54,7 +54,7 @@ void init_voices() {
 
 void tick_voices() {
 	// Tick all voices
-	for(int i = 0; i < NUM_VOICES; i++) {
+	for(int i = 0; i < NUM_VOICES_MAX; i++) {
 		if(voices[i].enabled) {
 			tick_voice(&voices[i]);
 		}
@@ -144,7 +144,7 @@ void construct_voice(oscillatorTypes type, Voice * v, float frequency, float det
 	v->base_freq = frequency;
 
 
-	for(int i =0; i<VOICE_NUM_OSC; i++) {
+	for(int i =0; i<VOICE_NUM_OSC_MAX; i++) {
 		v->osc[i] = get_oscillator(enable_oscillator(type, frequency));
 		v->num_osc++;
 	}
@@ -160,7 +160,7 @@ int enable_voice(oscillatorTypes type, int note, float detune) {
 	if(idx == -1) return -1;
 
 	// Make sure there are enough oscillators available for this Voice to be enabled:
-	if(VOICE_NUM_OSC > get_num_oscillators()-num_enabled_oscillators()) {
+	if(VOICE_NUM_OSC_MAX > get_num_oscillators()-num_enabled_oscillators()) {
 		return -1;
 	}
 
@@ -227,10 +227,10 @@ void set_voice_detune(Voice * voice, float detune) {
 	voice->detune = detune;
 	float frequency = voice->base_freq;
 	// Update oscillator frequencies accordingly:
-	for(int i =0; i<VOICE_NUM_OSC; i++) {
+	for(int i =0; i<VOICE_NUM_OSC_MAX; i++) {
 		// Alternate whether detune adds or subtracts to frequency based on if i is odd or even (creates even spread):
 		// detune/VOICE_NUM_OSC so that there is the same amount of detune regardless of the amount of oscillators.
-		voice->osc[i]->frequency = i%2==0 ? (frequency + (float)i * (detune*detune_scale)/VOICE_NUM_OSC) : (frequency - (float)i * (detune*detune_scale)/VOICE_NUM_OSC);
+		voice->osc[i]->frequency = i%2==0 ? (frequency + (float)i * (detune*detune_scale)/VOICE_NUM_OSC_MAX) : (frequency - (float)i * (detune*detune_scale)/VOICE_NUM_OSC_MAX);
 
 	}
 }
@@ -248,7 +248,7 @@ Voice * get_voice_from_note(int note) {
 	if(note==-1)
 		return NULL;
 
-	for(int i = 0; i<NUM_VOICES; i++) {
+	for(int i = 0; i<NUM_VOICES_MAX; i++) {
 		if(voices[i].NOTE==note) {
 			return(&voices[i]);
 		}

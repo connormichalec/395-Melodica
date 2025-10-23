@@ -50,7 +50,7 @@ float lpf_process(Filter *filt, float input) {
     return filt->buf0;
 }
 
-//
+
 void lpf_set_cutoff(Filter *filt, float cutoff) {
     // Clamp and recalculate feedback
 	if (cutoff < 0.0f) cutoff = 0.0f;

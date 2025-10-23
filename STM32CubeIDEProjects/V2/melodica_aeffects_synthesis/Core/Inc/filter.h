@@ -31,9 +31,14 @@ void lpf_set_cutoff(Filter *filt, float cutoff);
 void lpf_set_resonance(Filter *filt, float resonance);
 
 
-
+/**
+ * Set a given filters cutoff
+ */
 void set_filter_cutoff(Filter * filter, float cutoff);
 
+/**
+ * Set a given filters resonance
+ */
 void set_filter_resonance(Filter * filter, float resonance);
 
 /**
