@@ -60,7 +60,7 @@ typedef struct Synthesis_profile {
 typedef struct SynthesisParameters {
 	int profile_amount;
 	Synthesis_profile synthesis_profile[MAX_PROFILES];
-	int active_profile;
+	int active_profile;											// Right now holds the profile currently selected to use. TODO: Active profile should instead indicate which profile will be selected for "editing" and each profile will have an "enabled" status, which means midi notes in that profiles channel will trigger that specific profile ONLY if its active.
 
 } SynthesisParameters;
 

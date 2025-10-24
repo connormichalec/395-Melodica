@@ -14,7 +14,7 @@ SynthesisParameters* state;
 void set_profile_defaults(Synthesis_profile* profile) {
 	profile->gain = 1.0f;
 
-	profile->channel = -1;				// TODO: Profile channel will determine which incoming keys result in which profile.
+	profile->channel = -1;				// -1 means profile applied to all channels
 	profile->detune = 0.2f;
 	profile->voice_num_osc = VOICE_NUM_OSC_MAX;
 
