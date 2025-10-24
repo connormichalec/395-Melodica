@@ -59,6 +59,11 @@ float get_voice_ADSR_val(Voice * voice);
 void add_voice_ADSR(Voice * voice, float attack_factor, float attack_level, float decay_factor, float sustain_level, float release_factor);
 
 /**
+ * Get the voice ADSR
+ */
+ADSR* get_voice_ADSR(Voice * voice);
+
+/**
  * Used to manage voice functions
  */
 void tick_voice(Voice * voice);
@@ -76,6 +81,11 @@ int num_enabled_voices();
 void construct_voice(oscillatorTypes type, Voice * v, float frequency, float detune);
 
 /**
+ * Adjust the current  oscillators for this voice
+ */
+void set_voice_oscillators(Voice* v, int numOscillators, oscillatorTypes type, float frequency);
+
+/**
  * Set voice channel
  */
 void set_voice_channel(Voice * voice, int newChannel);
@@ -83,7 +93,7 @@ void set_voice_channel(Voice * voice, int newChannel);
 /**
  * Enable voice using a MIDI note no
  */
-int enable_voice(oscillatorTypes type, int note, float detune);
+int enable_voice(oscillatorTypes type, int numOscillators, int note, float detune);
 
 /**
  * Add filter
