@@ -63,11 +63,22 @@ void initialize_signal(int sample_rate_) {
 		channel_pressures[i] = 0.0f;
 	}
 
+	 //keyboard_update(40, 1, 1);
+
+
 	// Used later in volume pressure demo, number is steepness of curve for pressure "sensitivity"
 	generateLogLUT(5);
 }
 
 void keyboard_update(uint8_t val, uint8_t state, uint8_t channel) {
+	if(state == 1) {
+			// Key turned on, assign a voice to that key.
+			int i = enable_voice(SAW, 3, val, 0.2f);  							// apply a slight detune to voice
+			add_voice_filter(get_voice_from_idx(i),LOWPASS, 0.0f, 0.0f);	// Add a lowpass filter by default
+			add_voice_ADSR(get_voice_from_idx(i), 0.0f, 1.0f, 0.0f, 1.0f, 0.03f);					// Add adsr with small release
+			set_voice_channel(get_voice_from_idx(i), channel);
+		}
+	/*
 	if(state == 1) {
 
 		// TODO: Instead of using the the currently active profile, check all enabled (when thats implemented) profiles and find for one that matches the channel of this key.
@@ -86,7 +97,7 @@ void keyboard_update(uint8_t val, uint8_t state, uint8_t channel) {
 			set_voice_channel(get_voice_from_idx(i), channel);
 		}
 
-	}
+	}*/
 	else if (state == 0) {
 		// Key turned off, progress set ADSR to "release" state
 		ADSR_set_state(get_voice_from_note(val)->adsr,RELEASE);
@@ -122,12 +133,16 @@ void update_voice(Voice* v, Synthesis_profile* newParameters) {
 	a->release_factor = newParameters->adsr_release_factor;
 }
 
+
 float signal_next_sample() {
 
 	// Otherwise all oscillators will max out volume automatically and so adding them would not work.
 	float voice_scaling_fctr = 0.07f;			// how much to scale each voice by - TODO: replace this with a more professional solution.
 
 	float val = 0.0f;
+
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 0);
+
 
 	// TODO: Instead of disabling interrupts when running this, make a queue for functions that need to run mutually exclusive with this one so that when
 	// 		 Interrupts are called on them they wont cause a hard fault:
@@ -140,14 +155,14 @@ float signal_next_sample() {
 	// Tick voices:
 	tick_voices();
 
-
-
-
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 1);
 
 
 
 	// Go through all voices:
 	for(int q = 0; q <get_num_voices(); q++) {
+		//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 1);
+
 
 		Voice * v = get_voice_from_idx(q);
 
