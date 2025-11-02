@@ -27,7 +27,7 @@ void set_profile_defaults(Synthesis_profile* profile) {
 	profile->adsr_release_factor = 0.03f;
 
 	profile->filter1_type = LOWPASS;
-	profile->filter1_cutoff = 0.0f;
+	profile->filter1_cutoff = 0.2f;
 	profile->filter1_resonance = 0.0f;
 }
 
@@ -44,7 +44,7 @@ void initialize_controlstate() {
 	// First create a profile with default values:
 	state->profile_amount++;
 	state->active_profile = 0;
-	set_profile_defaults(&state->synthesis_profile[0]);
+	set_profile_defaults(&(state->synthesis_profile[0]));
 
 	// Now we will have one profile to work with
 
@@ -59,5 +59,5 @@ SynthesisParameters* get_controlstate() {
 
 
 Synthesis_profile* get_controlstate_active_profile() {
-	return &state->synthesis_profile[state->active_profile];
+	return &(state->synthesis_profile[state->active_profile]);
 }

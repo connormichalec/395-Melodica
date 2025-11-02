@@ -124,9 +124,8 @@ int main(void)
   // For debugging: - good use in stm32f4xx_it.c it can be set to go high when hard fault occurs
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 0);
 
-
-  audio_signal_init(&htim8, &hdac1);
   initialize_controlstate();
+  audio_signal_init(&htim8, &hdac1);
 
 
 

@@ -191,6 +191,7 @@ int enable_voice(oscillatorTypes type, int numOscillators, int note, float detun
 }
 
 void disable_voice(Voice * voice) {
+
 	// Check if voice is actually enabled:
 	if(voice==NULL || !voice->enabled)
 		return;

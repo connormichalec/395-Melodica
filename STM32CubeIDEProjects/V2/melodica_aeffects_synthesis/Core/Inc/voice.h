@@ -12,7 +12,7 @@
 #include "oscillator.h"
 #include "filter.h"
 
-#define VOICE_NUM_OSC_MAX 3		// Maximum allowed amount of oscillators to be enabled for for the voice, regardless of what user setting is. Will allocate this much for oscillators, but user can control how much oscillators per voice below this cap
+#define VOICE_NUM_OSC_MAX 4		// Maximum allowed amount of oscillators to be enabled for for the voice, regardless of what user setting is. Will allocate this much for oscillators, but user can control how much oscillators per voice below this cap
 #define NUM_VOICES_MAX 12		// Maximum allowed simultaneous voices active at once.
 
 // TODO: Implement function pointres in struct for more streamlined interfacing (liek a class)
