@@ -105,6 +105,9 @@ int main(void)
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
+
+  IOinit();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
