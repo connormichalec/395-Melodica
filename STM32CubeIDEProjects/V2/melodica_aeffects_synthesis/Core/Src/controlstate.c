@@ -36,6 +36,7 @@ void initialize_controlstate() {
 	// For now, the synthesizer only uses 1 profile that will just track inputs, in the future consider having independant profiles that can be loaded and "edited" to the current switches states given some button press
 	// This would give the flexbiility of having multiple profiles for easy switching, or something like
 
+	// TODO: Deconstruct this malloc
 	state = (SynthesisParameters*) malloc(sizeof(SynthesisParameters));		// (we never free since this variable should exist the entire lifetime of the runtime)
 	state->profile_amount = 0;
 	state->active_profile = -1;

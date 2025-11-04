@@ -60,8 +60,8 @@ all: main-build
 main-build: melodica_switchbox_boilerplate.elf secondary-outputs
 
 # Tool invocations
-melodica_switchbox_boilerplate.elf melodica_switchbox_boilerplate.map: $(OBJS) $(USER_OBJS) C:\Users\conno\STM32CubeIDE\workspace_1.17.0\melodica\STM32CubeIDEProjects\V2\melodica_switchbox_boilerplate\STM32L031K6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "melodica_switchbox_boilerplate.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\conno\STM32CubeIDE\workspace_1.17.0\melodica\STM32CubeIDEProjects\V2\melodica_switchbox_boilerplate\STM32L031K6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="melodica_switchbox_boilerplate.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+melodica_switchbox_boilerplate.elf melodica_switchbox_boilerplate.map: $(OBJS) $(USER_OBJS) C:\Users\connor15\Desktop\395-Melodica\STM32CubeIDEProjects\V2\melodica_switchbox_boilerplate\STM32L031K6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "melodica_switchbox_boilerplate.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\connor15\Desktop\395-Melodica\STM32CubeIDEProjects\V2\melodica_switchbox_boilerplate\STM32L031K6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="melodica_switchbox_boilerplate.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

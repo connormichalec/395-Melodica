@@ -8,10 +8,38 @@
 #ifndef INC_IOMANAGER_H_
 #define INC_IOMANAGER_H_
 
+#define MAX_ABS_IO 100
+#define MAX_REL_IO 100
+
+
+// linked list of absolute io (has a current state that will update accordingly)
+typedef struct io_abs {
+	int enabled;								// whether or not this io is being used
+	int device_id;								// (should be the same for all swithces here, in this struct for flexibility purposes)
+	int param_id;								// what parameter id is this io being tracked to?
+	unsigned int state_value;					// value of state
+	int (*poll_function) (io_abs*);				// poll function should 1 return if it did change enough, iomanager will send message if changed
+	void (*get_value) (io_abs*);				// get message value to send
+} io_abs;
+
+
+// relative io (just send updates, doesnt have a state)
+typedef struct io_rel {
+} io_rel;
+
+
+// keeps track of state of all io:
+typedef struct IOstate {
+	// List of all both io
+	io_abs abs_io[MAX_ABS_IO];
+	io_rel rel_io[MAX_REL_IO];
+} IOstate;
 
 // To be ticked by main
 void pollInputs();
 
 void IOinit();
+
+
 
 #endif /* INC_IOMANAGER_H_ */

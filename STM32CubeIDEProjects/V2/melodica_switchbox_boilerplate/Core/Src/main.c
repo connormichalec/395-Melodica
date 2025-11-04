@@ -120,6 +120,9 @@ int main(void)
   uint32_t last_msg_timestamp = 0;
   while (1)
   {
+
+	  pollInputs();
+
 	// Every second, if this is the last module send a connectivity update
 	cur_t = HAL_GetTick();
 	if (cur_t - last_msg_timestamp > UPDATE_MSG_PERIOD_MS && last_rx_timestamp > UPDATE_MSG_PERIOD_MS * 2) {
