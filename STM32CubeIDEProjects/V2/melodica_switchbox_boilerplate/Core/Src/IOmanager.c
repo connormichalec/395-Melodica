@@ -5,7 +5,8 @@
  *      Author: connor15
  */
 
-#include IOManager.h
+#include "IOManager.h"
+#include <stdlib.h>
 
 
 // Global io state:
@@ -15,8 +16,8 @@ void IOinit() {
 	// TODO: deconstruct this malloc.
 	state = (IOstate*) malloc(sizeof(IOstate));
 
-	// initialize all abs:
-	for(int i = 0; i<MAX_IO_ABS; i++) {
+	// initialize all abs to default:
+	for(int i = 0; i<MAX_ABS_IO; i++) {
 		state->abs_io[i].device_id = 0;
 		state->abs_io[i].poll_function = NULL;
 		state->abs_io[i].enabled = 0;
@@ -26,13 +27,39 @@ void IOinit() {
 	}
 }
 
+int registerAbsIO(io_abs io_device) {
+	// register a new absolute io device
+
+	for(int i = 0; i<MAX_ABS_IO; i++) {
+		if(state->abs_io[i].enabled == 0) {
+			// First non-enabled io device, register here
+
+			state->abs_io[i].device_id = io_device.device_id;
+			state->abs_io[i].enabled = 1;
+			state->abs_io[i].get_value = io_device.get_value;
+			state->abs_io[i].param_id = io_device.param_id;
+			state->abs_io[i].poll_function = io_device.poll_function;
+			state->abs_io[i].state_value = state->abs_io[i].state_value;
+
+			return 0;
+		}
+	}
+
+	// failure
+	return 1;
+
+}
+
 
 void pollInputs() {
-	for(int i = 0; i<MAX_IO_ABS; i++) {
+	for(int i = 0; i<MAX_ABS_IO; i++) {
 		if(state->abs_io[i].enabled) {
-			if(state->abs_io[i].poll_function(abs_io[i])) {
+			if(state->abs_io[i].poll_function(&state->abs_io[i])) {
 				// should update! poll got new stuff to send
-				int newVal = state->abs_io.get_value(abs_io[i]);
+				unsigned int newVal = state->abs_io[i].get_value(&state->abs_io[i]);
+
+				// send this new data over protocol:
+
 			}
 		}
 	}

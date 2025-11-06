@@ -14,12 +14,13 @@
 
 // linked list of absolute io (has a current state that will update accordingly)
 typedef struct io_abs {
-	int enabled;								// whether or not this io is being used
-	int device_id;								// (should be the same for all swithces here, in this struct for flexibility purposes)
-	int param_id;								// what parameter id is this io being tracked to?
-	unsigned int state_value;					// value of state
-	int (*poll_function) (io_abs*);				// poll function should 1 return if it did change enough, iomanager will send message if changed
-	void (*get_value) (io_abs*);				// get message value to send
+	int enabled;											// whether or not this io is being used
+	int device_id;											// (should be the same for all swithces here, in this struct for flexibility purposes)
+	int param_id;											// what parameter id is this io being tracked to?
+	unsigned int state_value;								// value of state
+	// callback functions for update:
+	int (*poll_function) (struct io_abs*);					// poll function should 1 return if it did change enough, iomanager will send message if changed
+	unsigned int (*get_value) (struct io_abs*);				// get message value to send
 } io_abs;
 
 
@@ -38,8 +39,11 @@ typedef struct IOstate {
 // To be ticked by main
 void pollInputs();
 
+// Initialize data structures
 void IOinit();
 
+// Register a new absolute IO device: returns 1 on failure 0 on success
+int registerAbsIO(io_abs io_device);
 
 
 #endif /* INC_IOMANAGER_H_ */

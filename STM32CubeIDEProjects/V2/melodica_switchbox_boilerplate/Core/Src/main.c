@@ -23,6 +23,8 @@
 /* USER CODE BEGIN Includes */
 #include "protocol.h"
 #include "config.h"
+#include "IODevices.h"
+#include "IOManager.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,6 +109,7 @@ int main(void)
 
 
   IOinit();
+  testIORegister();
 
   /* USER CODE END 2 */
 
@@ -122,6 +125,7 @@ int main(void)
   {
 
 	  pollInputs();
+
 
 	// Every second, if this is the last module send a connectivity update
 	cur_t = HAL_GetTick();
