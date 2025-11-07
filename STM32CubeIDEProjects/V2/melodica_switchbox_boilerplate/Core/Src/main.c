@@ -111,6 +111,7 @@ int main(void)
   IOinit();
   testIORegister();
 
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -123,7 +124,7 @@ int main(void)
   uint32_t last_msg_timestamp = 0;
   while (1)
   {
-
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
 	  pollInputs();
 
 
