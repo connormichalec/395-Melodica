@@ -39,6 +39,10 @@ typedef struct IOstate {
 // To be ticked by main
 void pollInputs();
 
+// Send all of the values of the current state, regardless if they have changed or not
+// Upon connecting to the devices, this should be called to send everything as it is right now
+void initialUpdate();
+
 // Initialize data structures
 void IOinit();
 

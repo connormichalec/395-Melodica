@@ -49,9 +49,9 @@ int testIOPollFunction(io_abs* io) {
 unsigned int testIOGetValue(io_abs* io) {
 	// Test output to pa7:
 	if(io->state_value == 0) {
-		//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 1);
 	} else {
-		//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, 0);
 	}
 
 	return io->state_value;

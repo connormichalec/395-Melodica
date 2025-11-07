@@ -50,10 +50,28 @@ int registerAbsIO(io_abs io_device) {
 
 }
 
+// Send all values of the state as they are, not just the ones that have changed
+void initialUpdate() {
+	for(int i = 0; i<MAX_ABS_IO; i++) {
+		if(state->abs_io[i].enabled) {
+			// poll IO
+			state->abs_io[i].poll_function(&state->abs_io[i]);
 
+			// send the current value of everything for initializaiton
+			unsigned int val = state->abs_io[i].get_value(&state->abs_io[i]);
+
+			// send this data over protocol:
+
+		}
+	}
+}
+
+
+// Poll for changes and send updates for those
 void pollInputs() {
 	for(int i = 0; i<MAX_ABS_IO; i++) {
 		if(state->abs_io[i].enabled) {
+			// poll and check if data has changed and needs to be sent
 			if(state->abs_io[i].poll_function(&state->abs_io[i])) {
 				// should update! poll got new stuff to send
 				unsigned int newVal = state->abs_io[i].get_value(&state->abs_io[i]);
