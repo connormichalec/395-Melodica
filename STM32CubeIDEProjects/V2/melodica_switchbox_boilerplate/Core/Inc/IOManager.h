@@ -21,6 +21,8 @@ typedef struct io_abs {
 	// callback functions for update:
 	int (*poll_function) (struct io_abs*);					// poll function should 1 return if it did change enough, iomanager will send message if changed
 	unsigned int (*get_value) (struct io_abs*);				// get message value to send
+	void* misc;												// misc data type pointer, store any additional information relevant to the io device (cast to necessary type)
+	void* destructFunction;									// to be called on destruction, for deallocating misc if needed. io_abs pointer is automatically passed to this
 } io_abs;
 
 

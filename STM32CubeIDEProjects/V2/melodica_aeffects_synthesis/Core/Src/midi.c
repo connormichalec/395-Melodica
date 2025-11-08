@@ -60,6 +60,7 @@ uint8_t midiData1 = 0;
 char midi_string[50];
 
 void MIDI_ProcessByte(uint8_t byte) {
+
 	if (byte & 0x80) {		// Status byte received
 		midiStatus = byte;
 		midiState = ((midiStatus & 0xF0) == 0xC0 || (midiStatus  & 0xF0) == 0xD0 || (midiStatus & 0xF0) == 0xF0)
@@ -99,25 +100,25 @@ float ToFrequency(uint8_t note) {
 
 void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2) {
 	uint8_t channel = midiStatus & 0x0F;
-
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
-			if (channel != 0) break;
+			//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 0);
+			//if (channel != 0) break;
 			event_callback(midiData2, 0, channel);
 
 			break;
 
 		case 0x90: // Note On
-			if (channel != 0) break;
+			//if (channel != 0) break;
+			//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 1);
+
+
 			event_callback(midiData2, 1, channel);
 			break;
 
 		case 0xD0: // Channel Pressure
 			if (channel != 0) break;
 			event_callback(midiData1, 2, channel);
-			break;
-
-		case 0xF0:	// Looper button press
 			break;
 
 		default:

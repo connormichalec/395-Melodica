@@ -13,7 +13,7 @@
 IOstate* state;
 
 void IOinit() {
-	// TODO: deconstruct this malloc.
+	// TODO: Implement a destructor for this and deconstruct this malloc along with calling each destructFunction for the data types.
 	state = (IOstate*) malloc(sizeof(IOstate));
 
 	// initialize all abs to default:
@@ -24,6 +24,8 @@ void IOinit() {
 		state->abs_io[i].get_value = NULL;
 		state->abs_io[i].param_id = 0;
 		state->abs_io[i].state_value = 0;
+		state->abs_io[i].misc = 0x0;
+		state->abs_io[i].destructFunction = 0x0;
 	}
 }
 
@@ -40,6 +42,8 @@ int registerAbsIO(io_abs io_device) {
 			state->abs_io[i].param_id = io_device.param_id;
 			state->abs_io[i].poll_function = io_device.poll_function;
 			state->abs_io[i].state_value = state->abs_io[i].state_value;
+			state->abs_io[i].misc = state->abs_io[i].misc;
+			state->abs_io[i].destructFunction = state->abs_io[i].destructFunction;
 
 			return 0;
 		}

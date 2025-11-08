@@ -76,6 +76,9 @@ void set_oscillator_type(Oscillator* osc, oscillatorTypes type) {
 	osc->type = type;
 
 	switch(type) {
+	case NOTYPE:
+		osc->oscillatorFunction = NULL;
+		break;
 	case SIN:
 		osc->oscillatorFunction = &sin_oscillator;
 		break;
