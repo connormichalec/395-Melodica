@@ -29,6 +29,10 @@
 #define CONTROL_RANGE 1000
 
 
+// What is this device ID?
+#define DEVICE_ID 67
+
+
 // parameter ids
 #define PARAMTER_ID_GAIN 1
 #define PARAMTER_ID_FILTER1_CUTOFF 5
