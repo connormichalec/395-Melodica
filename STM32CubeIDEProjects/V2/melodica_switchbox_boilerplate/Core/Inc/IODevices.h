@@ -37,21 +37,39 @@ struct ToggleSwitch3PDTMisc {
 
 // Used for all 3 pdt 3 way switches (instead of seperate funciton for each one:)
 int ToggleSwitch3PDTPollFunction(io_abs* io);
-unsigned int ToggleSwitch3PDTPollGetValue(io_abs* io);
+unsigned int ToggleSwitch3PDTGetValue(io_abs* io);
 void destruct3PDTMiscStrucutre(io_abs* io);
 
-/*       */
+///////////////////
+
+
+
 
 
 
 
 
 /*   10k POTS!   */
+void registerAllPots(ADC_HandleTypeDef* hadc);
 
+// register function for each specific pot:
+void pot1Register();
+void pot2Register();
+void pot3Register();
+void pot4Register();
+void pot5Register();
 
+// Misc structure for all pots, keep track of adc pin input
+struct PotMisc {
 
+	uint16_t ADCIdx;
+};
 
-/* 				*/
+int potPollFunction(io_abs* io);
+unsigned potGetValue(io_abs* io);
+void destructPotMiscStructure(io_abs* io);
+
+////////////////////////////
 
 
 #endif /* INC_IODEVICES_H_ */

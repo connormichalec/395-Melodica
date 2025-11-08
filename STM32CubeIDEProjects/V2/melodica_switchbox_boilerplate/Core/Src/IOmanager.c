@@ -27,6 +27,8 @@ void IOinit() {
 		state->abs_io[i].misc = 0x0;
 		state->abs_io[i].destructFunction = 0x0;
 	}
+
+	// TODO: implement io_rel for things like encoders
 }
 
 int registerAbsIO(io_abs io_device) {
@@ -48,6 +50,7 @@ int registerAbsIO(io_abs io_device) {
 			return 0;
 		}
 	}
+
 
 	// failure
 	return 1;
