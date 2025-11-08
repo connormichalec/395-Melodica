@@ -90,3 +90,9 @@ void pollInputs() {
 	}
 }
 
+unsigned int normalize_value(unsigned int original_range, unsigned int original_val) {
+	unsigned int normalized = (original_val * NORMALIZED_CONTROL_RANGE) / original_range;
+
+	return normalized;
+}
+

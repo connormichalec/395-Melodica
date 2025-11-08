@@ -11,6 +11,9 @@
 #define MAX_ABS_IO 100
 #define MAX_REL_IO 100
 
+// What range to normalized readings coming from things like potentiometers to send over UART to?
+#define NORMALIZED_CONTROL_RANGE 1000
+
 
 // linked list of absolute io (has a current state that will update accordingly)
 typedef struct io_abs {
@@ -50,6 +53,9 @@ void IOinit();
 
 // Register a new absolute IO device: returns 1 on failure 0 on success
 int registerAbsIO(io_abs io_device);
+
+// Helper function to normalize some IO value to a fixed point representation that we have decided on for sending over to receiving modules.
+unsigned int normalize_value(unsigned int original_range, unsigned int original_val);
 
 
 #endif /* INC_IOMANAGER_H_ */

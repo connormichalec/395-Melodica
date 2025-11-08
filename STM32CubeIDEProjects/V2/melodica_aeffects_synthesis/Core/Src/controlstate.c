@@ -51,9 +51,6 @@ void initialize_controlstate() {
 
 }
 
-// When we receive a state update from switchbox, update values accordingly. two psosible inputs, absolute values, or relative values.
-
-
 SynthesisParameters* get_controlstate() {
 	return state;
 }
@@ -61,4 +58,21 @@ SynthesisParameters* get_controlstate() {
 
 Synthesis_profile* get_controlstate_active_profile() {
 	return &(state->synthesis_profile[state->active_profile]);
+}
+
+// Just linearlly normalizes fixed point input to a float based on defined input range
+float linearNormalize(unsigned int input) {
+	return(((float) input) / ((float) CONTROL_RANGE));
+}
+
+
+// When we receive a state update from switchbox, update values accordingly. two psosible inputs, absolute values, or relative values.
+void update_parameter(unsigned int parameter_id, unsigned int control_type, unsigned int val) {
+	switch(parameter_id) {
+		case PARAMTER_ID_GAIN:
+			get_controlstate_active_profile()->gain = linearNormalize(val);
+			break;
+		default:
+			break;
+	}
 }

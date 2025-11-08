@@ -21,6 +21,18 @@
 
 #define MAX_PROFILES 100		// Number of synthesis/audio profiles to allocate aside.
 
+// control type:
+#define CONTROL_TYPE_ABSOLUTE 0
+#define CONTROL_TYPE_RELATIVE 1
+
+// Maximum value for parameters that have some fixed point input.
+#define CONTROL_RANGE 1000
+
+
+// parameter ids
+#define PARAMTER_ID_GAIN 1
+#define PARAMTER_ID_FILTER1_CUTOFF 5
+
 
 
 /** PROFILES FOR SYNTHESIS AND AUDIO EFFECTS **/
@@ -83,6 +95,11 @@ SynthesisParameters* get_controlstate();
  * Get active profile of current control state:
  */
 Synthesis_profile* get_controlstate_active_profile();
+
+/**
+ * Update a parameter, to be called by protocol when receiving an update signal from a switchbox
+ */
+void update_parameter(unsigned int parameter_id, unsigned int control_type, unsigned int val);
 
 
 
