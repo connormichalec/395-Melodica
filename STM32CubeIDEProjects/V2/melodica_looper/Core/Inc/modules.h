@@ -15,9 +15,9 @@ extern UART_HandleTypeDef hlpuart1;
 // Module ID definitions
 #define MODULE_CONNECTIVITY_MSG 0
 #define MODULE_TRANSPOSE_ID 1
-#define MODULE_STOPS_ID 1
-#define MODULE_LOOPER_ID 1
-#define MODULE_ARP_ID 1
+#define MODULE_STOPS_ID 2
+#define MODULE_LOOPER_ID 3
+#define MODULE_ARP_ID 4
 
 // Configurable parameters
 #define MODULE_UART hlpuart1
@@ -54,6 +54,9 @@ typedef struct TransposeState {
 
 extern TransposeState transpose_state;
 
+void stream_noteon(ModuleStream* module, uint8_t channel, uint8_t key, uint8_t velocity);
+void stream_noteoff(ModuleStream* module, uint8_t channel, uint8_t key, uint8_t velocity);
+
 typedef struct StopsState {
 	uint8_t stops[4];
 } StopsState;
@@ -73,6 +76,7 @@ extern PressureToggleState pressure_toggle_state;
 void Module_Init();
 void send_msg(uint8_t device, uint8_t *data, uint8_t len);
 
+void MIDI_RunModules();
 void Module_ProcessByte();
 void append_byte(ModuleStream* module, uint8_t byte);
 
@@ -81,11 +85,14 @@ void handle_looper_msg(uint8_t* data, uint8_t len);
 void handle_transpose_msg(uint8_t* data, uint8_t len);
 void handle_stops_msg(uint8_t* data, uint8_t len);
 
+void noupdate_channelpressure(ModuleStream* stream, uint8_t channel, uint8_t pressure);
 void out_stream_update_noteon(ModuleStream* stream, uint8_t channel, uint8_t key, uint8_t velocity);
 void out_stream_update_noteoff(ModuleStream* stream, uint8_t channel, uint8_t key, uint8_t velocity);
 void out_stream_update_channelpressure(ModuleStream* stream, uint8_t channel, uint8_t pressure);
 void transpose_update_noteon(ModuleStream* stream, uint8_t channel, uint8_t key, uint8_t velocity);
 void transpose_update_noteoff(ModuleStream* stream, uint8_t channel, uint8_t key, uint8_t velocity);
-void transpose_update_channelpressure(ModuleStream* stream, uint8_t channel, uint8_t pressure);
+void stops_update_noteon(ModuleStream* stream, uint8_t channel, uint8_t key, uint8_t velocity);
+void stops_update_noteoff(ModuleStream* stream, uint8_t channel, uint8_t key, uint8_t velocity);
+
 
 #endif /* INC_MODULES_H_ */

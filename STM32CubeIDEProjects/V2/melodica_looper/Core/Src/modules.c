@@ -45,6 +45,7 @@ uint8_t switchbox_byte;
 ModuleStream *streams[16];		// Stores the order of the streams
 ModuleStream out_stream;
 ModuleStream transpose_stream;
+ModuleStream stops_stream;
 void noTick(uint32_t timestamp) {};
 void Module_Init() {
 	for (uint8_t i = 0; i <= 127; i++) note_counters[i] = 0;
@@ -55,11 +56,17 @@ void Module_Init() {
 
 	// Initializing module states
 	pressure_toggle_state.pressure_enabled = 1;
+	transpose_state.shift = 0;
+	stops_state.stops[0] = 0;
+	stops_state.stops[1] = 1;
+	stops_state.stops[2] = 0;
+	stops_state.stops[3] = 0;
 
 	// Setting up module streams
 
-	streams[0] = &out_stream;
 	for (uint8_t i = 1; i < 16; i++) streams[i] = NULL;
+	//streams[0] = &stops_stream;
+	streams[0] = &out_stream;
 
 	out_stream.data_idx = 0;
 	out_stream.update_noteon = &out_stream_update_noteon;
@@ -70,9 +77,14 @@ void Module_Init() {
 	transpose_stream.data_idx = 0;
 	transpose_stream.update_noteon = &transpose_update_noteon;
 	transpose_stream.update_noteoff = &transpose_update_noteoff;
-	transpose_stream.update_channelpressure = &transpose_update_channelpressure;
-	transpose_stream.update_tick = noTick;
+	transpose_stream.update_channelpressure = &noupdate_channelpressure;
+	transpose_stream.update_tick = &noTick;
 
+	stops_stream.data_idx = 0;
+	stops_stream.update_noteon = &stops_update_noteon;
+	stops_stream.update_noteoff = &stops_update_noteoff;
+	stops_stream.update_channelpressure = &noupdate_channelpressure;
+	stops_stream.update_tick = &noTick;
 }
 
 void send_msg(uint8_t device_id, uint8_t* data, uint8_t len) {
@@ -137,10 +149,21 @@ void append_byte(ModuleStream* module, uint8_t byte) {
 	module->data_idx += 1;
 }
 
+void stream_noteon(ModuleStream* module, uint8_t channel, uint8_t key, uint8_t velocity) {
+	append_byte(module, NOTE_ON | (channel & 0b00001111));
+    append_byte(module, (uint8_t) 0b01111111 & key);
+    append_byte(module, (uint8_t) 0b01111111 & velocity);
+}
+
+void stream_noteoff(ModuleStream* module, uint8_t channel, uint8_t key, uint8_t velocity) {
+	append_byte(module, NOTE_OFF | (channel & 0b00001111));
+    append_byte(module, (uint8_t) 0b01111111 & key);
+    append_byte(module, (uint8_t) 0b01111111 & velocity);
+}
+
 // Simulates in software passing the data between different modules
 void MIDI_RunModules() {
-
-	for (uint8_t i = 0; i < 16; i++) {				// Looping through the module streams array
+	for (uint8_t i = 0; i < 16 && streams[i]; i++) {				// Looping through the module streams array
 		ModuleStream* current_stream = streams[i];
 
 		// Loop through all data in the buffer
@@ -183,6 +206,8 @@ void MIDI_RunModules() {
 
 		}
 
+		current_stream->data_idx = 0;
+
 		// If out stream is found, stop
 		if (current_stream == &out_stream) break;
 	}
@@ -207,20 +232,28 @@ void out_stream_update_channelpressure(ModuleStream* stream, uint8_t channel, ui
 }
 
 void transpose_update_noteon(ModuleStream* target, uint8_t channel, uint8_t key, uint8_t velocity) {
-	append_byte(target, 0x80 | channel);				// Channel and status
-	append_byte(target, key + transpose_state.shift);	// Transposed key
-	append_byte(target, velocity);						// Velocity
+	stream_noteon(target, channel, key + transpose_state.shift, velocity);
 }
 
 void transpose_update_noteoff(ModuleStream* target, uint8_t channel, uint8_t key, uint8_t velocity) {
-	append_byte(target, 0x90 | channel);				// Channel and status
-	append_byte(target, key + transpose_state.shift);	// Transposed key
-	append_byte(target, velocity);						// Velocity
+	stream_noteoff(target, channel, key + transpose_state.shift, velocity);
 }
 
-void transpose_update_channelpressure(ModuleStream* target, uint8_t channel, uint8_t pressure) {
+void noupdate_channelpressure(ModuleStream* target, uint8_t channel, uint8_t pressure) {
 	append_byte(target, 0xD0 | channel);
 	append_byte(target, pressure);
+}
+
+void stops_update_noteon(ModuleStream* target, uint8_t channel, uint8_t key, uint8_t velocity) {
+	for (uint8_t i = 0; i < 4; i++) {
+		if (stops_state.stops[i]) stream_noteon(target, channel, key + ((i - 1) * 12), velocity);
+	}
+}
+
+void stops_update_noteoff(ModuleStream* target, uint8_t channel, uint8_t key, uint8_t velocity) {
+	for (uint8_t i = 0; i < 4; i++) {
+		if (stops_state.stops[i]) stream_noteoff(target, channel, key + ((i - 1) * 12), velocity);
+	}
 }
 
 void pressure_toggle_update_noteon(ModuleStream* target, uint8_t channel, uint8_t key, uint8_t velocity) {
@@ -261,6 +294,7 @@ void handle_connectivity_msg(uint8_t device_id, uint8_t idx) {
 
 		case MODULE_STOPS_ID:
 			//streams[idx] = &stops_stream;
+			break;
 	}
 }
 

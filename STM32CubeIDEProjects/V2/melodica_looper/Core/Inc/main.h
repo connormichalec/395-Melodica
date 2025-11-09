@@ -57,10 +57,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define MODULES_USART_TX_Pin GPIO_PIN_2
-#define MODULES_USART_TX_GPIO_Port GPIOA
-#define MODULES_USART_RX_Pin GPIO_PIN_3
-#define MODULES_USART_RX_GPIO_Port GPIOA
+#define NEXT_TX_Pin GPIO_PIN_2
+#define NEXT_TX_GPIO_Port GPIOA
+#define NEXT_RX_Pin GPIO_PIN_3
+#define NEXT_RX_GPIO_Port GPIOA
 #define LOOPER_IN1_Pin GPIO_PIN_12
 #define LOOPER_IN1_GPIO_Port GPIOB
 #define LOOPER_IN2_Pin GPIO_PIN_13
@@ -69,10 +69,10 @@ void Error_Handler(void);
 #define TRANSPOSE_DOWN_GPIO_Port GPIOB
 #define TRANSPOSE_UP_Pin GPIO_PIN_15
 #define TRANSPOSE_UP_GPIO_Port GPIOB
-#define SWITCH_USART_TX_Pin GPIO_PIN_9
-#define SWITCH_USART_TX_GPIO_Port GPIOA
-#define SWITCH_USART_RX_Pin GPIO_PIN_10
-#define SWITCH_USART_RX_GPIO_Port GPIOA
+#define PREV_TX_Pin GPIO_PIN_9
+#define PREV_TX_GPIO_Port GPIOA
+#define PREV_RX_Pin GPIO_PIN_10
+#define PREV_RX_GPIO_Port GPIOA
 #define MIDI_OUT_Pin GPIO_PIN_10
 #define MIDI_OUT_GPIO_Port GPIOC
 #define MIDI_IN_Pin GPIO_PIN_11
