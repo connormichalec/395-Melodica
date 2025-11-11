@@ -1,7 +1,6 @@
 /*
  * audio.c
  *
- *  DESIGNED FOR THE STMF405!
  *
  *  Created on: Mar 31, 2025
  *      Author: Connor Michalec

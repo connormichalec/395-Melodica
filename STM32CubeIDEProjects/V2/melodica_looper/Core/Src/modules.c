@@ -65,8 +65,8 @@ void Module_Init() {
 	// Setting up module streams
 
 	for (uint8_t i = 1; i < 16; i++) streams[i] = NULL;
-	//streams[0] = &stops_stream;
-	streams[0] = &out_stream;
+	streams[0] = &stops_stream;
+	streams[1] = &out_stream;
 
 	out_stream.data_idx = 0;
 	out_stream.update_noteon = &out_stream_update_noteon;
@@ -175,32 +175,36 @@ void MIDI_RunModules() {
 			uint8_t velocity;
 			uint8_t pressure;
 			switch (midiStatus & 0xF0) {
-				case 0x80: // Note Off
+				case NOTE_OFF: // Note Off
 					channel = midiStatus & 0x0F;
 					key = current_stream->data[idx + 1];
 					velocity = current_stream->data[idx + 2];
 					current_stream->update_noteoff(streams[i + 1], channel, key, velocity);
+
 					idx += 3;
 					break;
 
-				case 0x90: // Note On
+				case NOTE_ON: // Note On
+					HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
 					channel = midiStatus & 0x0F;
 					key = current_stream->data[idx + 1];
 					velocity = current_stream->data[idx + 2];
 					current_stream->update_noteon(streams[i + 1], channel, key, velocity);
+
 					idx += 3;
 					break;
 
-				case 0xD0: // Channel Pressure
+				case CHANNEL_PRESSURE: // Channel Pressure
 					channel = midiStatus & 0x0F;
 					pressure = current_stream->data[idx + 1];
 					current_stream->update_channelpressure(streams[i + 1], channel, pressure);
+
 					idx += 2;
 					break;
 
 				default:
 					// If message is unsupported, kill the process
-					idx = 0;
+					idx = current_stream->data_idx;
 					break;
 			}
 
@@ -220,11 +224,7 @@ void out_stream_update_noteon(ModuleStream* stream, uint8_t channel, uint8_t key
 }
 
 void out_stream_update_noteoff(ModuleStream* stream, uint8_t channel, uint8_t key, uint8_t velocity) {
-	if (note_counters[key] > 0) note_counters[key] --;
-
-	if (note_counters[key] == 0) {
-		note_off(channel, key, velocity);
-	}
+	note_off(channel, key, velocity);
 }
 
 void out_stream_update_channelpressure(ModuleStream* stream, uint8_t channel, uint8_t pressure) {

@@ -8,16 +8,18 @@
 #ifndef SRC_OSCILLATOR_H_
 #define SRC_OSCILLATOR_H_
 
-#define NUM_OSCILLATORS 36
+#define NUM_OSCILLATORS 48
 
 typedef enum {
+	NOTYPE,
 	SIN,
 	SAW,
 	SQUARE
 } oscillatorTypes;
 
 typedef struct {
-	float (*oscillatorFunction)(float phase);			// Function to get an oscillation based on phase
+	oscillatorTypes type;
+	float (*oscillatorFunction)(float phase);			// Function to get an oscillation based on phase (based on the type)
 	float phase;
 	float frequency;
 	int osc_idx;										// Oscillator index (for easy indexing of all oscillators)
@@ -33,6 +35,16 @@ void init_oscillators();
  * Get Total number of oscillators
  */
 int get_num_oscillators();
+
+/**
+ * Set oscillator type
+ */
+
+void set_oscillator_type(Oscillator* osc, oscillatorTypes type);
+/**
+ * Get oscillator type
+ */
+oscillatorTypes get_oscillator_type(Oscillator* osc);
 
 /**
  * Get number of oscillators currently enabled
@@ -63,5 +75,6 @@ void set_osc_freq(Oscillator * oscillator, float freq);
  * Get osc freq
  */
 float get_osc_freq(Oscillator * oscillator);
+
 
 #endif /* SRC_OSCILLATOR_H_ */

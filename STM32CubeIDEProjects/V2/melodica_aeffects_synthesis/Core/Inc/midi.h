@@ -53,13 +53,6 @@ void channel_pressure(uint8_t channel, uint8_t pressure);
 // Sends a single byte over UART for a MIDI message
 void MIDI_SendByte(uint8_t byte);
 
-void record_note_off_all();
-
-// Creates a new NoteListener
-NoteListener new_note(uint8_t key, GPIO_TypeDef * GPIOx, uint16_t GPIO_Pin);
-
-// Listens for a specific note
-void listen(NoteListener * note);
 
 /////// MIDI RX STUFF
 typedef enum {

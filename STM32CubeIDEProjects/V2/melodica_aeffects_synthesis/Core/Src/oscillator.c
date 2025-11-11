@@ -35,6 +35,7 @@ float square_oscillator(float phase) {
 void init_oscillators() {
 	for(int i = 0; i < NUM_OSCILLATORS; i++) {
 		oscillators[i].enabled = 0;
+		oscillators[i].type = NOTYPE;
 		oscillators[i].oscillatorFunction = NULL;
 		oscillators[i].phase = 0.0f;
 		oscillators[i].frequency = 0.0f;
@@ -63,8 +64,31 @@ float get_osc_freq(Oscillator * osc) {
 	return(osc->frequency);
 }
 
+oscillatorTypes get_oscillator_type(Oscillator *osc) {
+	return(osc->type);
+}
+
 void set_osc_freq(Oscillator * osc, float freq) {
 	osc->frequency = freq;
+}
+
+void set_oscillator_type(Oscillator* osc, oscillatorTypes type) {
+	osc->type = type;
+
+	switch(type) {
+	case NOTYPE:
+		osc->oscillatorFunction = NULL;
+		break;
+	case SIN:
+		osc->oscillatorFunction = &sin_oscillator;
+		break;
+	case SAW:
+		osc->oscillatorFunction = &saw_oscillator;
+		break;
+	case SQUARE:
+		osc->oscillatorFunction = &square_oscillator;
+		break;
+	}
 }
 
 int enable_oscillator(oscillatorTypes oscillator, float frequency) {
@@ -74,17 +98,7 @@ int enable_oscillator(oscillatorTypes oscillator, float frequency) {
 
 	Oscillator* o = &oscillators[idx];
 
-	switch(oscillator) {
-	case SIN:
-		o->oscillatorFunction = &sin_oscillator;
-		break;
-	case SAW:
-		o->oscillatorFunction = &saw_oscillator;
-		break;
-	case SQUARE:
-		o->oscillatorFunction = &square_oscillator;
-		break;
-	}
+	set_oscillator_type(o, oscillator);
 
 	o->phase = 0.0f;
 	o->frequency = frequency;
@@ -100,6 +114,7 @@ void disable_oscillator(Oscillator * oscillator) {
 	if(oscillator==NULL || !oscillator->enabled)
 		return;
 
+	oscillator->type = NOTYPE;
 	oscillator->oscillatorFunction = NULL;
 	oscillator->phase = 0.0f;
 	oscillator->frequency = 0.0f;
