@@ -103,7 +103,7 @@ void HandleMIDIMessage(uint8_t midiStatus, uint8_t midiData1, uint8_t midiData2)
 	switch (midiStatus & 0xF0) {
 		case 0x80: // Note Off
 			//HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 0);
-			//if (channel != 0) break;
+			if (channel != 0) break;
 			event_callback(midiData2, 0, channel);
 
 			break;

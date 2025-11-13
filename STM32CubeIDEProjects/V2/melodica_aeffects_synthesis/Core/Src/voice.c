@@ -62,7 +62,7 @@ void tick_voices() {
 }
 
 void tick_voice(Voice * voice) {
-	if(!voice->enabled)
+	if(voice == NULL || !voice->enabled)
 		return;
 
 	//Tick ADSRs:
