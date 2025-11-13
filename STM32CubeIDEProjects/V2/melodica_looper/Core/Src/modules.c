@@ -35,8 +35,8 @@ PressureToggleState pressure_toggle_state;
  */
 
 
-uint8_t msg_buf[256];	// Holds a received message
-uint8_t msg_idx;
+uint8_t msg_buf[512];	// Holds a received message
+uint16_t msg_idx;
 uint32_t last_rx_timestamp;
 uint8_t note_counters[128];
 
@@ -111,28 +111,27 @@ void Module_ProcessByte() {
 	msg_buf[msg_idx] = byte;
 	msg_idx++;
 
+	if (msg_idx < sizeof(SwitchboxMsg)) { HAL_UART_Receive_IT(&huart2, &switchbox_byte, 1); return; }
 
-	uint8_t length = msg_buf[3];
-	// Check if this is a connectivity message
-	if (msg_buf[0] == 0) {
-		if (msg_idx >= 4) {
-			if (msg_buf[0] == msg_buf[1]) {	// Redundancy check
-				handle_connectivity_msg(msg_buf[2], msg_buf[3]);
-			}
-		}
-	}
+	SwitchboxMsg sb_msg;
+	memcpy(&sb_msg, msg_buf, sizeof(SwitchboxMsg));
 
-	// Wait until enough bytes have been read (device ID + redundancy + length + data)
-	if (msg_idx >= 3 + length) {
+	// Wait until enough bytes have been read
+	if (msg_idx >= sizeof(SwitchboxMsg) + sb_msg.data_length) {
+
+
 		switch (msg_buf[0]) {
-			case 0x00:	// Transpose IO
-				handle_transpose_msg(msg_buf + 3, msg_buf[2]);
+			case MODULE_CONNECTIVITY_MSG:
+				handle_connectivity_msg(sb_msg.device_ID, sb_msg.parameter_ID);	// Index is encoded into parameter ID for connectivity messages
 				break;
-			case 0x01:  // Stops IO
-				handle_stops_msg(msg_buf + 3, msg_buf[2]);
+			case MODULE_TRANSPOSE_ID:	// Transpose IO
+				handle_transpose_msg(msg_buf + sizeof(SwitchboxMsg), sb_msg.data_length);
 				break;
-			case 0x02: 	// Looper IO
-				handle_looper_msg(msg_buf + 3, msg_buf[2]);
+			case MODULE_STOPS_ID:  // Stops IO
+				handle_stops_msg(msg_buf + sizeof(SwitchboxMsg), sb_msg.data_length);
+				break;
+			case MODULE_LOOPER_ID: 	// Looper IO
+				handle_looper_msg(msg_buf + sizeof(SwitchboxMsg), sb_msg.data_length);
 
 		}
 
@@ -281,21 +280,18 @@ void pressure_toggle_update_channelpressure(ModuleStream* target, uint8_t channe
 
 }
 
-void handle_connectivity_msg(uint8_t device_id, uint8_t idx) {
-	// TODO: Implement this
-	// What's the plan here?
-	//	Need some kind of way to map device id to stream objects
-	//	Set the appropriate index in the stream array to the corresponding stream object
-
+void handle_connectivity_msg(uint8_t device_id, uint16_t idx) {
 	switch (device_id) {
 		case MODULE_TRANSPOSE_ID:
 			streams[idx] = &transpose_stream;
 			break;
 
 		case MODULE_STOPS_ID:
-			//streams[idx] = &stops_stream;
+			streams[idx] = &stops_stream;
 			break;
 	}
+
+	streams[idx + 1] = &out_stream;
 }
 
 //TODO: Shift all currently played notes

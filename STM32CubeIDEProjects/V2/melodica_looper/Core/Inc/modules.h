@@ -12,12 +12,26 @@
 
 extern UART_HandleTypeDef hlpuart1;
 
+typedef enum {
+	ABSOLUTE,
+	RELATIVE
+} ControlType;
+
+// Switchbox message
+typedef struct __attribute__((packed)) SwitchboxMsg {
+	uint8_t device_ID;
+	ControlType control_type;
+	uint16_t parameter_ID;
+	uint16_t data_length;
+} SwitchboxMsg;
+
 // Module ID definitions
 #define MODULE_CONNECTIVITY_MSG 0
 #define MODULE_TRANSPOSE_ID 1
 #define MODULE_STOPS_ID 2
 #define MODULE_LOOPER_ID 3
 #define MODULE_ARP_ID 4
+#define MODULE_SYNTH_ID 255
 
 // Configurable parameters
 #define MODULE_UART hlpuart1
@@ -31,6 +45,7 @@ extern UART_HandleTypeDef hlpuart1;
 // Button definitions
 #define BUTTON_TRANSPOSE_DOWN 0
 #define BUTTON_TRANSPOSE_UP 1
+
 
 // Internal module struct
 typedef struct ModuleStream ModuleStream;
@@ -80,7 +95,7 @@ void MIDI_RunModules();
 void Module_ProcessByte();
 void append_byte(ModuleStream* module, uint8_t byte);
 
-void handle_connectivity_msg(uint8_t device_id, uint8_t idx);
+void handle_connectivity_msg(uint8_t device_id, uint16_t idx);
 void handle_looper_msg(uint8_t* data, uint8_t len);
 void handle_transpose_msg(uint8_t* data, uint8_t len);
 void handle_stops_msg(uint8_t* data, uint8_t len);
