@@ -33,7 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define SEND_DUMMY_NOTE 0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,7 +49,7 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+uint32_t cur_t;		// Globally accessible timestamp
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -67,6 +67,7 @@ static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN 0 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+
     if (huart->Instance == UART4) {
     	MIDI_ProcessByte();
     }
@@ -95,8 +96,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  Module_Init();
-  MIDI_INIT();
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -113,15 +113,50 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  Module_Init();
+  MIDI_INIT();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint32_t last_noteon = HAL_GetTick();
+  uint32_t last_noteoff = HAL_GetTick() - 500;
+  stops_state.stops[0] = 1;
+  stops_state.stops[1] = 1;
+  stops_state.stops[2] = 1;
+  stops_state.stops[3] = 1;
+
+  /*uint8_t test;
+  if (HAL_UART_Receive(&huart4, &test, 1, 1000) == HAL_OK) {
+    // We got a byte → hardware is fine; problem is IRQ setup
+  }*/
+
   while (1)
   {
-	  // Todo: See if GetTick actually works
-	  uint32_t cur_t = HAL_GetTick();
+	  cur_t = HAL_GetTick();
+
+	  // Run ticking update on all modules
+	  for (uint8_t i = 0; i < 16 && streams[i]; i++) {
+		  streams[i]->update_tick(cur_t);
+	  }
+
+	  // Testing: Putting a note in the out stream
+	  if (cur_t - last_noteon > 1000) {
+		  //transpose_state.shift = (transpose_state.shift + 1) % 12;
+		  if (SEND_DUMMY_NOTE) note_on(0, 48, 60);
+		  //stream_noteon(streams[0], 0, 60, 60);
+		  last_noteon = cur_t;
+	  }
+
+	  if (cur_t - last_noteoff > 1000) {
+		  if (SEND_DUMMY_NOTE) note_off(0, 48, 0);
+		  //stream_noteoff(streams[0], 0, 60, 0);
+		  last_noteoff = cur_t;
+	  }
+
+	  // Run all modules
+	  MIDI_RunModules();
+
 
     /* USER CODE END WHILE */
 
@@ -376,18 +411,28 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : PA0 */
   GPIO_InitStruct.Pin = GPIO_PIN_0;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA1 PA4 PA5 PA6
-                           PA7 PA8 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
-                          |GPIO_PIN_7|GPIO_PIN_8;
+  /*Configure GPIO pins : PA1 PA5 PA6 PA7
+                           PA8 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7
+                          |GPIO_PIN_8;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : LOOPER_IN1_Pin LOOPER_IN2_Pin TRANSPOSE_DOWN_Pin TRANSPOSE_UP_Pin */
