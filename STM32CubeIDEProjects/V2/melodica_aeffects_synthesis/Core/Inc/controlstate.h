@@ -16,6 +16,7 @@
 #include "oscillator.h"
 #include "voice.h"
 #include "ADSR.h"
+#include "stm32h7xx_hal.h"
 #include "filter.h"
 
 
@@ -34,16 +35,23 @@
 
 
 // parameter ids
-#define PARAMTER_ID_GAIN 1
-#define PARAMTER_ID_FILTER1_CUTOFF 5
+#define PARAMTER_ID_GAIN 1						// (not in synthesis profile)
+#define PARAMTER_ID_DETUNE 2
+#define PARAMETER_ID_VOICE_NUM_OSC 3
+#define PARAMETER_ID_OSC_TYPE 4
+#define PARAMETER_ID_ADSR_ATTACK_FACTOR 5
+#define PARAMETER_ID_ADSR_ATTACK_LEVEL 6
+#define PARAMETER_ID_ADSR_DECAY_FACTOR 7
+#define PARAMETER_ID_ADSR_SUSTAIN_LEVEL 8
+#define PARAMETER_ID_ADSR_RELEASE_FACTOR 9
+#define PARAMETER_ID_FILTER1_TYPE 10
+#define PARAMETER_ID_FILTER1_CUTOFF 11
+#define PARAMETER_ID_FILTER1_RESONANCE 12
 
 
 
 /** PROFILES FOR SYNTHESIS AND AUDIO EFFECTS **/
 typedef struct Synthesis_profile {
-	// Master Synthesis:
-	float gain;							// Digital volume (for now) - TODO: Digital dac with controllable gain via i2c to do volume control analogly
-
 	// Voices:
 	int channel;						// Channel setting for this profile, maybe have multiple profiles on different channels? Then split keyboard up halfway down the middle for channel 1/channel 2 in the mainboard?
 	float detune;						// Detune between oscillators in voice, gives a phat sound, (the more oscillators the better for this)
@@ -103,9 +111,7 @@ Synthesis_profile* get_controlstate_active_profile();
 /**
  * Update a parameter, to be called by protocol when receiving an update signal from a switchbox
  */
-void update_parameter(unsigned int parameter_id, unsigned int control_type, unsigned int val);
-
-
+void update_parameter(unsigned int parameter_id, unsigned int control_type, uint8_t* data);
 
 
 #endif /* INC_CONTROLSTATE_H_ */

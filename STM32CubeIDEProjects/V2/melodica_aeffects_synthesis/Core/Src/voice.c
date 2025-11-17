@@ -240,7 +240,7 @@ void set_voice_oscillators(Voice* v, int numOscillators, oscillatorTypes type, f
 	if(v->voice_num_oscillators != numOscillators) {
 		int newAmount = v->voice_num_oscillators;
 
-		if(numOscillators > v->voice_num_oscillators) {
+		if(numOscillators < v->voice_num_oscillators) {
 			// Need to disable some oscillators from the voice, disable last N oscillators
 
 			for(int i = v->voice_num_oscillators-1; i >= numOscillators && i>= 0; i--) {

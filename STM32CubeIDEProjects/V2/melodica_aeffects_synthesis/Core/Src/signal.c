@@ -7,11 +7,9 @@
 
 #include "signal.h"
 #include "oscillator.h"
-#include "controlstate.h"
 #include "midi.h"
 #include <math.h>
 #include "filter.h"
-#include "voice.h"
 
 int sample_rate;				// Sample rate of DAC
 
@@ -20,6 +18,9 @@ int sample_rate;				// Sample rate of DAC
 
 float channel_pressures[NUM_CHANNELS];
 
+// Digital volume (for now) - TODO: Digital dac with controllable gain via i2c to do volume control analogly
+// Master gain
+float gain = 1.0f;
 
 // From chatgpt:
 #define LUT_SIZE 128
@@ -132,6 +133,20 @@ void update_voice(Voice* v, Synthesis_profile* newParameters) {
 	a->release_factor = newParameters->adsr_release_factor;
 }
 
+// Updates all active voices to new parameters
+void update_all_active_voices(Synthesis_profile* newParameters) {
+	// Go through all voices:
+	for(int q = 0; q <get_num_voices(); q++) {
+
+
+		Voice * v = get_voice_from_idx(q);
+
+		if(v->enabled) { // only update active voices (when new voices are created they will match the profile)
+			update_voice(v, newParameters);
+		}
+	}
+}
+
 
 float signal_next_sample() {
 
@@ -211,7 +226,7 @@ float signal_next_sample() {
 			*/
 
 			// Apply voice scaling factor to normalize and add to final val
-			val = val + voice_val * voice_scaling_fctr;
+			val = val + voice_val * voice_scaling_fctr * gain;
 
 		}
 
@@ -225,4 +240,9 @@ float signal_next_sample() {
 
 	return val;
 }
+
+void set_master_gain(float val) {
+	gain = val;
+}
+
 
