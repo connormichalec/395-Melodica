@@ -25,6 +25,7 @@
 #include "config.h"
 #include "IODevices.h"
 #include "IOManager.h"
+#include "modules.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,6 +66,7 @@ static void MX_ADC_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern uint32_t last_rx_timestamp;
+uint8_t test_flag = 0;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance == USART2) {
@@ -112,7 +114,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   HAL_ADC_Start(&hadc);			// make sure to start adc for pots
-
+  Switchbox_Init();
   IOinit();
   registerAll3PDTToggleSwitches();
   registerAllPots(&hadc);
@@ -128,25 +130,16 @@ int main(void)
 
 
   uint32_t cur_t;
-  uint32_t last_msg_timestamp = 0;
+  uint32_t last_msg_timestamp = HAL_GetTick();
   while (1)
   {
-	  pollInputs();
+	  //pollInputs();
 
 
 	// Every second, if this is the last module send a connectivity update
 	cur_t = HAL_GetTick();
-	if (cur_t - last_msg_timestamp > UPDATE_MSG_PERIOD_MS && last_rx_timestamp > UPDATE_MSG_PERIOD_MS * 2) {
-		// Additional message telling the fx board where to put the out stream
-		uint8_t send_buf[4] = { 0, 0, 0, 1 };
-		HAL_UART_Transmit(&huart2, send_buf, 4, 1000000);
-
-		send_buf[0] = 0;
-		send_buf[1] = 0;
-		send_buf[2] = DEVICE_ID;
-		send_buf[3] = 0;
-
-		HAL_UART_Transmit(&huart2, send_buf, 4, 1000000);
+	if (cur_t - last_msg_timestamp > UPDATE_MSG_PERIOD_MS && cur_t - last_rx_timestamp > UPDATE_MSG_PERIOD_MS * 2) {
+		if(test_flag == 1) HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
 
 
 		last_msg_timestamp = cur_t;

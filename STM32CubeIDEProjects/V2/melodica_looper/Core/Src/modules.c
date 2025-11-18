@@ -280,6 +280,7 @@ void pressure_toggle_update_channelpressure(ModuleStream* target, uint8_t channe
 
 }
 
+// TODO: After a certain timeout, if no connectivity messages are received reset the stream
 void handle_connectivity_msg(uint8_t device_id, uint16_t idx) {
 	switch (device_id) {
 		case MODULE_TRANSPOSE_ID:

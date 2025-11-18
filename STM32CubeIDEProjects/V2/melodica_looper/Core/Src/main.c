@@ -126,11 +126,6 @@ int main(void)
   stops_state.stops[2] = 1;
   stops_state.stops[3] = 1;
 
-  /*uint8_t test;
-  if (HAL_UART_Receive(&huart4, &test, 1, 1000) == HAL_OK) {
-    // We got a byte → hardware is fine; problem is IRQ setup
-  }*/
-
   while (1)
   {
 	  cur_t = HAL_GetTick();

@@ -8,7 +8,7 @@
 #ifndef INC_MODULES_H_
 #define INC_MODULES_H_
 
-#include "stm32g4xx_hal.h"
+#include "stm32l0xx_hal.h"
 
 extern UART_HandleTypeDef hlpuart1;
 
@@ -21,7 +21,7 @@ typedef enum {
 typedef struct __attribute__((packed)) SwitchboxMsg {
 	uint8_t device_ID;
 	ControlType control_type;
-	uint16_t parameter_ID;		// Used as index for control messages
+	uint16_t parameter_ID;
 	uint16_t data_length;
 } SwitchboxMsg;
 

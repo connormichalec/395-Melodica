@@ -5,5 +5,5 @@
  *      Author: kobes
  */
 
-#define DEVICE_ID 1
+#define DEVICE_ID 2
 #define UPDATE_MSG_PERIOD_MS 1000
