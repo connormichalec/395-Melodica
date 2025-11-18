@@ -101,8 +101,10 @@ float rel_func(ADSR * adsr) {
 }
 
 void ADSR_set_state(ADSR * adsr, ADSRstate state) {
-	adsr->cur_state = state;
-	adsr->cur_step = 0;
+	if(adsr != NULL) {
+		adsr->cur_state = state;
+		adsr->cur_step = 0;
+	}
 }
 
 void ADSR_next(ADSR * adsr) {
@@ -128,6 +130,9 @@ void ADSR_next(ADSR * adsr) {
 }
 
 void ADSR_tick(ADSR * adsr) {
+	if(adsr == NULL)
+		return;
+
 	adsr->cur_step++;
 
 	switch(adsr->cur_state) {

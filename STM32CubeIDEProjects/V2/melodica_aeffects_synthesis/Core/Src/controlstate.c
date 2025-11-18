@@ -7,13 +7,12 @@
 
 #include "controlstate.h"
 #include <stdlib.h>
+#include "signal.h"
 
 // global state
 SynthesisParameters* state;
 
 void set_profile_defaults(Synthesis_profile* profile) {
-	profile->gain = 1.0f;
-
 	profile->channel = -1;				// -1 means profile applied to all channels
 	profile->detune = 0.2f;
 	profile->voice_num_osc = VOICE_NUM_OSC_MAX;
@@ -60,17 +59,75 @@ Synthesis_profile* get_controlstate_active_profile() {
 	return &(state->synthesis_profile[state->active_profile]);
 }
 
-// Just linearlly normalizes fixed point input to a float based on defined input range
-float linearNormalize(unsigned int input) {
-	return(((float) input) / ((float) CONTROL_RANGE));
-}
-
 
 // When we receive a state update from switchbox, update values accordingly. two psosible inputs, absolute values, or relative values.
-void update_parameter(unsigned int parameter_id, unsigned int control_type, unsigned int val) {
+void update_parameter(unsigned int parameter_id, unsigned int control_type, uint8_t* data) {
 	switch(parameter_id) {
-		case PARAMTER_ID_GAIN:
-			get_controlstate_active_profile()->gain = linearNormalize(val);
+		case PARAMTER_ID_GAIN:					// Note: gain is not actually in the synthesis profile struct, as it is universal and does not change with profile.
+			set_master_gain(*((float*) data));
+			break;
+		case PARAMTER_ID_DETUNE:
+			get_controlstate_active_profile()->detune = *((float*) data);
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_VOICE_NUM_OSC:
+			get_controlstate_active_profile()->voice_num_osc = *((uint8_t*) data);
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_OSC_TYPE:
+			switch(*((uint8_t*) data)) {
+				case 0:
+					get_controlstate_active_profile()->oscillatorType = SAW;
+					break;
+				case 1:
+					get_controlstate_active_profile()->oscillatorType = SIN;
+					break;
+				case 2:
+					get_controlstate_active_profile()->oscillatorType = SQUARE;
+					break;
+				default:
+					break;
+			}
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_ADSR_ATTACK_FACTOR:
+			get_controlstate_active_profile()->adsr_attack_factor = *((float*) data);
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_ADSR_ATTACK_LEVEL:
+			get_controlstate_active_profile()->adsr_attack_level = *((float*) data);
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_ADSR_DECAY_FACTOR:
+			get_controlstate_active_profile()->adsr_decay_factor = *((float*) data);
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_ADSR_SUSTAIN_LEVEL:
+			get_controlstate_active_profile()->adsr_sustain_level = *((float*) data);
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_ADSR_RELEASE_FACTOR:
+			get_controlstate_active_profile()->adsr_release_factor= *((float*) data);
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_FILTER1_TYPE:
+			//TODO: Test once more filter types are implemented
+			switch(*((uint8_t*) data)) {
+				case 0:
+					get_controlstate_active_profile()->filter1_type = LOWPASS;
+					break;
+				default:
+					break;
+			}
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_FILTER1_CUTOFF:
+			get_controlstate_active_profile()->filter1_cutoff = *((float*) data);
+			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_FILTER1_RESONANCE:
+			get_controlstate_active_profile()->filter1_resonance = *((float*) data);
+			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		default:
 			break;

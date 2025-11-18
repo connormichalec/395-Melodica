@@ -7,11 +7,9 @@
 
 #include "signal.h"
 #include "oscillator.h"
-#include "controlstate.h"
 #include "midi.h"
 #include <math.h>
 #include "filter.h"
-#include "voice.h"
 
 int sample_rate;				// Sample rate of DAC
 
@@ -20,6 +18,9 @@ int sample_rate;				// Sample rate of DAC
 
 float channel_pressures[NUM_CHANNELS];
 
+// Digital volume (for now) - TODO: Digital dac with controllable gain via i2c to do volume control analogly
+// Master gain
+float gain = 1.0f;
 
 // From chatgpt:
 #define LUT_SIZE 128
@@ -66,6 +67,9 @@ void initialize_signal(int sample_rate_) {
 
 	// Used later in volume pressure demo, number is steepness of curve for pressure "sensitivity"
 	generateLogLUT(5);
+
+	//test:
+	//keyboard_update(60, 1, 0);
 }
 
 void keyboard_update(uint8_t val, uint8_t state, uint8_t channel) {
@@ -91,7 +95,12 @@ void keyboard_update(uint8_t val, uint8_t state, uint8_t channel) {
 	}
 	else if (state == 0) {
 		// Key turned off, progress set ADSR to "release" state
-		ADSR_set_state(get_voice_from_note(val)->adsr,RELEASE);
+
+		Voice* v = get_voice_from_note(val);
+		if (v != NULL) {
+			ADSR_set_state(v->adsr, RELEASE);
+		}
+
 	}
 	else if (state == 2) {
 		// note pressure update, (not implemented: update pressure for voices of that channel)
@@ -122,6 +131,20 @@ void update_voice(Voice* v, Synthesis_profile* newParameters) {
 	a->decay_factor = newParameters->adsr_decay_factor;
 	a->sustain_level = newParameters->adsr_sustain_level;
 	a->release_factor = newParameters->adsr_release_factor;
+}
+
+// Updates all active voices to new parameters
+void update_all_active_voices(Synthesis_profile* newParameters) {
+	// Go through all voices:
+	for(int q = 0; q <get_num_voices(); q++) {
+
+
+		Voice * v = get_voice_from_idx(q);
+
+		if(v->enabled) { // only update active voices (when new voices are created they will match the profile)
+			update_voice(v, newParameters);
+		}
+	}
 }
 
 
@@ -203,7 +226,7 @@ float signal_next_sample() {
 			*/
 
 			// Apply voice scaling factor to normalize and add to final val
-			val = val + voice_val * voice_scaling_fctr;
+			val = val + voice_val * voice_scaling_fctr * gain;
 
 		}
 
@@ -217,4 +240,9 @@ float signal_next_sample() {
 
 	return val;
 }
+
+void set_master_gain(float val) {
+	gain = val;
+}
+
 
