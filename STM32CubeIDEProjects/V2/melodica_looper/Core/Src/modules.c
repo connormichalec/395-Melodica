@@ -65,8 +65,7 @@ void Module_Init() {
 	// Setting up module streams
 
 	for (uint8_t i = 1; i < 16; i++) streams[i] = NULL;
-	streams[0] = &stops_stream;
-	streams[1] = &out_stream;
+	streams[0] = &out_stream;
 
 	out_stream.data_idx = 0;
 	out_stream.update_noteon = &out_stream_update_noteon;

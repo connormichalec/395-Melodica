@@ -66,7 +66,6 @@ static void MX_ADC_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern uint32_t last_rx_timestamp;
-uint8_t test_flag = 0;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance == USART2) {
@@ -134,12 +133,10 @@ int main(void)
   while (1)
   {
 	  //pollInputs();
-
-
 	// Every second, if this is the last module send a connectivity update
 	cur_t = HAL_GetTick();
 	if (cur_t - last_msg_timestamp > UPDATE_MSG_PERIOD_MS && cur_t - last_rx_timestamp > UPDATE_MSG_PERIOD_MS * 2) {
-		if(test_flag == 1) HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
+		HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
 
 
 		last_msg_timestamp = cur_t;
@@ -305,8 +302,8 @@ static void MX_LPUART1_UART_Init(void)
 
   /* USER CODE END LPUART1_Init 1 */
   hlpuart1.Instance = LPUART1;
-  hlpuart1.Init.BaudRate = 209700;
-  hlpuart1.Init.WordLength = UART_WORDLENGTH_7B;
+  hlpuart1.Init.BaudRate = 115200;
+  hlpuart1.Init.WordLength = UART_WORDLENGTH_8B;
   hlpuart1.Init.StopBits = UART_STOPBITS_1;
   hlpuart1.Init.Parity = UART_PARITY_NONE;
   hlpuart1.Init.Mode = UART_MODE_TX_RX;
@@ -375,10 +372,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : PA4 */
-  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  /*Configure GPIO pins : PA1 PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

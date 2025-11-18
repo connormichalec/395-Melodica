@@ -39,10 +39,9 @@ void Switchbox_Init() {
 	memcpy(connectivity_msg, &cmsg, sizeof(SwitchboxMsg));
 }
 
-extern uint8_t test_flag;
 void Prev_ProcessByte() {
-	// TODO for next week: FIGURE OUT WHY THIS ISNT REARMING
-	HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1);
+	__disable_irq();
+	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
 
 	// Reset system if timeout
 	uint32_t timestamp = HAL_GetTick();
@@ -56,9 +55,8 @@ void Prev_ProcessByte() {
 	// Store into buffer
 	prev_msg_buf[prev_msg_idx] = prev_msg_byte;
 	prev_msg_idx++;
-	test_flag = 1;
 
-	if (prev_msg_idx < sizeof(SwitchboxMsg)) { return; }
+	if (prev_msg_idx < sizeof(SwitchboxMsg)) { __enable_irq(); HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1); return; }
 
 	SwitchboxMsg sb_msg;
 	memcpy(&sb_msg, prev_msg_buf, sizeof(SwitchboxMsg));
@@ -87,6 +85,8 @@ void Prev_ProcessByte() {
 		// Reset reader index
 		prev_msg_idx = 0;
 	}
+	__enable_irq();
+	HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1);
 }
 
 void Next_ProcessByte() {
