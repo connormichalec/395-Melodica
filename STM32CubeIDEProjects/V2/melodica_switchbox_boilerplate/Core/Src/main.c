@@ -148,7 +148,7 @@ int main(void)
 
 	cur_t = HAL_GetTick();
 	if (cur_t - last_msg_timestamp > UPDATE_MSG_PERIOD_MS && cur_t - last_rx_timestamp > UPDATE_MSG_PERIOD_MS * 2) {
-		HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
+		//HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
 
 
 		last_msg_timestamp = cur_t;

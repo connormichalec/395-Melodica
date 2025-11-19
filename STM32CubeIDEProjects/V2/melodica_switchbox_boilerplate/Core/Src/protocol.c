@@ -44,10 +44,10 @@ void Prev_ProcessByte() {
 	// Reset system if timeout
 	uint32_t timestamp = HAL_GetTick();
 
-	// TODO: Uncomment this later, just commenting out for debugging
-	/*if (timestamp - last_rx_timestamp >= 10) {		// 10ms timeout
+	if (timestamp - last_rx_timestamp >= 10) {		// 10ms timeout
 		prev_msg_idx = 0;
-	}*/
+	}
+
 	last_rx_timestamp = timestamp;
 
 
@@ -58,6 +58,7 @@ void Prev_ProcessByte() {
 
 
 	if (prev_msg_idx < sizeof(SwitchboxMsg)) {
+		// Receive the rest of the message
 		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
 		HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1);
 		return;
@@ -69,7 +70,7 @@ void Prev_ProcessByte() {
 
 	// Check if this is a connectivity message
 	if (prev_msg_idx >= sizeof(SwitchboxMsg) + sb_msg.data_length) {
-		if (sb_msg.device_ID == MODULE_CONNECTIVITY_MSG) {
+		if (sb_msg.device_ID == MODULE_CONNECTIVITY_MSG) {			// TODO: ytf are we checking if device ID is equal to this, doesnt make sense
 			// Prepend connectivity message for this device if the message was from the immediate neighbor
 			// (this results in building a "train" whenever the last device sends a message)
 			// This ensures modules arrive with indexes in ascending order
@@ -99,6 +100,8 @@ void Prev_ProcessByte() {
 void Next_ProcessByte() {
 
 }
+
+// only will send the heartbeat if its the last module in the chain, all others will append to the heartbeat coming down the line.
 void send_connectivity_message() {
 
 }

@@ -12,6 +12,8 @@
 
 extern UART_HandleTypeDef hlpuart1;
 
+
+// TODO: Move these two structs to protocol.h they dont make too much sense being here. This file is more implementation specific.
 typedef enum {
 	ABSOLUTE,
 	RELATIVE
@@ -24,6 +26,8 @@ typedef struct __attribute__((packed)) SwitchboxMsg {
 	uint16_t parameter_ID;
 	uint16_t data_length;
 } SwitchboxMsg;
+
+
 
 // Module ID definitions
 #define MODULE_CONNECTIVITY_MSG 0
