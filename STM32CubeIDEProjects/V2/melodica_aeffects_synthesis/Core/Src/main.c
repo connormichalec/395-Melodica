@@ -138,6 +138,10 @@ int main(void)
   {
 	  audio_signal_loop_tick();
 
+	  if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_7)) {
+		  *((uint8_t*)testbuffer) = 0;
+		  update_parameter(PARAMETER_ID_FILTER1_TYPE,0,testbuffer);
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

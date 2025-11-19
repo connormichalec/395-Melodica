@@ -11,6 +11,8 @@
 #define INC_PROTOCOL_H_
 
 extern uint8_t connectivity_msg[16];
+extern uint8_t prev_msg_byte;
+extern uint8_t next_msg_byte;
 extern uint32_t last_rx_timestamp;
 
 

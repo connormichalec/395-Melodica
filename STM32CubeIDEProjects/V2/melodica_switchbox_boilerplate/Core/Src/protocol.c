@@ -15,7 +15,7 @@ extern UART_HandleTypeDef hlpuart1; // Previous device
 
 uint8_t prev_msg_byte;
 uint8_t prev_msg_buf[512];
-uint8_t prev_msg_idx;
+uint8_t prev_msg_idx = 0;
 uint8_t next_msg_byte;
 uint8_t next_msg_buf[512];
 uint8_t next_msg_idx;
@@ -40,8 +40,6 @@ void Switchbox_Init() {
 }
 
 void Prev_ProcessByte() {
-	__disable_irq();
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
 
 	// Reset system if timeout
 	uint32_t timestamp = HAL_GetTick();
@@ -52,11 +50,19 @@ void Prev_ProcessByte() {
 	}*/
 	last_rx_timestamp = timestamp;
 
+
 	// Store into buffer
 	prev_msg_buf[prev_msg_idx] = prev_msg_byte;
 	prev_msg_idx++;
 
-	if (prev_msg_idx < sizeof(SwitchboxMsg)) { __enable_irq(); HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1); return; }
+
+
+	if (prev_msg_idx < sizeof(SwitchboxMsg)) {
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+		HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1);
+		return;
+	}
+
 
 	SwitchboxMsg sb_msg;
 	memcpy(&sb_msg, prev_msg_buf, sizeof(SwitchboxMsg));
@@ -85,8 +91,9 @@ void Prev_ProcessByte() {
 		// Reset reader index
 		prev_msg_idx = 0;
 	}
-	__enable_irq();
+
 	HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1);
+	return;
 }
 
 void Next_ProcessByte() {
