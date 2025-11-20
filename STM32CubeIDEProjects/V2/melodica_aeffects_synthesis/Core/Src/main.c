@@ -24,6 +24,7 @@
 #include "audio.h"
 #include "midi.h"
 #include "controlstate.h"
+#include "protocol.h"
 #include "signal.h"
 #include <stdlib.h>
 /* USER CODE END Includes */
@@ -76,6 +77,28 @@ static void MX_DAC1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+extern uint8_t midi_buffer;
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	// For MIDI:
+    if (huart->Instance == USART1) { // Ensure this is USART1's interrupt
+        // Restart UART reception to keep listening - this is important to do BEFORE processbyte because processbyte could start the synthesis and interrupts wont be enabled until event callback returns.
+        HAL_UART_Receive_IT(&huart1, &midi_buffer, 1);
+
+        MIDI_ProcessByte(midi_buffer); // Your custom MIDI parsing logic
+    }
+
+    // For Comms:
+    if (huart->Instance == USART2) {
+    	Next_ProcessByte();
+    }
+
+    if (huart->Instance == USART3) {
+    	Prev_ProcessByte();
+
+    }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -118,6 +141,7 @@ int main(void)
   MX_DAC1_Init();
   /* USER CODE BEGIN 2 */
   MIDI_Init(&note_callbk);
+  ProtocolInit();
 
   // For debugging: - good use in stm32f4xx_it.c it can be set to go high when hard fault occurs
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, 0);
@@ -138,6 +162,10 @@ int main(void)
   {
 	  audio_signal_loop_tick();
 
+	  if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_7)) {
+		  *((uint8_t*)testbuffer) = 0;
+		  update_parameter(PARAMETER_ID_FILTER1_TYPE,0,testbuffer);
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -397,7 +425,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -445,7 +473,7 @@ static void MX_USART3_UART_Init(void)
 
   /* USER CODE END USART3_Init 1 */
   huart3.Instance = USART3;
-  huart3.Init.BaudRate = 115200;
+  huart3.Init.BaudRate = 9600;
   huart3.Init.WordLength = UART_WORDLENGTH_8B;
   huart3.Init.StopBits = UART_STOPBITS_1;
   huart3.Init.Parity = UART_PARITY_NONE;

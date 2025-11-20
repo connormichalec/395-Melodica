@@ -15,7 +15,7 @@ extern UART_HandleTypeDef hlpuart1; // Previous device
 
 uint8_t prev_msg_byte;
 uint8_t prev_msg_buf[512];
-uint8_t prev_msg_idx;
+uint8_t prev_msg_idx = 0;
 uint8_t next_msg_byte;
 uint8_t next_msg_buf[512];
 uint8_t next_msg_idx;
@@ -40,30 +40,37 @@ void Switchbox_Init() {
 }
 
 void Prev_ProcessByte() {
-	__disable_irq();
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
 
 	// Reset system if timeout
 	uint32_t timestamp = HAL_GetTick();
 
-	// TODO: Uncomment this later, just commenting out for debugging
-	/*if (timestamp - last_rx_timestamp >= 10) {		// 10ms timeout
+	if (timestamp - last_rx_timestamp >= 10) {		// 10ms timeout
 		prev_msg_idx = 0;
-	}*/
+	}
+
 	last_rx_timestamp = timestamp;
+
 
 	// Store into buffer
 	prev_msg_buf[prev_msg_idx] = prev_msg_byte;
 	prev_msg_idx++;
 
-	if (prev_msg_idx < sizeof(SwitchboxMsg)) { __enable_irq(); HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1); return; }
+
+
+	if (prev_msg_idx < sizeof(SwitchboxMsg)) {
+		// Receive the rest of the message
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
+		HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1);
+		return;
+	}
+
 
 	SwitchboxMsg sb_msg;
 	memcpy(&sb_msg, prev_msg_buf, sizeof(SwitchboxMsg));
 
 	// Check if this is a connectivity message
 	if (prev_msg_idx >= sizeof(SwitchboxMsg) + sb_msg.data_length) {
-		if (sb_msg.device_ID == MODULE_CONNECTIVITY_MSG) {
+		if (sb_msg.device_ID == MODULE_CONNECTIVITY_MSG) {			// TODO: ytf are we checking if device ID is equal to this, doesnt make sense
 			// Prepend connectivity message for this device if the message was from the immediate neighbor
 			// (this results in building a "train" whenever the last device sends a message)
 			// This ensures modules arrive with indexes in ascending order
@@ -85,13 +92,16 @@ void Prev_ProcessByte() {
 		// Reset reader index
 		prev_msg_idx = 0;
 	}
-	__enable_irq();
+
 	HAL_UART_Receive_IT(&hlpuart1, &prev_msg_byte, 1);
+	return;
 }
 
 void Next_ProcessByte() {
 
 }
+
+// only will send the heartbeat if its the last module in the chain, all others will append to the heartbeat coming down the line.
 void send_connectivity_message() {
 
 }

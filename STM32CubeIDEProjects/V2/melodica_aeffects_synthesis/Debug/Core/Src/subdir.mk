@@ -12,6 +12,7 @@ C_SRCS += \
 ../Core/Src/main.c \
 ../Core/Src/midi.c \
 ../Core/Src/oscillator.c \
+../Core/Src/protocol.c \
 ../Core/Src/signal.c \
 ../Core/Src/stm32h7xx_hal_msp.c \
 ../Core/Src/stm32h7xx_it.c \
@@ -28,6 +29,7 @@ OBJS += \
 ./Core/Src/main.o \
 ./Core/Src/midi.o \
 ./Core/Src/oscillator.o \
+./Core/Src/protocol.o \
 ./Core/Src/signal.o \
 ./Core/Src/stm32h7xx_hal_msp.o \
 ./Core/Src/stm32h7xx_it.o \
@@ -44,6 +46,7 @@ C_DEPS += \
 ./Core/Src/main.d \
 ./Core/Src/midi.d \
 ./Core/Src/oscillator.d \
+./Core/Src/protocol.d \
 ./Core/Src/signal.d \
 ./Core/Src/stm32h7xx_hal_msp.d \
 ./Core/Src/stm32h7xx_it.d \
@@ -62,7 +65,7 @@ Core/Src/signal.o: ../Core/Src/signal.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/ADSR.cyclo ./Core/Src/ADSR.d ./Core/Src/ADSR.o ./Core/Src/ADSR.su ./Core/Src/audio.cyclo ./Core/Src/audio.d ./Core/Src/audio.o ./Core/Src/audio.su ./Core/Src/controlstate.cyclo ./Core/Src/controlstate.d ./Core/Src/controlstate.o ./Core/Src/controlstate.su ./Core/Src/filter.cyclo ./Core/Src/filter.d ./Core/Src/filter.o ./Core/Src/filter.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/midi.cyclo ./Core/Src/midi.d ./Core/Src/midi.o ./Core/Src/midi.su ./Core/Src/oscillator.cyclo ./Core/Src/oscillator.d ./Core/Src/oscillator.o ./Core/Src/oscillator.su ./Core/Src/signal.cyclo ./Core/Src/signal.d ./Core/Src/signal.o ./Core/Src/signal.su ./Core/Src/stm32h7xx_hal_msp.cyclo ./Core/Src/stm32h7xx_hal_msp.d ./Core/Src/stm32h7xx_hal_msp.o ./Core/Src/stm32h7xx_hal_msp.su ./Core/Src/stm32h7xx_it.cyclo ./Core/Src/stm32h7xx_it.d ./Core/Src/stm32h7xx_it.o ./Core/Src/stm32h7xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32h7xx.cyclo ./Core/Src/system_stm32h7xx.d ./Core/Src/system_stm32h7xx.o ./Core/Src/system_stm32h7xx.su ./Core/Src/voice.cyclo ./Core/Src/voice.d ./Core/Src/voice.o ./Core/Src/voice.su
+	-$(RM) ./Core/Src/ADSR.cyclo ./Core/Src/ADSR.d ./Core/Src/ADSR.o ./Core/Src/ADSR.su ./Core/Src/audio.cyclo ./Core/Src/audio.d ./Core/Src/audio.o ./Core/Src/audio.su ./Core/Src/controlstate.cyclo ./Core/Src/controlstate.d ./Core/Src/controlstate.o ./Core/Src/controlstate.su ./Core/Src/filter.cyclo ./Core/Src/filter.d ./Core/Src/filter.o ./Core/Src/filter.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/midi.cyclo ./Core/Src/midi.d ./Core/Src/midi.o ./Core/Src/midi.su ./Core/Src/oscillator.cyclo ./Core/Src/oscillator.d ./Core/Src/oscillator.o ./Core/Src/oscillator.su ./Core/Src/protocol.cyclo ./Core/Src/protocol.d ./Core/Src/protocol.o ./Core/Src/protocol.su ./Core/Src/signal.cyclo ./Core/Src/signal.d ./Core/Src/signal.o ./Core/Src/signal.su ./Core/Src/stm32h7xx_hal_msp.cyclo ./Core/Src/stm32h7xx_hal_msp.d ./Core/Src/stm32h7xx_hal_msp.o ./Core/Src/stm32h7xx_hal_msp.su ./Core/Src/stm32h7xx_it.cyclo ./Core/Src/stm32h7xx_it.d ./Core/Src/stm32h7xx_it.o ./Core/Src/stm32h7xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32h7xx.cyclo ./Core/Src/system_stm32h7xx.d ./Core/Src/system_stm32h7xx.o ./Core/Src/system_stm32h7xx.su ./Core/Src/voice.cyclo ./Core/Src/voice.d ./Core/Src/voice.o ./Core/Src/voice.su
 
 .PHONY: clean-Core-2f-Src
 

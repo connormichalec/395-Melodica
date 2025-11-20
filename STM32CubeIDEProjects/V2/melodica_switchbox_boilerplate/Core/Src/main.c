@@ -66,14 +66,20 @@ static void MX_ADC_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern uint32_t last_rx_timestamp;
+uint8_t test;
+uint8_t test2;
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+
+
     if (huart->Instance == USART2) {
     	Next_ProcessByte();
     }
 
     if (huart->Instance == LPUART1) {
     	Prev_ProcessByte();
+
     }
 }
 /* USER CODE END 0 */
@@ -117,6 +123,10 @@ int main(void)
   IOinit();
   registerAll3PDTToggleSwitches();
   registerAllPots(&hadc);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 0);
+
+
+
 
 
 
@@ -130,13 +140,15 @@ int main(void)
 
   uint32_t cur_t;
   uint32_t last_msg_timestamp = HAL_GetTick();
-  while (1)
-  {
+  while (1) {
+
+
 	  //pollInputs();
 	// Every second, if this is the last module send a connectivity update
+
 	cur_t = HAL_GetTick();
 	if (cur_t - last_msg_timestamp > UPDATE_MSG_PERIOD_MS && cur_t - last_rx_timestamp > UPDATE_MSG_PERIOD_MS * 2) {
-		HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
+		//HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
 
 
 		last_msg_timestamp = cur_t;
@@ -251,14 +263,6 @@ static void MX_ADC_Init(void)
 
   /** Configure for the selected ADC regular channel to be converted.
   */
-  sConfig.Channel = ADC_CHANNEL_6;
-  if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel to be converted.
-  */
   sConfig.Channel = ADC_CHANNEL_7;
   if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
   {
@@ -268,14 +272,6 @@ static void MX_ADC_Init(void)
   /** Configure for the selected ADC regular channel to be converted.
   */
   sConfig.Channel = ADC_CHANNEL_8;
-  if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure for the selected ADC regular channel to be converted.
-  */
-  sConfig.Channel = ADC_CHANNEL_9;
   if (HAL_ADC_ConfigChannel(&hadc, &sConfig) != HAL_OK)
   {
     Error_Handler();
@@ -302,7 +298,7 @@ static void MX_LPUART1_UART_Init(void)
 
   /* USER CODE END LPUART1_Init 1 */
   hlpuart1.Instance = LPUART1;
-  hlpuart1.Init.BaudRate = 115200;
+  hlpuart1.Init.BaudRate = 9600;
   hlpuart1.Init.WordLength = UART_WORDLENGTH_8B;
   hlpuart1.Init.StopBits = UART_STOPBITS_1;
   hlpuart1.Init.Parity = UART_PARITY_NONE;
@@ -336,7 +332,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -372,10 +368,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PA1 PA4 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_4;
+  /*Configure GPIO pins : PA0 PA1 PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

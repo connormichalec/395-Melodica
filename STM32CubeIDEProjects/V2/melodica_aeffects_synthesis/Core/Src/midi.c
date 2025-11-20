@@ -32,14 +32,6 @@ void MIDI_SendByte(uint8_t byte) {
 /////// RX STUFF
 uint8_t midi_buffer;	// Buffer for incoming midi data
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart->Instance == USART1) { // Ensure this is USART1's interrupt
-        // Restart UART reception to keep listening - this is important to do BEFORE processbyte because processbyte could start the synthesis and interrupts wont be enabled until event callback returns.
-        HAL_UART_Receive_IT(&huart1, &midi_buffer, 1);
-
-        MIDI_ProcessByte(midi_buffer); // Your custom MIDI parsing logic
-    }
-}
 
 //MODIFIED BY CONNOR: - this is a quick fix and needs to be more thoroughly implemented
 void (*event_callback)(uint8_t, uint8_t, uint8_t);
