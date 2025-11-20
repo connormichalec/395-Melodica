@@ -7,6 +7,7 @@
 
 // Code for module management
 #include "modules.h"
+#include "protocol.h"
 #include "midi.h"
 #include <string.h>
 
@@ -118,20 +119,22 @@ void Module_ProcessByte() {
 	// Wait until enough bytes have been read
 	if (msg_idx >= sizeof(SwitchboxMsg) + sb_msg.data_length) {
 
+		if (sb_msg.control_type == CONTROL_CONNECTIVITY) {
+			handle_connectivity_msg(sb_msg.device_ID, sb_msg.parameter_ID);	// Index is encoded into parameter ID for connectivity messages
+		}
 
-		switch (msg_buf[0]) {
-			case MODULE_CONNECTIVITY_MSG:
-				handle_connectivity_msg(sb_msg.device_ID, sb_msg.parameter_ID);	// Index is encoded into parameter ID for connectivity messages
-				break;
-			case MODULE_TRANSPOSE_ID:	// Transpose IO
-				handle_transpose_msg(msg_buf + sizeof(SwitchboxMsg), sb_msg.data_length);
-				break;
-			case MODULE_STOPS_ID:  // Stops IO
-				handle_stops_msg(msg_buf + sizeof(SwitchboxMsg), sb_msg.data_length);
-				break;
-			case MODULE_LOOPER_ID: 	// Looper IO
-				handle_looper_msg(msg_buf + sizeof(SwitchboxMsg), sb_msg.data_length);
+		else {
+			switch (sb_msg.device_ID) {
+				case MODULE_TRANSPOSE_ID:	// Transpose IO
+					handle_transpose_msg(msg_buf + sizeof(SwitchboxMsg), sb_msg.data_length);
+					break;
+				case MODULE_STOPS_ID:  // Stops IO
+					handle_stops_msg(msg_buf + sizeof(SwitchboxMsg), sb_msg.data_length);
+					break;
+				case MODULE_LOOPER_ID: 	// Looper IO
+					handle_looper_msg(msg_buf + sizeof(SwitchboxMsg), sb_msg.data_length);
 
+			}
 		}
 
 		// Reset reader

@@ -12,19 +12,6 @@
 
 extern UART_HandleTypeDef hlpuart1;
 
-typedef enum {
-	ABSOLUTE,
-	RELATIVE
-} ControlType;
-
-// Switchbox message
-typedef struct __attribute__((packed)) SwitchboxMsg {
-	uint8_t device_ID;
-	ControlType control_type;
-	uint16_t parameter_ID;		// Used as index for control messages
-	uint16_t data_length;
-} SwitchboxMsg;
-
 // Module ID definitions
 #define MODULE_CONNECTIVITY_MSG 0
 #define MODULE_TRANSPOSE_ID 1

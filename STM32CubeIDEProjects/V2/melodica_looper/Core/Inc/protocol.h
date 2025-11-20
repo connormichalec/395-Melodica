@@ -5,7 +5,7 @@
  *      Author: kobes
  */
 
-#include "stm32l0xx_hal.h"
+#include "stm32g4xx_hal.h"
 
 #ifndef INC_PROTOCOL_H_
 #define INC_PROTOCOL_H_

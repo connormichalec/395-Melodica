@@ -31,10 +31,10 @@ void Switchbox_Init() {
 	// Set up default connectivity message
 	SwitchboxMsg cmsg;
 
-	cmsg.control_type = ABSOLUTE;
-	cmsg.data_length = 0;
 	cmsg.device_ID = DEVICE_ID;
-	cmsg.parameter_ID = 0;
+	cmsg.control_type = CONTROL_CONNECTIVITY;
+	cmsg.data_length = 0;
+	cmsg.parameter_ID = 0;	// Encodes index
 
 	memcpy(connectivity_msg, &cmsg, sizeof(SwitchboxMsg));
 }
@@ -70,7 +70,7 @@ void Prev_ProcessByte() {
 
 	// Check if this is a connectivity message
 	if (prev_msg_idx >= sizeof(SwitchboxMsg) + sb_msg.data_length) {
-		if (sb_msg.device_ID == MODULE_CONNECTIVITY_MSG) {			// TODO: ytf are we checking if device ID is equal to this, doesnt make sense
+		if (sb_msg.control_type == CONTROL_CONNECTIVITY) {
 			// Prepend connectivity message for this device if the message was from the immediate neighbor
 			// (this results in building a "train" whenever the last device sends a message)
 			// This ensures modules arrive with indexes in ascending order
@@ -78,7 +78,7 @@ void Prev_ProcessByte() {
 				HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
 			}
 
-			// Add 1 to index value before passing along
+			// Add 1 to index value (encoded in parameter ID) before passing along
 			sb_msg.parameter_ID += 1;
 			memcpy(prev_msg_buf, &sb_msg, sizeof(SwitchboxMsg));
 			HAL_UART_Transmit(&huart2, prev_msg_buf, sizeof(SwitchboxMsg), 1000000);
