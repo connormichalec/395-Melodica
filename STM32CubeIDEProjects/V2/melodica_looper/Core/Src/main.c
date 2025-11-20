@@ -71,7 +71,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     if (huart->Instance == UART4) {
     	MIDI_ProcessByte();
     }
-    if (huart->Instance == MODULES_USART) {
+    if (huart->Instance == PREV_USART) {
     	Module_ProcessByte();
     }
 
@@ -139,19 +139,24 @@ int main(void)
 	  if (cur_t - last_noteon > 1000) {
 		  //transpose_state.shift = (transpose_state.shift + 1) % 12;
 		  if (SEND_DUMMY_NOTE) note_on(0, 48, 60);
-		  //stream_noteon(streams[0], 0, 60, 60);
+		  stream_noteon(streams[0], 0, 60, 60);
 		  last_noteon = cur_t;
 	  }
 
 	  if (cur_t - last_noteoff > 1000) {
 		  if (SEND_DUMMY_NOTE) note_off(0, 48, 0);
-		  //stream_noteoff(streams[0], 0, 60, 0);
+		  stream_noteoff(streams[0], 0, 60, 0);
 		  last_noteoff = cur_t;
 	  }
 
 	  // Run all modules
 	  MIDI_RunModules();
 
+	  // If no heartbeat has been detected lately, treat modules as disconnected
+	  if (cur_t - last_rx_timestamp > 2000) {
+		  streams[0] = &out_stream;
+		  streams[1] = NULL;
+	  }
 
     /* USER CODE END WHILE */
 
@@ -309,7 +314,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -357,7 +362,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 9600;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;

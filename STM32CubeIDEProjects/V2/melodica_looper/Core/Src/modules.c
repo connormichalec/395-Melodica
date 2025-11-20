@@ -53,7 +53,7 @@ void Module_Init() {
 	msg_idx = 0;
 	last_rx_timestamp = 0;
 
-	HAL_UART_Receive_IT(&huart2, &switchbox_byte, 1);
+	HAL_UART_Receive_IT(&huart1, &switchbox_byte, 1);
 
 	// Initializing module states
 	pressure_toggle_state.pressure_enabled = 1;
@@ -111,7 +111,7 @@ void Module_ProcessByte() {
 	msg_buf[msg_idx] = byte;
 	msg_idx++;
 
-	if (msg_idx < sizeof(SwitchboxMsg)) { HAL_UART_Receive_IT(&huart2, &switchbox_byte, 1); return; }
+	if (msg_idx < sizeof(SwitchboxMsg)) { HAL_UART_Receive_IT(&huart1, &switchbox_byte, 1); return; }
 
 	SwitchboxMsg sb_msg;
 	memcpy(&sb_msg, msg_buf, sizeof(SwitchboxMsg));
@@ -142,7 +142,7 @@ void Module_ProcessByte() {
 	}
 
 	// Re-enable interrupt
-	HAL_UART_Receive_IT(&huart2, &switchbox_byte, 1);
+	HAL_UART_Receive_IT(&huart1, &switchbox_byte, 1);
 }
 
 void append_byte(ModuleStream* module, uint8_t byte) {
@@ -186,7 +186,6 @@ void MIDI_RunModules() {
 					break;
 
 				case NOTE_ON: // Note On
-					HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
 					channel = midiStatus & 0x0F;
 					key = current_stream->data[idx + 1];
 					velocity = current_stream->data[idx + 2];

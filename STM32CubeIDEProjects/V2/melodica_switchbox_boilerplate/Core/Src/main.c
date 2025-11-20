@@ -65,7 +65,6 @@ static void MX_ADC_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern uint32_t last_rx_timestamp;
 uint8_t test;
 uint8_t test2;
 
@@ -148,7 +147,7 @@ int main(void)
 
 	cur_t = HAL_GetTick();
 	if (cur_t - last_msg_timestamp > UPDATE_MSG_PERIOD_MS && cur_t - last_rx_timestamp > UPDATE_MSG_PERIOD_MS * 2) {
-		//HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
+		HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
 
 
 		last_msg_timestamp = cur_t;

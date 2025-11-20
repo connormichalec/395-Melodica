@@ -79,8 +79,8 @@ void Error_Handler(void);
 #define MIDI_IN_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
-#define SWITCH_USART USART1
-#define MODULES_USART USART2
+#define PREV_USART USART1
+#define NEXT_USART USART2
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

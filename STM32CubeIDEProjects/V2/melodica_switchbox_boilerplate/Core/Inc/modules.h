@@ -11,7 +11,7 @@
 #include "stm32l0xx_hal.h"
 
 extern UART_HandleTypeDef hlpuart1;
-
+extern uint32_t last_rx_timestamp;
 
 // Module ID definitions
 #define MODULE_CONNECTIVITY_MSG 0

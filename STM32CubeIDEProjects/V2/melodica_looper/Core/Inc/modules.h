@@ -10,7 +10,8 @@
 
 #include "stm32g4xx_hal.h"
 
-extern UART_HandleTypeDef hlpuart1;
+extern UART_HandleTypeDef huart1;
+extern uint32_t last_rx_timestamp;
 
 // Module ID definitions
 #define MODULE_CONNECTIVITY_MSG 0
@@ -21,10 +22,10 @@ extern UART_HandleTypeDef hlpuart1;
 #define MODULE_SYNTH_ID 255
 
 // Configurable parameters
-#define MODULE_UART hlpuart1
+#define MODULE_UART huart1
 
 // Constant definitions
-#define MODULE_RX_TIMEOUT_MS 15
+#define MODULE_RX_TIMEOUT_MS 100
 
 #define CONNECTIVITY_MSG_LEN 2
 #define MAX_TRANSPOSE_RANGE 12
