@@ -60,8 +60,8 @@ all: main-build
 main-build: melodica_looper.elf secondary-outputs
 
 # Tool invocations
-melodica_looper.elf melodica_looper.map: $(OBJS) $(USER_OBJS) C:\Users\kobes\STM32CubeIDE\workspace_1.17.0\melodica\STM32CubeIDEProjects\V2\melodica_looper\STM32G473CBUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "melodica_looper.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\kobes\STM32CubeIDE\workspace_1.17.0\melodica\STM32CubeIDEProjects\V2\melodica_looper\STM32G473CBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="melodica_looper.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+melodica_looper.elf melodica_looper.map: $(OBJS) $(USER_OBJS) C:\Users\conno\STM32CubeIDE\workspace_1.17.0\melodica\STM32CubeIDEProjects\V2\melodica_looper\STM32G473CBUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "melodica_looper.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\conno\STM32CubeIDE\workspace_1.17.0\melodica\STM32CubeIDEProjects\V2\melodica_looper\STM32G473CBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="melodica_looper.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

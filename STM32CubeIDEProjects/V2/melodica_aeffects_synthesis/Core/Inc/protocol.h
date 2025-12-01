@@ -12,17 +12,24 @@
 
 #include "stm32h7xx_hal.h"
 
+#define CONTROL_ABSOLUTE 0
+#define CONTROL_RELATIVE 1
+#define CONTROL_CONNECTIVITY 2
+
 typedef enum {
 	ABSOLUTE,
 	RELATIVE
 } ControlType;
 
+
+// NOTE: The actual message data follows this message struct in memory, so to access it add the sizeof this struct to its address to get to start of data
 // Message
 typedef struct __attribute__((packed)) Msg {
-	uint8_t device_ID;
-	ControlType control_type;
-	uint16_t parameter_ID;
-	uint16_t data_length;
+	uint8_t device_ID;			// device ID of message sender
+	uint8_t target_device_ID;	// message destination device ID (if applicable)
+	uint8_t control_type;		// 0: Absolute, 1: Relative, 2: Connectivity message
+	uint16_t parameter_ID;  	// If this is a connectivity message, index is encoded into this field
+	uint16_t data_length;		// data length (to be appended after this message!)
 } Msg;
 
 void ProtocolInit();

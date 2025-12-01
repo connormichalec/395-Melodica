@@ -21,14 +21,16 @@ extern uint32_t last_rx_timestamp;
 
 // Switchbox message
 typedef struct __attribute__((packed)) SwitchboxMsg {
-	uint8_t device_ID;
-	uint8_t control_type;	// 0: Absolute, 1: Relative, 2: Connectivity message
-	uint16_t parameter_ID;  // If this is a connectivity message, index is encoded into this field
-	uint16_t data_length;
+	uint8_t device_ID;			// device ID of message sender
+	uint8_t target_device_ID;	// message destination  device ID (if applicable)
+	uint8_t control_type;		// 0: Absolute, 1: Relative, 2: Connectivity message
+	uint16_t parameter_ID;  	// If this is a connectivity message, index is encoded into this field
+	uint16_t data_length;		// data length (to be appended after this message!)
 } SwitchboxMsg;
 
 void Switchbox_Init();
 void Prev_ProcessByte();
 void Next_ProcessByte();
+void send_parameter_update_toNext(uint8_t parameter_ID, uint8_t target_device_ID, uint8_t control_type, uint32_t data);
 
 #endif /* INC_PROTOCOL_H_ */

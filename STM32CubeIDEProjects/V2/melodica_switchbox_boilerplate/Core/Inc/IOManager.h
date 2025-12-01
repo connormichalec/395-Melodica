@@ -8,22 +8,20 @@
 #ifndef INC_IOMANAGER_H_
 #define INC_IOMANAGER_H_
 
+#include "stm32l0xx_hal.h"
+
 #define MAX_ABS_IO 100
 #define MAX_REL_IO 100
-
-// What range to normalized readings coming from things like potentiometers to send over UART to?
-#define NORMALIZED_CONTROL_RANGE 1000
 
 
 // linked list of absolute io (has a current state that will update accordingly)
 typedef struct io_abs {
 	int enabled;											// whether or not this io is being used
-	int device_id;											// (should be the same for all swithces here, in this struct for flexibility purposes)
-	int param_id;											// what parameter id is this io being tracked to?
-	unsigned int state_value;								// value of state
+	uint8_t target_device_id;
+	uint8_t param_id;											// what parameter id is this io being tracked to?
+	uint32_t state_value;									// value of state (fixed as uint32_t cast from float if needed)
 	// callback functions for update:
 	int (*poll_function) (struct io_abs*);					// poll function should 1 return if it did change enough, iomanager will send message if changed
-	unsigned int (*get_value) (struct io_abs*);				// get message value to send
 	void* misc;												// misc data type pointer, store any additional information relevant to the io device (cast to necessary type)
 	void* destructFunction;									// to be called on destruction, for deallocating misc if needed. io_abs pointer is automatically passed to this
 } io_abs;
@@ -54,8 +52,6 @@ void IOinit();
 // Register a new absolute IO device: returns 1 on failure 0 on success
 int registerAbsIO(io_abs io_device);
 
-// Helper function to normalize some IO value to a fixed point representation that we have decided on for sending over to receiving modules.
-unsigned int normalize_value(unsigned int original_range, unsigned int original_val);
 
 
 #endif /* INC_IOMANAGER_H_ */

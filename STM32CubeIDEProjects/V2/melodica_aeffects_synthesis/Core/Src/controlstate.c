@@ -71,11 +71,11 @@ void update_parameter(unsigned int parameter_id, unsigned int control_type, uint
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_VOICE_NUM_OSC:
-			get_controlstate_active_profile()->voice_num_osc = *((uint8_t*) data);
+			get_controlstate_active_profile()->voice_num_osc = *((uint32_t*) data);
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_OSC_TYPE:
-			switch(*((uint8_t*) data)) {
+			switch(*((uint32_t*) data)) {
 				case 0:
 					get_controlstate_active_profile()->oscillatorType = SAW;
 					break;

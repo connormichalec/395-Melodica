@@ -30,10 +30,6 @@
 #define CONTROL_RANGE 1000
 
 
-// What is this device ID?
-#define DEVICE_ID 67
-
-
 // parameter ids
 #define PARAMTER_ID_GAIN 1						// (not in synthesis profile)
 #define PARAMTER_ID_DETUNE 2

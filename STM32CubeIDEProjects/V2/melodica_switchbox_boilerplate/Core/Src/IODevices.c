@@ -7,6 +7,7 @@
 
 
 #include "IODevices.h"
+#include "config.h"
 #include <stdlib.h>
 #include <stm32l0xx_hal_adc.h>
 
@@ -15,19 +16,18 @@
 /*           3 WAY SWITCHES            */
 void registerAll3PDTToggleSwitches() {
 	// call all of the individual switch register functions:
-	void ToggleSwitch3PDTRegister1();
-	void ToggleSwitch3PDTRegister2();
-	void ToggleSwitch3PDTRegister3();
+	ToggleSwitch3PDTRegister1();
+	ToggleSwitch3PDTRegister2();
+	ToggleSwitch3PDTRegister3();
 }
 
 // each one affects different parameter id but functions the same
 void ToggleSwitch3PDTRegister1() {
 	io_abs i;
 
-	i.device_id = 10;
-	i.param_id = 1;
+	i.target_device_id = SYNTH_DEVICE_ID;
+	i.param_id = PARAMETER_ID_OSC_TYPE;
 	i.poll_function = &ToggleSwitch3PDTPollFunction;
-	i.get_value = &ToggleSwitch3PDTGetValue;
 	i.state_value = 0;
 
 	struct ToggleSwitch3PDTMisc* m = (struct ToggleSwitch3PDTMisc*) malloc(sizeof(struct ToggleSwitch3PDTMisc));
@@ -44,10 +44,9 @@ void ToggleSwitch3PDTRegister1() {
 void ToggleSwitch3PDTRegister2() {
 	io_abs i;
 
-	i.device_id = 10;
+	i.target_device_id = 10;
 	i.param_id = 2;
 	i.poll_function = &ToggleSwitch3PDTPollFunction;
-	i.get_value = &ToggleSwitch3PDTGetValue;
 	i.state_value = 0;
 
 	struct ToggleSwitch3PDTMisc* m = (struct ToggleSwitch3PDTMisc*) malloc(sizeof(struct ToggleSwitch3PDTMisc));
@@ -64,10 +63,9 @@ void ToggleSwitch3PDTRegister2() {
 void ToggleSwitch3PDTRegister3() {
 	io_abs i;
 
-	i.device_id = 10;
+	i.target_device_id = 10;
 	i.param_id = 3;
 	i.poll_function = &ToggleSwitch3PDTPollFunction;
-	i.get_value = &ToggleSwitch3PDTGetValue;
 	i.state_value = 0;
 
 	struct ToggleSwitch3PDTMisc* m = (struct ToggleSwitch3PDTMisc*) malloc(sizeof(struct ToggleSwitch3PDTMisc));
@@ -93,16 +91,19 @@ int ToggleSwitch3PDTPollFunction(io_abs* io) {
 	int pin2 = HAL_GPIO_ReadPin(misc->GPIO2, misc->GPIOPin2);
 
 	// states:
-	if(pin1 && io->state_value!=1) {
+	if(pin1 && pin2 && io->state_value != 1) {
 		io->state_value = 1;
+
 		return(1);
 	}
-	else if (pin2 && io->state_value != 2) {
+	else if (pin2 && !pin1 && io->state_value != 2) {
 		io->state_value = 2;
+
 		return(1);
 	}
 	else if(!pin2 && !pin1 && io->state_value != 0){
 		io->state_value = 0;
+
 		return(1);
 	}
 
@@ -110,18 +111,8 @@ int ToggleSwitch3PDTPollFunction(io_abs* io) {
 	return(0);
 }
 
-unsigned int ToggleSwitch3PDTGetValue(io_abs* io) {
-	// Test output to pa7:
-	if(io->state_value == 0) {
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, 1);
-	} else {
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, 0);
-	}
 
-	return io->state_value;
-}
-
-void destruct3PDTMiscStrucutres(io_abs* io) {
+void destruct3PDTMiscStrucutre(io_abs* io) {
 	// TODO: Implement deallocation of misc structs
 }
 
@@ -149,10 +140,9 @@ void registerAllPots(ADC_HandleTypeDef* hadc) {
 void pot1Register() {
 	io_abs i;
 
-	i.device_id = 10;
+	i.target_device_id = 10;
 	i.param_id = 4;
 	i.poll_function = &potPollFunction;
-	i.get_value = &potGetValue;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
@@ -166,10 +156,9 @@ void pot1Register() {
 void pot2Register() {
 	io_abs i;
 
-	i.device_id = 10;
+	i.target_device_id = 10;
 	i.param_id = 5;
 	i.poll_function = &potPollFunction;
-	i.get_value = &potGetValue;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
@@ -183,10 +172,9 @@ void pot2Register() {
 void pot3Register() {
 	io_abs i;
 
-	i.device_id = 10;
+	i.target_device_id = 10;
 	i.param_id = 6;
 	i.poll_function = &potPollFunction;
-	i.get_value = &potGetValue;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
@@ -200,10 +188,9 @@ void pot3Register() {
 void pot4Register() {
 	io_abs i;
 
-	i.device_id = 10;
+	i.target_device_id = 10;
 	i.param_id = 7;
 	i.poll_function = &potPollFunction;
-	i.get_value = &potGetValue;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
@@ -217,10 +204,9 @@ void pot4Register() {
 void pot5Register() {
 	io_abs i;
 
-	i.device_id = 10;
+	i.target_device_id = 10;
 	i.param_id = 8;
 	i.poll_function = &potPollFunction;
-	i.get_value = &potGetValue;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
@@ -257,10 +243,6 @@ int potPollFunction(io_abs* io) {
 	// otherwise nothing:
 	return 0;
 
-}
-
-unsigned potGetValue(io_abs* io) {
-	return io->state_value;
 }
 
 void destructPotMiscStructure(io_abs* io) {

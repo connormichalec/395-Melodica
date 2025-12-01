@@ -121,7 +121,7 @@ int main(void)
   Switchbox_Init();
   IOinit();
   registerAll3PDTToggleSwitches();
-  registerAllPots(&hadc);
+  //registerAllPots(&hadc);
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, 0);
 
 
@@ -139,16 +139,25 @@ int main(void)
 
   uint32_t cur_t;
   uint32_t last_msg_timestamp = HAL_GetTick();
+  uint32_t cur_t_2;
+  uint32_t last_msg_timestamp_2 = HAL_GetTick();
   while (1) {
 
 
-	  //pollInputs();
-	// Every second, if this is the last module send a connectivity update
 
+	cur_t_2 = HAL_GetTick();
+	if (cur_t_2 - last_msg_timestamp_2 > IO_POLL_MSG_PERIOD_MS) {
+		pollInputs();
+
+		last_msg_timestamp_2 = cur_t_2;
+	}
+
+
+	// Every second, if this is the last module send a connectivity update - TODO: Check if last module???
 	cur_t = HAL_GetTick();
 	if (cur_t - last_msg_timestamp > UPDATE_MSG_PERIOD_MS && cur_t - last_rx_timestamp > UPDATE_MSG_PERIOD_MS * 2) {
-		HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
-
+		// Last module in chain send heartbeat
+		//HAL_UART_Transmit(&huart2, connectivity_msg, sizeof(SwitchboxMsg), 1000000);
 
 		last_msg_timestamp = cur_t;
 	}
@@ -379,7 +388,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : PA15 */
   GPIO_InitStruct.Pin = GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB3 PB4 PB5 PB6
@@ -387,7 +396,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
                           |GPIO_PIN_7;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */

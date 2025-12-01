@@ -6,6 +6,7 @@
  */
 
 #include "IOManager.h"
+#include "protocol.h"	// for Control types
 #include <stdlib.h>
 
 
@@ -18,10 +19,10 @@ void IOinit() {
 
 	// initialize all abs to default:
 	for(int i = 0; i<MAX_ABS_IO; i++) {
-		state->abs_io[i].device_id = 0;
+		state->abs_io[i].target_device_id = 0;
 		state->abs_io[i].poll_function = NULL;
 		state->abs_io[i].enabled = 0;
-		state->abs_io[i].get_value = NULL;
+		state->abs_io[i].state_value = 0;
 		state->abs_io[i].param_id = 0;
 		state->abs_io[i].state_value = 0;
 		state->abs_io[i].misc = 0x0;
@@ -37,15 +38,15 @@ int registerAbsIO(io_abs io_device) {
 	for(int i = 0; i<MAX_ABS_IO; i++) {
 		if(state->abs_io[i].enabled == 0) {
 			// First non-enabled io device, register here
+			send_parameter_update_toNext(2,2, CONTROL_ABSOLUTE, 3);
 
-			state->abs_io[i].device_id = io_device.device_id;
+			state->abs_io[i].target_device_id = io_device.target_device_id;
 			state->abs_io[i].enabled = 1;
-			state->abs_io[i].get_value = io_device.get_value;
 			state->abs_io[i].param_id = io_device.param_id;
 			state->abs_io[i].poll_function = io_device.poll_function;
-			state->abs_io[i].state_value = state->abs_io[i].state_value;
-			state->abs_io[i].misc = state->abs_io[i].misc;
-			state->abs_io[i].destructFunction = state->abs_io[i].destructFunction;
+			state->abs_io[i].state_value = io_device.state_value;
+			state->abs_io[i].misc = io_device.misc;
+			state->abs_io[i].destructFunction = io_device.destructFunction;
 
 			return 0;
 		}
@@ -65,9 +66,10 @@ void initialUpdate() {
 			state->abs_io[i].poll_function(&state->abs_io[i]);
 
 			// send the current value of everything for initializaiton
-			unsigned int val = state->abs_io[i].get_value(&state->abs_io[i]);
+			uint32_t val = state->abs_io[i].state_value;
 
 			// send this data over protocol:
+			send_parameter_update_toNext(state->abs_io[i].param_id, state->abs_io[i].target_device_id, CONTROL_ABSOLUTE, val);
 
 		}
 	}
@@ -76,23 +78,22 @@ void initialUpdate() {
 
 // Poll for changes and send updates for those
 void pollInputs() {
+
 	for(int i = 0; i<MAX_ABS_IO; i++) {
+
 		if(state->abs_io[i].enabled) {
+
 			// poll and check if data has changed and needs to be sent
 			if(state->abs_io[i].poll_function(&state->abs_io[i])) {
 				// should update! poll got new stuff to send
-				unsigned int newVal = state->abs_io[i].get_value(&state->abs_io[i]);
+				uint32_t val = state->abs_io[i].state_value;
 
 				// send this new data over protocol:
 
+				send_parameter_update_toNext(state->abs_io[i].param_id, state->abs_io[i].target_device_id, CONTROL_ABSOLUTE, val);
 			}
 		}
 	}
 }
 
-unsigned int normalize_value(unsigned int original_range, unsigned int original_val) {
-	unsigned int normalized = (original_val * NORMALIZED_CONTROL_RANGE) / original_range;
-
-	return normalized;
-}
 
