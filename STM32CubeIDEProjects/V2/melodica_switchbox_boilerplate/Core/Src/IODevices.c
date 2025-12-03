@@ -9,8 +9,8 @@
 #include "IODevices.h"
 #include "config.h"
 #include <stdlib.h>
-#include <stm32l0xx_hal_adc.h>
-
+#include <string.h>
+#include <math.h>
 
 
 /*           3 WAY SWITCHES            */
@@ -126,27 +126,39 @@ void destruct3PDTMiscStrucutre(io_abs* io) {
 
 /* 						POTENTIOMETERS					*/
 
+
+#define NUM_ADC_CHANNELS 5 					// Make sure this matches ADC scan config
+uint16_t g_adc_values[NUM_ADC_CHANNELS];
+
 ADC_HandleTypeDef* hadc_;
 
 void registerAllPots(ADC_HandleTypeDef* hadc) {
 	hadc_ = hadc;
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 0);
+
+	  // Make sure NUM_ADC_CHANNELS matches ADC's Nb of Conversion
+	if (HAL_ADC_Start_DMA(hadc_, (uint32_t*)g_adc_values, NUM_ADC_CHANNELS) != HAL_OK) {
+	        // Handle Error
+	}
+
+
 	pot1Register();
-	pot2Register();
-	pot3Register();
-	pot4Register();
-	pot5Register();
+	//pot2Register();
+	//pot3Register();
+	//pot4Register();
+	//pot5Register();
 }
 
 void pot1Register() {
 	io_abs i;
 
-	i.target_device_id = 10;
-	i.param_id = 4;
+	i.target_device_id = SYNTH_DEVICE_ID;
+	i.param_id = PARAMTER_ID_DETUNE;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
-	m->ADCIdx = 9;
+	m->ADCNumber = 4;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
@@ -156,13 +168,13 @@ void pot1Register() {
 void pot2Register() {
 	io_abs i;
 
-	i.target_device_id = 10;
-	i.param_id = 5;
+	i.target_device_id = SYNTH_DEVICE_ID;
+	i.param_id = PARAMTER_ID_DETUNE;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
-	m->ADCIdx = 8;
+	m->ADCNumber = 3;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
@@ -172,13 +184,13 @@ void pot2Register() {
 void pot3Register() {
 	io_abs i;
 
-	i.target_device_id = 10;
-	i.param_id = 6;
+	i.target_device_id = SYNTH_DEVICE_ID;
+	i.param_id = PARAMTER_ID_DETUNE;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
-	m->ADCIdx = 7;
+	m->ADCNumber = 2;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
@@ -188,13 +200,13 @@ void pot3Register() {
 void pot4Register() {
 	io_abs i;
 
-	i.target_device_id = 10;
-	i.param_id = 7;
+	i.target_device_id = SYNTH_DEVICE_ID;
+	i.param_id = PARAMTER_ID_DETUNE;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
-	m->ADCIdx = 6;
+	m->ADCNumber = 1;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
@@ -204,19 +216,22 @@ void pot4Register() {
 void pot5Register() {
 	io_abs i;
 
-	i.target_device_id = 10;
-	i.param_id = 8;
+	i.target_device_id = SYNTH_DEVICE_ID;
+	i.param_id = PARAMTER_ID_DETUNE;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
-	m->ADCIdx = 5;
+	m->ADCNumber = 0;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
 
 	registerAbsIO(i);
 }
+
+#define ADC_RESOLUTION 4095.0f			// Maximum read value from ADC (will be normalized to a "1"
+#define POT_DEVIATION 0.05f
 
 int potPollFunction(io_abs* io) {
 	// For this implementation we are fetching the last rad DAC value (not using DMA - although that would be more efficient TODO?)
@@ -225,20 +240,30 @@ int potPollFunction(io_abs* io) {
 
 	struct PotMisc* m = (struct PotMisc*) io->misc;
 
-	uint32_t val;
-	for (uint8_t i = 0; i <= m->ADCIdx; i++) {
-	    HAL_ADC_PollForConversion(hadc_, HAL_MAX_DELAY);			// TODO: Get a timeout in there
-	    val = HAL_ADC_GetValue(hadc_);
-	}
+	uint16_t val_raw;			// raw adc read value
+	float val_float;			// adc value converted to a float
+
+	// Get the value
+	val_raw = g_adc_values[m->ADCNumber];
+
+
+	// Convert to normalized float
+	val_float = ((float) val_raw / ADC_RESOLUTION);
+
+	// get current value as a float for comparison:
+	float val_current_float;
+	memcpy(&val_current_float, &io->state_value, sizeof(val_current_float));
+
 
 	// check if this value is much different than the stored one:
-	if(val != io->state_value) {
+	if (fabsf(val_float - val_current_float) > POT_DEVIATION) {
 		// if it is call an update:
+		//HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
 
-		io->state_value = val;
+		memcpy(&io->state_value, &val_float, sizeof(val_float));
+
 		return 1;
 	}
-
 
 	// otherwise nothing:
 	return 0;

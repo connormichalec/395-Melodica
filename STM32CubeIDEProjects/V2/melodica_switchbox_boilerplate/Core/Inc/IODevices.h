@@ -75,7 +75,7 @@ void pot5Register();
 // Misc structure for all pots, keep track of adc pin input
 struct PotMisc {
 
-	uint16_t ADCIdx;
+	uint16_t ADCNumber;
 };
 
 int potPollFunction(io_abs* io);

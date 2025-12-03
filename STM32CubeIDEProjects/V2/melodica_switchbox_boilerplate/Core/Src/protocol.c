@@ -69,7 +69,6 @@ void Prev_ProcessByte() {
 	memcpy(&sb_msg, prev_msg_buf, sizeof(SwitchboxMsg));
 
 	if (prev_msg_idx >= sizeof(SwitchboxMsg) + sb_msg.data_length) {
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_1);
 
 		// Check if this is a connectivity message
 		if (sb_msg.control_type == CONTROL_CONNECTIVITY) {
