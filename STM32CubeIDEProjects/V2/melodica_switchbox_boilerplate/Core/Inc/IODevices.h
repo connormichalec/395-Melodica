@@ -13,8 +13,8 @@
 
 #define SYNTH_DEVICE_ID 10
 
-#define PARAMTER_ID_GAIN 1
-#define PARAMTER_ID_DETUNE 2
+#define PARAMETER_ID_GAIN 1
+#define PARAMETER_ID_DETUNE 2
 #define PARAMETER_ID_VOICE_NUM_OSC 3
 #define PARAMETER_ID_OSC_TYPE 4
 #define PARAMETER_ID_ADSR_ATTACK_FACTOR 5
@@ -25,6 +25,8 @@
 #define PARAMETER_ID_FILTER1_TYPE 10
 #define PARAMETER_ID_FILTER1_CUTOFF 11
 #define PARAMETER_ID_FILTER1_RESONANCE 12
+
+#define PARAMETER_ID_DUMMY 150
 
 
 /* 3 WAY SWITHCES:*/
@@ -76,6 +78,7 @@ void pot5Register();
 struct PotMisc {
 
 	uint16_t ADCNumber;
+	int reversed;			// Whether or not the dircetion of this pot should be reversed
 };
 
 int potPollFunction(io_abs* io);

@@ -32,9 +32,9 @@ void ToggleSwitch3PDTRegister1() {
 
 	struct ToggleSwitch3PDTMisc* m = (struct ToggleSwitch3PDTMisc*) malloc(sizeof(struct ToggleSwitch3PDTMisc));
 	m->GPIO1 = GPIOA;
-	m->GPIOPin1 = GPIO_PIN_15;
-	m->GPIO2 = GPIOB;
-	m->GPIOPin2 = GPIO_PIN_3;
+	m->GPIOPin1 = GPIO_PIN_0;		// right first (viewed w/ connected pins bottom)
+	m->GPIO2 = GPIOA;
+	m->GPIOPin2 = GPIO_PIN_8;
 
 	i.misc = m;
 	i.destructFunction = &destruct3PDTMiscStrucutre;
@@ -44,16 +44,16 @@ void ToggleSwitch3PDTRegister1() {
 void ToggleSwitch3PDTRegister2() {
 	io_abs i;
 
-	i.target_device_id = 10;
-	i.param_id = 2;
+	i.target_device_id = SYNTH_DEVICE_ID;
+	i.param_id = PARAMETER_ID_FILTER1_TYPE;
 	i.poll_function = &ToggleSwitch3PDTPollFunction;
 	i.state_value = 0;
 
 	struct ToggleSwitch3PDTMisc* m = (struct ToggleSwitch3PDTMisc*) malloc(sizeof(struct ToggleSwitch3PDTMisc));
-	m->GPIO1 = GPIOB;
-	m->GPIOPin1 = GPIO_PIN_4;
-	m->GPIO2 = GPIOB;
-	m->GPIOPin2 = GPIO_PIN_5;
+	m->GPIO1 = GPIOA;
+	m->GPIOPin1 = GPIO_PIN_12;
+	m->GPIO2 = GPIOA;
+	m->GPIOPin2 = GPIO_PIN_11;
 
 	i.misc = m;
 	i.destructFunction = &destruct3PDTMiscStrucutre;
@@ -63,16 +63,16 @@ void ToggleSwitch3PDTRegister2() {
 void ToggleSwitch3PDTRegister3() {
 	io_abs i;
 
-	i.target_device_id = 10;
-	i.param_id = 3;
+	i.target_device_id = SYNTH_DEVICE_ID;
+	i.param_id = PARAMETER_ID_DUMMY;		// breath sensor mode
 	i.poll_function = &ToggleSwitch3PDTPollFunction;
 	i.state_value = 0;
 
 	struct ToggleSwitch3PDTMisc* m = (struct ToggleSwitch3PDTMisc*) malloc(sizeof(struct ToggleSwitch3PDTMisc));
-	m->GPIO1 = GPIOB;
-	m->GPIOPin1 = GPIO_PIN_6;
-	m->GPIO2 = GPIOB;
-	m->GPIOPin2 = GPIO_PIN_7;
+	m->GPIO1 = GPIOA;
+	m->GPIOPin1 = GPIO_PIN_1;
+	m->GPIO2 = GPIOA;
+	m->GPIOPin2 = GPIO_PIN_4;
 
 	i.misc = m;
 	i.destructFunction = &destruct3PDTMiscStrucutre;
@@ -137,28 +137,29 @@ void registerAllPots(ADC_HandleTypeDef* hadc) {
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 0);
 
 	  // Make sure NUM_ADC_CHANNELS matches ADC's Nb of Conversion
-	if (HAL_ADC_Start_DMA(hadc_, (uint32_t*)g_adc_values, NUM_ADC_CHANNELS) != HAL_OK) {
+	if (HAL_ADC_Start_DMA(hadc_, (uint32_t*) g_adc_values, NUM_ADC_CHANNELS) != HAL_OK) {
 	        // Handle Error
 	}
 
 
 	pot1Register();
-	//pot2Register();
-	//pot3Register();
-	//pot4Register();
-	//pot5Register();
+	pot2Register();
+	pot3Register();
+	pot4Register();
+	pot5Register();
 }
 
 void pot1Register() {
 	io_abs i;
 
 	i.target_device_id = SYNTH_DEVICE_ID;
-	i.param_id = PARAMTER_ID_DETUNE;
+	i.param_id = PARAMETER_ID_GAIN;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
 	m->ADCNumber = 4;
+	m->reversed = 0;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
@@ -169,12 +170,13 @@ void pot2Register() {
 	io_abs i;
 
 	i.target_device_id = SYNTH_DEVICE_ID;
-	i.param_id = PARAMTER_ID_DETUNE;
+	i.param_id = PARAMETER_ID_ADSR_RELEASE_FACTOR;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
 	m->ADCNumber = 3;
+	m->reversed = 1;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
@@ -185,12 +187,13 @@ void pot3Register() {
 	io_abs i;
 
 	i.target_device_id = SYNTH_DEVICE_ID;
-	i.param_id = PARAMTER_ID_DETUNE;
+	i.param_id = PARAMETER_ID_DETUNE;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
 	m->ADCNumber = 2;
+	m->reversed = 1;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
@@ -201,12 +204,13 @@ void pot4Register() {
 	io_abs i;
 
 	i.target_device_id = SYNTH_DEVICE_ID;
-	i.param_id = PARAMTER_ID_DETUNE;
+	i.param_id = PARAMETER_ID_FILTER1_CUTOFF;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
 	m->ADCNumber = 1;
+	m->reversed = 1;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
@@ -217,12 +221,13 @@ void pot5Register() {
 	io_abs i;
 
 	i.target_device_id = SYNTH_DEVICE_ID;
-	i.param_id = PARAMTER_ID_DETUNE;
+	i.param_id = PARAMETER_ID_FILTER1_RESONANCE;
 	i.poll_function = &potPollFunction;
 	i.state_value = 0;
 
 	struct PotMisc* m = (struct PotMisc*) malloc(sizeof(struct PotMisc));
 	m->ADCNumber = 0;
+	m->reversed = 1;
 
 	i.misc = m;
 	i.destructFunction = &destructPotMiscStructure;
@@ -249,6 +254,11 @@ int potPollFunction(io_abs* io) {
 
 	// Convert to normalized float
 	val_float = ((float) val_raw / ADC_RESOLUTION);
+
+	// If this one is reversed, reverse it:
+	if(m->reversed) {
+		val_float = 1 - val_float;
+	}
 
 	// get current value as a float for comparison:
 	float val_current_float;

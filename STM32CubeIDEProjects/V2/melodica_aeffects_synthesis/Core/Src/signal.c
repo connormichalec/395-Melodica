@@ -242,7 +242,9 @@ float signal_next_sample() {
 }
 
 void set_master_gain(float val) {
-	gain = val;
+	if(val>=0.0f && val <=1.0f) {
+		gain = val;
+	}
 }
 
 

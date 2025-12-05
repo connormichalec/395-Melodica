@@ -7,6 +7,7 @@
 
 #include "controlstate.h"
 #include <stdlib.h>
+#include <string.h>
 #include "signal.h"
 
 // global state
@@ -59,23 +60,28 @@ Synthesis_profile* get_controlstate_active_profile() {
 	return &(state->synthesis_profile[state->active_profile]);
 }
 
-
 // When we receive a state update from switchbox, update values accordingly. two psosible inputs, absolute values, or relative values.
 void update_parameter(unsigned int parameter_id, unsigned int control_type, uint8_t* data) {
+	float val_float;
+	uint32_t val_uint32;
 	switch(parameter_id) {
 		case PARAMTER_ID_GAIN:					// Note: gain is not actually in the synthesis profile struct, as it is universal and does not change with profile.
-			set_master_gain(*((float*) data));
+		    memcpy(&val_float, data, sizeof(float));
+		    set_master_gain(val_float);
 			break;
 		case PARAMTER_ID_DETUNE:
-			get_controlstate_active_profile()->detune = *((float*) data);
+		    memcpy(&val_float, data, sizeof(float));
+			get_controlstate_active_profile()->detune = val_float;
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_VOICE_NUM_OSC:
-			get_controlstate_active_profile()->voice_num_osc = *((uint32_t*) data);
+		    memcpy(&val_uint32, data, sizeof(uint32_t));
+			get_controlstate_active_profile()->voice_num_osc = val_uint32;
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_OSC_TYPE:
-			switch(*((uint32_t*) data)) {
+		    memcpy(&val_uint32, data, sizeof(uint32_t));
+			switch(val_uint32) {
 				case 0:
 					get_controlstate_active_profile()->oscillatorType = SAW;
 					break;
@@ -91,28 +97,34 @@ void update_parameter(unsigned int parameter_id, unsigned int control_type, uint
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_ADSR_ATTACK_FACTOR:
-			get_controlstate_active_profile()->adsr_attack_factor = *((float*) data);
+		    memcpy(&val_float, data, sizeof(float));
+			get_controlstate_active_profile()->adsr_attack_factor = val_float;
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_ADSR_ATTACK_LEVEL:
-			get_controlstate_active_profile()->adsr_attack_level = *((float*) data);
+		    memcpy(&val_float, data, sizeof(float));
+			get_controlstate_active_profile()->adsr_attack_level = val_float;
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_ADSR_DECAY_FACTOR:
-			get_controlstate_active_profile()->adsr_decay_factor = *((float*) data);
+		    memcpy(&val_float, data, sizeof(float));
+			get_controlstate_active_profile()->adsr_decay_factor = val_float;
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_ADSR_SUSTAIN_LEVEL:
-			get_controlstate_active_profile()->adsr_sustain_level = *((float*) data);
+		    memcpy(&val_float, data, sizeof(float));
+			get_controlstate_active_profile()->adsr_sustain_level = val_float;
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_ADSR_RELEASE_FACTOR:
-			get_controlstate_active_profile()->adsr_release_factor= *((float*) data);
+		    memcpy(&val_float, data, sizeof(float));
+			get_controlstate_active_profile()->adsr_release_factor= val_float;
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_FILTER1_TYPE:
 			//TODO: Test once more filter types are implemented
-			switch(*((uint8_t*) data)) {
+		    memcpy(&val_uint32, data, sizeof(uint32_t));
+			switch(val_uint32) {
 				case 0:
 					get_controlstate_active_profile()->filter1_type = LOWPASS;
 					break;
@@ -122,11 +134,13 @@ void update_parameter(unsigned int parameter_id, unsigned int control_type, uint
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_FILTER1_CUTOFF:
-			get_controlstate_active_profile()->filter1_cutoff = *((float*) data);
+		    memcpy(&val_float, data, sizeof(float));
+			get_controlstate_active_profile()->filter1_cutoff = val_float;
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_FILTER1_RESONANCE:
-			get_controlstate_active_profile()->filter1_resonance = *((float*) data);
+		    memcpy(&val_float, data, sizeof(float));
+			get_controlstate_active_profile()->filter1_resonance = val_float;
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		default:
