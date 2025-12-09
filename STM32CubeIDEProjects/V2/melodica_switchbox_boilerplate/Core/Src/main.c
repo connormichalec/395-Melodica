@@ -126,7 +126,7 @@ int main(void)
   registerAllPots(&hadc);
 
   // Quick delay ensures the synth board is ready to receive commands before sending first poll update
-  HAL_Delay(800);
+  HAL_Delay(100);
 
 
 

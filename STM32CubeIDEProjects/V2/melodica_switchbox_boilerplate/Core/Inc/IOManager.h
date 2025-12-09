@@ -17,6 +17,7 @@
 // linked list of absolute io (has a current state that will update accordingly)
 typedef struct io_abs {
 	int enabled;											// whether or not this io is being used
+	int sentInitial;										// has the first update been sent yet (when device is powered on)
 	uint8_t target_device_id;
 	uint8_t param_id;											// what parameter id is this io being tracked to?
 	uint32_t state_value;									// value of state (fixed as uint32_t cast from float if needed)

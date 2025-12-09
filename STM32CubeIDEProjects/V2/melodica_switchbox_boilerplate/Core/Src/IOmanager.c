@@ -22,6 +22,7 @@ void IOinit() {
 		state->abs_io[i].target_device_id = 0;
 		state->abs_io[i].poll_function = NULL;
 		state->abs_io[i].enabled = 0;
+		state->abs_io[i].sentInitial = 0;
 		state->abs_io[i].state_value = 0;
 		state->abs_io[i].param_id = 0;
 		state->abs_io[i].state_value = 0;
@@ -38,7 +39,6 @@ int registerAbsIO(io_abs io_device) {
 	for(int i = 0; i<MAX_ABS_IO; i++) {
 		if(state->abs_io[i].enabled == 0) {
 			// First non-enabled io device, register here
-			send_parameter_update_toNext(2,2, CONTROL_ABSOLUTE, 3);
 
 			state->abs_io[i].target_device_id = io_device.target_device_id;
 			state->abs_io[i].enabled = 1;
@@ -47,6 +47,7 @@ int registerAbsIO(io_abs io_device) {
 			state->abs_io[i].state_value = io_device.state_value;
 			state->abs_io[i].misc = io_device.misc;
 			state->abs_io[i].destructFunction = io_device.destructFunction;
+			state->abs_io[i].sentInitial = 0;
 
 			return 0;
 		}
@@ -74,6 +75,8 @@ void pollInputs() {
 				// send this new data over protocol:
 
 				send_parameter_update_toNext(state->abs_io[i].param_id, state->abs_io[i].target_device_id, CONTROL_ABSOLUTE, val);
+
+				return;			// ONLY ONE PARAMETER AT A TIME!! Important since receiver cant handle multiple in a row (as designed currently) - TODO: Cleaner solution -- poll rate must not be too frequent
 			}
 		}
 	}

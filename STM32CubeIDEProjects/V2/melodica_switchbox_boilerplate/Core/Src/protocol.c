@@ -122,7 +122,9 @@ void send_parameter_update_toNext(uint8_t parameter_ID, uint8_t target_device_ID
 	memcpy(msg_buf + sizeof(SwitchboxMsg), &data, sizeof(uint32_t));
 
 	// transmit to next, we send data as a single uint32_t buffer that way we can capture both floats and normal integer data (and that is sufficient for any parameter update)
+	// Make sure this transmits in blocking mode!
 	HAL_UART_Transmit(&huart2, msg_buf, sizeof(SwitchboxMsg) + message.data_length, 1000000);
+
 }
 
 // only will send the heartbeat if its the last module in the chain, all others will append to the heartbeat coming down the line.

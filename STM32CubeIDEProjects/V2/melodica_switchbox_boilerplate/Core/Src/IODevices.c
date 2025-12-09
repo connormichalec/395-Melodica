@@ -107,6 +107,12 @@ int ToggleSwitch3PDTPollFunction(io_abs* io) {
 		return(1);
 	}
 
+	if(!io->sentInitial) {
+		// Auto update if initial wasnt sent yet (and flag)
+		io->sentInitial = 1;
+		return 1;
+	}
+
 	// no change
 	return(0);
 }
@@ -134,13 +140,11 @@ ADC_HandleTypeDef* hadc_;
 
 void registerAllPots(ADC_HandleTypeDef* hadc) {
 	hadc_ = hadc;
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, 0);
 
 	  // Make sure NUM_ADC_CHANNELS matches ADC's Nb of Conversion
 	if (HAL_ADC_Start_DMA(hadc_, (uint32_t*) g_adc_values, NUM_ADC_CHANNELS) != HAL_OK) {
 	        // Handle Error
 	}
-
 
 	pot1Register();
 	pot2Register();
@@ -266,8 +270,10 @@ int potPollFunction(io_abs* io) {
 
 
 	// check if this value is much different than the stored one:
-	if (fabsf(val_float - val_current_float) > POT_DEVIATION) {
-		// if it is call an update:
+	if (fabsf(val_float - val_current_float) > POT_DEVIATION || !io->sentInitial) {
+		// Auto update if initial wasnt sent yet (and flag)
+		io->sentInitial = 1;
+
 		//HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
 
 		memcpy(&io->state_value, &val_float, sizeof(val_float));
