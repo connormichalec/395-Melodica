@@ -21,6 +21,16 @@ float channel_pressures[NUM_CHANNELS];
 // Digital volume (for now) - TODO: Digital dac with controllable gain via i2c to do volume control analogly
 // Master gain
 float gain = 1.0f;
+// Breath sensor setting: TODO - should this be in voice instead of signal?? (as seen in comments below)
+int breathSetting = 0;
+
+float secondary_gain = 1.0f;			// Secondary gain used by voice pressure
+
+
+//TODO: Implement these in a better manner: They are used to match the potentiometers current setting, that way breath sensor can add on top of the base while keeping that setting in memory
+float filter1_cutoff_base = 0.0f;
+float detune_base = 0.0f;
+
 
 // From chatgpt:
 #define LUT_SIZE 128
@@ -108,6 +118,45 @@ void keyboard_update(uint8_t val, uint8_t state, uint8_t channel) {
 		// Update pressure assigned to that voice
 		channel_pressures[channel] = (float) val / (float) 127;
 
+		float pres = channel_pressures[channel];
+
+		Synthesis_profile* p = get_controlstate_active_profile();
+
+		float t;			// TODO: Fix jankiness (rushed here)
+
+		// Breath sensor updates
+		switch(breathSetting) {
+			case 0:		// Volume and filter
+				secondary_gain = log_LUT(pres);
+				t = filter1_cutoff_base + log_LUT(pres);
+				if(t<0.0f)
+					t=0.0f;
+				else if(t>1.0f)
+					t = 1.0f;
+				p->filter1_cutoff = t;
+				break;
+			case 2:		// Just Filter (set filter0 to pres plus current pot setting)
+				t = filter1_cutoff_base + log_LUT(pres);
+				if(t<0.0f)
+					t=0.0f;
+				else if(t>1.0f)
+					t = 1.0f;
+				p->filter1_cutoff = t;
+				break;
+			case 1:		// Detune (add to current pot setting)
+				t = detune_base + log_LUT(pres);
+				if(t<0.0f)
+					t=0.0f;
+				else if(t>1.0f)
+					t = 1.0f;
+				p->detune = t;
+				break;
+			default:
+				break;
+
+		}
+		update_all_active_voices(p);
+
 
 	}
 }
@@ -119,12 +168,15 @@ void update_voice(Voice* v, Synthesis_profile* newParameters) {
 	set_voice_detune(v, newParameters->detune);
 	set_voice_oscillators(v, newParameters->voice_num_osc, newParameters->oscillatorType, v->base_freq);
 
-
+	//update filter1:
 	Filter* f = get_voice_filters(v);
-	f->cutoff = newParameters->filter1_cutoff;
-	f->resonance = newParameters->filter1_resonance;
+	set_filter_cutoff(f, newParameters->filter1_cutoff);
+	set_filter_resonance(f, newParameters->filter1_resonance);
+	//TODO: Make function for:
 	f->type = newParameters->filter1_type;
 
+
+	//TODO: Functions for these??
 	ADSR* a = get_voice_ADSR(v);
 	a->attack_factor = newParameters->adsr_attack_factor;
 	a->attack_level = newParameters->adsr_attack_level;
@@ -213,17 +265,21 @@ float signal_next_sample() {
 			// Apply ADSR factor:
 			voice_val = voice_val * get_voice_ADSR_val(v);
 
-			/*   FOR PRESSURE TO AFFECT VOL AND FILTER:
-			// Apply voice pressure factor as a scaling for volume: - apply a log curve to this to not have to blow as hard
-			voice_val = voice_val * log_LUT(channel_pressures[get_voice_channel(v)]);
 
-			// set detune based on pressure amount:
-			//set_voice_detune(v, log_LUT(channel_pressures[get_voice_channel(v)]));
+			switch(breathSetting) {
+				case 0:		// Volume and filter
+					voice_val = voice_val * secondary_gain;
+					break;
+				case 2:		// Just Filter (set filter0 to pres plus current pot setting)
+					// (handled in keyboard update)
+					break;
+				case 1:		// Detune (add to current pot setting)
+					// (handled in keyboard update)
+					break;
+				default:
+					break;
 
-			// set cutoff for first filter:
-			float pres = channel_pressures[get_voice_channel(v)];
-			set_filter_cutoff(get_voice_filters(v), pres < 0.1 ? 0.1 : pres);
-			*/
+			}
 
 			// Apply voice scaling factor to normalize and add to final val
 			val = val + voice_val * voice_scaling_fctr * gain;
@@ -247,4 +303,8 @@ void set_master_gain(float val) {
 	}
 }
 
+// For now this is part of the signal chain using a global variable that will update: TODO - move to voice? especially if we want to have this as profile-specific
+void set_breath_sensor_setting(int val) {
+	breathSetting = val;
+}
 

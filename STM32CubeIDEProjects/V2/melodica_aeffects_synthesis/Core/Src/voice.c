@@ -274,6 +274,10 @@ float get_voice_detune(Voice * voice) {
 
 float detune_scale = 7.0f;
 void set_voice_detune(Voice * voice, float detune) {
+	if(detune<=0.0f)
+		detune = 0.0f;
+	if(detune>=1.0f)
+		detune = 1.0f;
 	voice->detune = detune;
 	float frequency = voice->base_freq;
 	// Update oscillator frequencies accordingly:
@@ -284,7 +288,6 @@ void set_voice_detune(Voice * voice, float detune) {
 
 	}
 }
-
 
 
 Voice * get_voice_from_idx(int voice_idx) {

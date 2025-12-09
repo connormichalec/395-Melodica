@@ -60,6 +60,9 @@ Synthesis_profile* get_controlstate_active_profile() {
 	return &(state->synthesis_profile[state->active_profile]);
 }
 
+extern float filter1_cutoff_base;
+extern float detune_base;
+
 // When we receive a state update from switchbox, update values accordingly. two psosible inputs, absolute values, or relative values.
 void update_parameter(unsigned int parameter_id, unsigned int control_type, uint8_t* data) {
 	float val_float;
@@ -72,6 +75,7 @@ void update_parameter(unsigned int parameter_id, unsigned int control_type, uint
 		case PARAMTER_ID_DETUNE:
 		    memcpy(&val_float, data, sizeof(float));
 			get_controlstate_active_profile()->detune = val_float;
+			detune_base = val_float;			// temporary TODO
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_VOICE_NUM_OSC:
@@ -136,12 +140,18 @@ void update_parameter(unsigned int parameter_id, unsigned int control_type, uint
 		case PARAMETER_ID_FILTER1_CUTOFF:
 		    memcpy(&val_float, data, sizeof(float));
 			get_controlstate_active_profile()->filter1_cutoff = val_float;
+			filter1_cutoff_base = val_float;			// temporary TODO
 			update_all_active_voices(get_controlstate_active_profile());
 			break;
 		case PARAMETER_ID_FILTER1_RESONANCE:
 		    memcpy(&val_float, data, sizeof(float));
 			get_controlstate_active_profile()->filter1_resonance = val_float;
 			update_all_active_voices(get_controlstate_active_profile());
+			break;
+		case PARAMETER_ID_BREATH_SETTING:
+		    memcpy(&val_uint32, data, sizeof(uint32_t));
+			get_controlstate_active_profile()->breath_setting = val_uint32;
+			set_breath_sensor_setting(val_uint32);
 			break;
 		default:
 			break;

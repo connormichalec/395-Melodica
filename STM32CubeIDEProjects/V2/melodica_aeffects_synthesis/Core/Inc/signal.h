@@ -24,7 +24,11 @@ float signal_next_sample();
 
 float get_channel_pressure(int channel);
 
+// not in synth profile (stays constant across all profiles regardless of changing them)
 void set_master_gain(float val);
+
+// in synth profile (for now)
+void set_breath_sensor_setting(int val);
 
 void update_voice(Voice* v, Synthesis_profile* newParameters);
 

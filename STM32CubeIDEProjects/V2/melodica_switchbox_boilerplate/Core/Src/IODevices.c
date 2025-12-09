@@ -45,7 +45,7 @@ void ToggleSwitch3PDTRegister2() {
 	io_abs i;
 
 	i.target_device_id = SYNTH_DEVICE_ID;
-	i.param_id = PARAMETER_ID_FILTER1_TYPE;
+	i.param_id = PARAMETER_ID_FILTER1_TYPE;   //TODO: (this doesnt work yet on synthesizer side not implemented)
 	i.poll_function = &ToggleSwitch3PDTPollFunction;
 	i.state_value = 0;
 
@@ -64,7 +64,7 @@ void ToggleSwitch3PDTRegister3() {
 	io_abs i;
 
 	i.target_device_id = SYNTH_DEVICE_ID;
-	i.param_id = PARAMETER_ID_DUMMY;		// breath sensor mode
+	i.param_id = PARAMETER_ID_BREATH_SETTING;
 	i.poll_function = &ToggleSwitch3PDTPollFunction;
 	i.state_value = 0;
 

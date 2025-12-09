@@ -43,6 +43,8 @@
 #define PARAMETER_ID_FILTER1_TYPE 10
 #define PARAMETER_ID_FILTER1_CUTOFF 11
 #define PARAMETER_ID_FILTER1_RESONANCE 12
+#define PARAMETER_ID_BREATH_SETTING 13
+
 
 
 
@@ -67,6 +69,9 @@ typedef struct Synthesis_profile {
 	FilterType filter1_type;
 	float filter1_cutoff;
 	float filter1_resonance;
+
+	// Breath setting (TOODO: Think about if we might wanna move this out of the profile like gain - but i dont think that makes a lot of sense)
+	int breath_setting;
 
 } Synthesis_profile;
 /** **/
